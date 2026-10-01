@@ -4,6 +4,7 @@
  */
 package gui;
 
+import Customer.CustomerGUI;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -25,6 +26,7 @@ public class MainFrame extends JFrame implements ActionListener {
     private CustomerLoginPanel panelCustomerLogin;
     private DriverLoginPanel panelDriverLogin;
     private AdminLoginPanel panelAdminLogin;
+    private CustomerGUI panelCustomerGUI;
 
     // Credentials
     private final String VALID_CUSTOMER_USER = "customer1";
@@ -55,6 +57,7 @@ public class MainFrame extends JFrame implements ActionListener {
         panelCustomerLogin = new CustomerLoginPanel(this);
         panelDriverLogin = new DriverLoginPanel(this);
         panelAdminLogin = new AdminLoginPanel(this);
+        panelCustomerGUI = new CustomerGUI(this);
 
         // Adding to cardLayout container
         mainContainer.add(panelStart, "START");
@@ -64,6 +67,7 @@ public class MainFrame extends JFrame implements ActionListener {
         mainContainer.add(panelCustomerLogin, "CUSTOMER_LOGIN");
         mainContainer.add(panelDriverLogin, "DRIVER_LOGIN");
         mainContainer.add(panelAdminLogin, "ADMIN_LOGIN");
+        mainContainer.add(panelCustomerGUI, "CUSTOMER_HOME");
 
         cardLayout.show(mainContainer, "START");
     }
@@ -141,9 +145,13 @@ public class MainFrame extends JFrame implements ActionListener {
             if (identifier.equals(VALID_CUSTOMER_USER) && password.equals(VALID_CUSTOMER_PASS)) {
                 String saveMsg = panelCustomerLogin.chkLoginSavePassword.isSelected() ? "\n(Password saved locally)" : "";
                 JOptionPane.showMessageDialog(this, "Login Successful! Welcome Customer." + saveMsg, "Success", JOptionPane.INFORMATION_MESSAGE);
+                
                 panelCustomerLogin.txtLoginEmailOrUser.setText("");
                 panelCustomerLogin.txtLoginPassword.setText("");
                 panelCustomerLogin.chkLoginSavePassword.setSelected(false);
+
+                // Switch to Customer Home panel
+                cardLayout.show(mainContainer, "CUSTOMER_HOME");
             } else {
                 JOptionPane.showMessageDialog(this, "Invalid Email/Username or Password!", "Login Failed", JOptionPane.ERROR_MESSAGE);
             }
@@ -193,6 +201,12 @@ public class MainFrame extends JFrame implements ActionListener {
                  source == panelDriverLogin.btnDriverLoginBack || 
                  source == panelAdminLogin.btnAdminLoginBack) {
             cardLayout.show(mainContainer, "ROLES");
+        }
+        else if (source == panelCustomerGUI.btnNavProfile) {
+            int choice = JOptionPane.showConfirmDialog(this, "Do you want to log out?", "Logout", JOptionPane.YES_NO_OPTION);
+            if (choice == JOptionPane.YES_OPTION) {
+                cardLayout.show(mainContainer, "ROLES");
+            }
         }
     }
 }
