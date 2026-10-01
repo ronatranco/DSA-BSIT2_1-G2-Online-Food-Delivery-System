@@ -1,23 +1,16 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package gui;
 
 import java.awt.*;
 import java.awt.event.ActionListener;
+import java.sql.*;
 import javax.swing.*;
-/**
- *
- * @author rownavanana
- */
 
 public class SignupPanel extends JPanel {
     private Color PURPLE_DARK = new Color(74, 20, 140);
     private Color YELLOW_ACCENT = new Color(255, 193, 7);
     private Color BG_LIGHT = new Color(248, 245, 250);
 
-    public JTextField txtName, txtEmail, txtPhone, txtAddress;
+    public JTextField txtName, txtEmail, txtPhone, txtAddress, txtUser;
     public JPasswordField txtPassword, txtConfirmPassword;
     public JCheckBox chkSavePassword;
     public JButton btnRegister, btnAlreadyHaveAccount;
@@ -61,50 +54,54 @@ public class SignupPanel extends JPanel {
         rightPanelSignup.add(lblName);
         rightPanelSignup.add(txtName);
 
+        JLabel lblUser = new JLabel("Username");
+        lblUser.setBounds(60, 142, 380, 20);
+        txtUser = new JTextField();
+        txtUser.setBounds(60, 164, 380, 35);
+        rightPanelSignup.add(lblUser);
+        rightPanelSignup.add(txtUser);
+
         JLabel lblEmail = new JLabel("Email Address (@gmail.com)");
-        lblEmail.setBounds(60, 142, 380, 20);
+        lblEmail.setBounds(60, 204, 380, 20);
         txtEmail = new JTextField();
-        txtEmail.setBounds(60, 164, 380, 35);
+        txtEmail.setBounds(60, 226, 380, 35);
         rightPanelSignup.add(lblEmail);
         rightPanelSignup.add(txtEmail);
 
         JLabel lblPhone = new JLabel("Phone Number (11 digits, e.g., 09123456789)");
-        lblPhone.setBounds(60, 204, 380, 20);
+        lblPhone.setBounds(60, 266, 380, 20);
         txtPhone = new JTextField();
-        txtPhone.setBounds(60, 226, 380, 35);
+        txtPhone.setBounds(60, 288, 380, 35);
         rightPanelSignup.add(lblPhone);
         rightPanelSignup.add(txtPhone);
-        
+
         JLabel lblAddress = new JLabel("Address");
-        lblAddress.setBounds(60, 266, 380, 20);
-
-        txtAddress = new JTextField();            
-        txtAddress.setBounds(60, 288, 380, 35);   
-
+        lblAddress.setBounds(60, 328, 380, 20);
+        txtAddress = new JTextField();
+        txtAddress.setBounds(60, 350, 380, 35);
         rightPanelSignup.add(lblAddress);
         rightPanelSignup.add(txtAddress);
 
         JLabel lblPassword = new JLabel("Password");
-        lblPassword.setBounds(60, 328, 380, 20);
+        lblPassword.setBounds(60, 390, 380, 20);
         txtPassword = new JPasswordField();
         JPanel passPanelSignup = createPasswordFieldWithEye(txtPassword);
-        passPanelSignup.setBounds(60, 350, 380, 35);
+        passPanelSignup.setBounds(60, 412, 380, 35);
         rightPanelSignup.add(lblPassword);
         rightPanelSignup.add(passPanelSignup);
 
         JLabel lblConfirmPassword = new JLabel("Confirm Password");
-        lblConfirmPassword.setBounds(60, 390, 380, 20);
+        lblConfirmPassword.setBounds(60, 452, 380, 20);
         txtConfirmPassword = new JPasswordField();
-        
         JPanel confirmPassPanelSignup = createPasswordFieldWithEye(txtConfirmPassword);
-        confirmPassPanelSignup.setBounds(60, 412, 380, 35);
+        confirmPassPanelSignup.setBounds(60, 474, 380, 35);
         rightPanelSignup.add(lblConfirmPassword);
         rightPanelSignup.add(confirmPassPanelSignup);
 
         chkSavePassword = new JCheckBox("Save Password");
         chkSavePassword.setFont(new Font("Segoe UI", Font.PLAIN, 12));
         chkSavePassword.setBackground(BG_LIGHT);
-        chkSavePassword.setBounds(60, 455, 150, 20);
+        chkSavePassword.setBounds(60, 514, 150, 20);
         chkSavePassword.setFocusPainted(false);
         rightPanelSignup.add(chkSavePassword);
 
@@ -113,8 +110,8 @@ public class SignupPanel extends JPanel {
         btnRegister.setBackground(PURPLE_DARK);
         btnRegister.setForeground(Color.WHITE);
         btnRegister.setFocusPainted(false);
-        btnRegister.setBounds(60, 490, 380, 45);
-        btnRegister.addActionListener(listener);
+        btnRegister.setBounds(60, 544, 380, 45);
+        btnRegister.addActionListener(e -> handleRegister());
         rightPanelSignup.add(btnRegister);
 
         btnAlreadyHaveAccount = new JButton("Already have an account?");
@@ -124,11 +121,51 @@ public class SignupPanel extends JPanel {
         btnAlreadyHaveAccount.setBorderPainted(false);
         btnAlreadyHaveAccount.setFocusPainted(false);
         btnAlreadyHaveAccount.setCursor(new Cursor(Cursor.HAND_CURSOR));
-        btnAlreadyHaveAccount.setBounds(60, 545, 380, 30);
+        btnAlreadyHaveAccount.setBounds(60, 599, 380, 30);
         btnAlreadyHaveAccount.addActionListener(listener);
         rightPanelSignup.add(btnAlreadyHaveAccount);
 
         add(rightPanelSignup);
+    }
+
+    private void handleRegister() {
+        String name = txtName.getText().trim();
+        String user = txtUser.getText().trim();
+        String email = txtEmail.getText().trim();
+        String phone = txtPhone.getText().trim();
+        String address = txtAddress.getText().trim();
+        String pass = new String(txtPassword.getPassword());
+        String confirm = new String(txtConfirmPassword.getPassword());
+
+        if (name.isEmpty() || user.isEmpty() || email.isEmpty() || pass.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Please fill in all required fields.");
+            return;
+        }
+        if (!pass.equals(confirm)) {
+            JOptionPane.showMessageDialog(this, "Passwords do not match.");
+            return;
+        }
+
+        String sql = "INSERT INTO user_auth (full_name, email_address, username, phone_number, address, password) "
+                   + "VALUES (?, ?, ?, ?, ?, ?)";
+
+        try (Connection con = DatabaseConnection.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+
+            ps.setString(1, name);
+            ps.setString(2, email);
+            ps.setString(3, user);
+            ps.setString(4, phone.isEmpty() ? null : phone);
+            ps.setString(5, address.isEmpty() ? null : address);
+            ps.setString(6, pass);
+            ps.executeUpdate();
+
+            JOptionPane.showMessageDialog(this, "Account created.");
+            btnAlreadyHaveAccount.doClick();
+
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(this, "Error: " + ex.getMessage());
+        }
     }
 
     private JPanel createPasswordFieldWithEye(JPasswordField passField) {
