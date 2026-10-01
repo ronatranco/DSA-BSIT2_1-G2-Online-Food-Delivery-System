@@ -10,6 +10,7 @@ package Order;
  */
 public class OrderMain {
     public static void main(String []args){
-        System.out.println("Order Up!");
+        CustomerOrders Orders = new CustomerOrders();
+        Orders.setVisible(true);
     }
 }
