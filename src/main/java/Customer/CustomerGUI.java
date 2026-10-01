@@ -10,5 +10,8 @@ package Customer;
  * @author klara
  */
 public class CustomerGUI {
-
+    public static void main(String[] args) {
+        System.out.println("Hello, Rona!");
+    }
+    
 }
