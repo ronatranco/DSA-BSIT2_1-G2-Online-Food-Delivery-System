@@ -6,7 +6,6 @@ package GUI;
 
 import java.awt.*;
 import javax.swing.*;
-
 /**
  *
  * @author rownavanana
@@ -20,10 +19,11 @@ public class AdminLoginPanel extends JPanel {
 
     private Font REGULAR_FONT = new Font("Segoe UI", Font.PLAIN, 14);
 
+    // PUBLIC FIELDS PARA PAREHAS SA CUSTOMER LOGIN PANEL
     public JTextField txtAdminUser;
     public JPasswordField txtAdminPass;
     public JCheckBox chkAdminSavePass;
-    public JButton btnAdminLogin, btnAdminLoginBack;
+    public JButton btnAdminLogin, btnAdminForgotPassword, btnAdminLoginBack;
     private MainFrame mainFrame;
 
     public AdminLoginPanel(MainFrame mainFrame) {
@@ -89,6 +89,16 @@ public class AdminLoginPanel extends JPanel {
         chkAdminSavePass.setBounds(60, 340, 150, 20);
         chkAdminSavePass.setFocusPainted(false);
         rightPanelAdmin.add(chkAdminSavePass);
+
+        btnAdminForgotPassword = new JButton("Forgot password?");
+        btnAdminForgotPassword.setFont(new Font("Segoe UI", Font.BOLD, 12));
+        btnAdminForgotPassword.setForeground(PURPLE_DARK);
+        btnAdminForgotPassword.setContentAreaFilled(false);
+        btnAdminForgotPassword.setBorderPainted(false);
+        btnAdminForgotPassword.setFocusPainted(false);
+        btnAdminForgotPassword.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        btnAdminForgotPassword.setBounds(300, 338, 140, 25);
+        rightPanelAdmin.add(btnAdminForgotPassword);
 
         btnAdminLogin = new JButton("Login");
         btnAdminLogin.setFont(new Font("Segoe UI", Font.BOLD, 16));

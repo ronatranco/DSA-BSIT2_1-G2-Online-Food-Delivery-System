@@ -1,3 +1,7 @@
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
+ */
 package GUI;
 
 import java.awt.*;
@@ -18,7 +22,7 @@ public class RestaurantLoginPanel extends JPanel {
     public JTextField txtRestaurantUser;
     public JPasswordField txtRestaurantPass;
     public JCheckBox chkRestaurantSavePass;
-    public JButton btnRestaurantLogin, btnRestaurantLoginBack;
+    public JButton btnRestaurantLogin, btnRestaurantForgotPassword, btnRestaurantLoginBack;
     private MainFrame mainFrame;
 
     public RestaurantLoginPanel(MainFrame mainFrame) {
@@ -84,6 +88,16 @@ public class RestaurantLoginPanel extends JPanel {
         chkRestaurantSavePass.setBounds(60, 340, 150, 20);
         chkRestaurantSavePass.setFocusPainted(false);
         rightPanelRestaurant.add(chkRestaurantSavePass);
+
+        btnRestaurantForgotPassword = new JButton("Forgot password?");
+        btnRestaurantForgotPassword.setFont(new Font("Segoe UI", Font.BOLD, 12));
+        btnRestaurantForgotPassword.setForeground(PURPLE_DARK);
+        btnRestaurantForgotPassword.setContentAreaFilled(false);
+        btnRestaurantForgotPassword.setBorderPainted(false);
+        btnRestaurantForgotPassword.setFocusPainted(false);
+        btnRestaurantForgotPassword.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        btnRestaurantForgotPassword.setBounds(300, 338, 140, 25);
+        rightPanelRestaurant.add(btnRestaurantForgotPassword);
 
         btnRestaurantLogin = new JButton("Login");
         btnRestaurantLogin.setFont(new Font("Segoe UI", Font.BOLD, 16));
