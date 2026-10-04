@@ -4,12 +4,13 @@
  */
 package Main;
 
+import GUI.MainFrame;
 
 /**
  *
  * @author rownavanana
+ * CLASS PARA MAG RUN BUONG GAWA NATIN
  */
-import gui.MainFrame;
 
 public class Main {
     public static void main(String[] args) {
