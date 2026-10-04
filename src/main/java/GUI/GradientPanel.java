@@ -2,13 +2,14 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package gui;
+package GUI;
 
 import java.awt.*;
 import javax.swing.*;
 /**
  *
  * @author rownavanana
+ * this is for GUI lang like yung makikita nyong gradient na violet kay grabpanda the left banner
  */
 
 public class GradientPanel extends JPanel {

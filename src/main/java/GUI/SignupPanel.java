@@ -2,27 +2,29 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package gui;
+package GUI;
 
 import java.awt.*;
-import java.awt.event.ActionListener;
 import javax.swing.*;
+
 /**
  *
  * @author rownavanana
  */
-
 public class SignupPanel extends JPanel {
     private Color PURPLE_DARK = new Color(74, 20, 140);
     private Color YELLOW_ACCENT = new Color(255, 193, 7);
     private Color BG_LIGHT = new Color(248, 245, 250);
 
-    public JTextField txtName, txtEmail, txtPhone, txtAddress;
+    public JTextField txtName, txtUsername, txtEmail, txtPhone, txtAddress;
     public JPasswordField txtPassword, txtConfirmPassword;
     public JCheckBox chkSavePassword;
     public JButton btnRegister, btnAlreadyHaveAccount;
+    private MainFrame mainFrame;
 
-    public SignupPanel(ActionListener listener) {
+    public SignupPanel(MainFrame mainFrame) {
+        this.mainFrame = mainFrame;
+
         setLayout(null);
         setBackground(BG_LIGHT);
 
@@ -51,72 +53,85 @@ public class SignupPanel extends JPanel {
         JLabel lblSignupTitle = new JLabel("Create Account", SwingConstants.LEFT);
         lblSignupTitle.setFont(new Font("Segoe UI", Font.BOLD, 32));
         lblSignupTitle.setForeground(PURPLE_DARK);
-        lblSignupTitle.setBounds(60, 30, 400, 40);
+        lblSignupTitle.setBounds(60, 20, 400, 40);
         rightPanelSignup.add(lblSignupTitle);
 
+        // 1. Full Name
         JLabel lblName = new JLabel("Full Name");
-        lblName.setBounds(60, 80, 380, 20);
+        lblName.setBounds(60, 68, 380, 18);
         txtName = new JTextField();
-        txtName.setBounds(60, 102, 380, 35);
+        txtName.setBounds(60, 88, 380, 30);
         rightPanelSignup.add(lblName);
         rightPanelSignup.add(txtName);
 
+        // 2. Username 
+        JLabel lblUsername = new JLabel("Username");
+        lblUsername.setBounds(60, 122, 380, 18);
+        txtUsername = new JTextField();
+        txtUsername.setBounds(60, 142, 380, 30);
+        rightPanelSignup.add(lblUsername);
+        rightPanelSignup.add(txtUsername);
+
+        // 3. Email Address
         JLabel lblEmail = new JLabel("Email Address (@gmail.com)");
-        lblEmail.setBounds(60, 142, 380, 20);
+        lblEmail.setBounds(60, 176, 380, 18);
         txtEmail = new JTextField();
-        txtEmail.setBounds(60, 164, 380, 35);
+        txtEmail.setBounds(60, 196, 380, 30);
         rightPanelSignup.add(lblEmail);
         rightPanelSignup.add(txtEmail);
 
+        // 4. Phone Number
         JLabel lblPhone = new JLabel("Phone Number (11 digits, e.g., 09123456789)");
-        lblPhone.setBounds(60, 204, 380, 20);
+        lblPhone.setBounds(60, 230, 380, 18);
         txtPhone = new JTextField();
-        txtPhone.setBounds(60, 226, 380, 35);
+        txtPhone.setBounds(60, 250, 380, 30);
         rightPanelSignup.add(lblPhone);
         rightPanelSignup.add(txtPhone);
-        
+
+        // 5. Address
         JLabel lblAddress = new JLabel("Address");
-        lblAddress.setBounds(60, 266, 380, 20);
-
-        txtAddress = new JTextField();            
-        txtAddress.setBounds(60, 288, 380, 35);   
-
+        lblAddress.setBounds(60, 284, 380, 18);
+        txtAddress = new JTextField();         
+        txtAddress.setBounds(60, 304, 380, 30);   
         rightPanelSignup.add(lblAddress);
         rightPanelSignup.add(txtAddress);
 
+        // 6. Password
         JLabel lblPassword = new JLabel("Password");
-        lblPassword.setBounds(60, 328, 380, 20);
+        lblPassword.setBounds(60, 338, 380, 18);
         txtPassword = new JPasswordField();
         JPanel passPanelSignup = createPasswordFieldWithEye(txtPassword);
-        passPanelSignup.setBounds(60, 350, 380, 35);
+        passPanelSignup.setBounds(60, 358, 380, 30);
         rightPanelSignup.add(lblPassword);
         rightPanelSignup.add(passPanelSignup);
 
+        // 7. Confirm Password
         JLabel lblConfirmPassword = new JLabel("Confirm Password");
-        lblConfirmPassword.setBounds(60, 390, 380, 20);
+        lblConfirmPassword.setBounds(60, 392, 380, 18);
         txtConfirmPassword = new JPasswordField();
-        
         JPanel confirmPassPanelSignup = createPasswordFieldWithEye(txtConfirmPassword);
-        confirmPassPanelSignup.setBounds(60, 412, 380, 35);
+        confirmPassPanelSignup.setBounds(60, 412, 380, 30);
         rightPanelSignup.add(lblConfirmPassword);
         rightPanelSignup.add(confirmPassPanelSignup);
 
+        // 8. Save Password Checkbox
         chkSavePassword = new JCheckBox("Save Password");
         chkSavePassword.setFont(new Font("Segoe UI", Font.PLAIN, 12));
         chkSavePassword.setBackground(BG_LIGHT);
-        chkSavePassword.setBounds(60, 455, 150, 20);
+        chkSavePassword.setBounds(60, 448, 150, 20);
         chkSavePassword.setFocusPainted(false);
         rightPanelSignup.add(chkSavePassword);
 
+        // 9. Register Button
         btnRegister = new JButton("REGISTER");
         btnRegister.setFont(new Font("Segoe UI", Font.BOLD, 14));
         btnRegister.setBackground(PURPLE_DARK);
         btnRegister.setForeground(Color.WHITE);
         btnRegister.setFocusPainted(false);
-        btnRegister.setBounds(60, 490, 380, 45);
-        btnRegister.addActionListener(listener);
+        btnRegister.setBounds(60, 480, 380, 42);
         rightPanelSignup.add(btnRegister);
 
+        // 10. Already have an account Button
         btnAlreadyHaveAccount = new JButton("Already have an account?");
         btnAlreadyHaveAccount.setFont(new Font("Segoe UI", Font.BOLD, 13));
         btnAlreadyHaveAccount.setForeground(PURPLE_DARK);
@@ -124,8 +139,7 @@ public class SignupPanel extends JPanel {
         btnAlreadyHaveAccount.setBorderPainted(false);
         btnAlreadyHaveAccount.setFocusPainted(false);
         btnAlreadyHaveAccount.setCursor(new Cursor(Cursor.HAND_CURSOR));
-        btnAlreadyHaveAccount.setBounds(60, 545, 380, 30);
-        btnAlreadyHaveAccount.addActionListener(listener);
+        btnAlreadyHaveAccount.setBounds(60, 530, 380, 30);
         rightPanelSignup.add(btnAlreadyHaveAccount);
 
         add(rightPanelSignup);
@@ -141,7 +155,7 @@ public class SignupPanel extends JPanel {
 
         JToggleButton btnEye = new JToggleButton("👁");
         btnEye.setFont(new Font("Segoe UI Symbol", Font.PLAIN, 16));
-        btnEye.setPreferredSize(new Dimension(45, 32));
+        btnEye.setPreferredSize(new Dimension(45, 30));
         btnEye.setMargin(new Insets(0, 0, 0, 0));
         btnEye.setContentAreaFilled(false);
         btnEye.setBorderPainted(false);

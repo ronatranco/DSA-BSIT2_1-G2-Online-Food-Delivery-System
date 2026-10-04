@@ -2,16 +2,16 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package gui;
+package GUI;
 
 import java.awt.*;
-import java.awt.event.ActionListener;
 import javax.swing.*;
+
 /**
  *
  * @author rownavanana
+ * ito yung first panel na makikita ng user
  */
-
 public class StartPanel extends JPanel {
     private Color PURPLE_DARK = new Color(74, 20, 140);
     private Color YELLOW_ACCENT = new Color(255, 193, 7);
@@ -22,8 +22,11 @@ public class StartPanel extends JPanel {
     private Font REGULAR_FONT = new Font("Segoe UI", Font.PLAIN, 14);
 
     public JButton btnStart;
+    private MainFrame mainFrame;
 
-    public StartPanel(ActionListener listener) {
+    public StartPanel(MainFrame mainFrame) {
+        this.mainFrame = mainFrame;
+
         setLayout(null);
         setBackground(BG_LIGHT);
 
@@ -50,7 +53,6 @@ public class StartPanel extends JPanel {
         btnStart.setForeground(Color.BLACK);
         btnStart.setFocusPainted(false);
         btnStart.setBounds(382, 380, 260, 55);
-        btnStart.addActionListener(listener);
         add(btnStart);
     }
 }

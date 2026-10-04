@@ -1,19 +1,16 @@
-package gui;
-
 /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-
+package GUI;
 
 import java.awt.*;
-import java.awt.event.ActionListener;
 import javax.swing.*;
+
 /**
  *
  * @author rownavanana
  */
-
 public class AdminLoginPanel extends JPanel {
     private Color PURPLE_DARK = new Color(74, 20, 140);
     private Color PURPLE_LIGHT = new Color(156, 39, 176);
@@ -27,8 +24,11 @@ public class AdminLoginPanel extends JPanel {
     public JPasswordField txtAdminPass;
     public JCheckBox chkAdminSavePass;
     public JButton btnAdminLogin, btnAdminLoginBack;
+    private MainFrame mainFrame;
 
-    public AdminLoginPanel(ActionListener listener) {
+    public AdminLoginPanel(MainFrame mainFrame) {
+        this.mainFrame = mainFrame;
+
         setLayout(null);
         setBackground(BG_LIGHT);
 
@@ -96,7 +96,6 @@ public class AdminLoginPanel extends JPanel {
         btnAdminLogin.setForeground(Color.WHITE);
         btnAdminLogin.setFocusPainted(false);
         btnAdminLogin.setBounds(60, 385, 380, 48);
-        btnAdminLogin.addActionListener(listener);
         rightPanelAdmin.add(btnAdminLogin);
 
         btnAdminLoginBack = new JButton("← Go Back");
@@ -107,7 +106,6 @@ public class AdminLoginPanel extends JPanel {
         btnAdminLoginBack.setFocusPainted(false);
         btnAdminLoginBack.setCursor(new Cursor(Cursor.HAND_CURSOR));
         btnAdminLoginBack.setBounds(50, 445, 120, 30);
-        btnAdminLoginBack.addActionListener(listener);
         rightPanelAdmin.add(btnAdminLoginBack);
 
         add(rightPanelAdmin);

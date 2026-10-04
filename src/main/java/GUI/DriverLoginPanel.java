@@ -2,16 +2,15 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package gui;
+package GUI;
 
 import java.awt.*;
-import java.awt.event.ActionListener;
 import javax.swing.*;
+
 /**
  *
  * @author rownavanana
  */
-
 public class DriverLoginPanel extends JPanel {
     private Color PURPLE_DARK = new Color(74, 20, 140);
     private Color YELLOW_ACCENT = new Color(255, 193, 7);
@@ -24,8 +23,11 @@ public class DriverLoginPanel extends JPanel {
     public JPasswordField txtDriverPass;
     public JCheckBox chkDriverSavePass;
     public JButton btnDriverLogin, btnDriverLoginBack;
+    private MainFrame mainFrame;
 
-    public DriverLoginPanel(ActionListener listener) {
+    public DriverLoginPanel(MainFrame mainFrame) {
+        this.mainFrame = mainFrame;
+
         setLayout(null);
         setBackground(BG_LIGHT);
 
@@ -93,7 +95,6 @@ public class DriverLoginPanel extends JPanel {
         btnDriverLogin.setForeground(Color.BLACK);
         btnDriverLogin.setFocusPainted(false);
         btnDriverLogin.setBounds(60, 385, 380, 48);
-        btnDriverLogin.addActionListener(listener);
         rightPanelDriver.add(btnDriverLogin);
 
         btnDriverLoginBack = new JButton("← Go Back");
@@ -104,7 +105,6 @@ public class DriverLoginPanel extends JPanel {
         btnDriverLoginBack.setFocusPainted(false);
         btnDriverLoginBack.setCursor(new Cursor(Cursor.HAND_CURSOR));
         btnDriverLoginBack.setBounds(50, 445, 120, 30);
-        btnDriverLoginBack.addActionListener(listener);
         rightPanelDriver.add(btnDriverLoginBack);
 
         add(rightPanelDriver);

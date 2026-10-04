@@ -2,16 +2,16 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package gui;
+package GUI;
 
 import java.awt.*;
-import java.awt.event.ActionListener;
 import javax.swing.*;
+
 /**
  *
  * @author rownavanana
+ * second panel
  */
-
 public class AuthPanel extends JPanel {
     private Color PURPLE_DARK = new Color(74, 20, 140);
     private Color YELLOW_ACCENT = new Color(255, 193, 7);
@@ -21,8 +21,11 @@ public class AuthPanel extends JPanel {
     private Font REGULAR_FONT = new Font("Segoe UI", Font.PLAIN, 14);
 
     public JButton btnNavLogin, btnNavRegister;
+    private MainFrame mainFrame;
 
-    public AuthPanel(ActionListener listener) {
+    public AuthPanel(MainFrame mainFrame) {
+        this.mainFrame = mainFrame;
+
         setLayout(null);
         setBackground(BG_LIGHT);
 
@@ -68,7 +71,6 @@ public class AuthPanel extends JPanel {
         btnNavLogin.setForeground(Color.WHITE);
         btnNavLogin.setFocusPainted(false);
         btnNavLogin.setBounds(60, 250, 380, 50);
-        btnNavLogin.addActionListener(listener);
         rightPanelAuth.add(btnNavLogin);
 
         btnNavRegister = new JButton("SIGN UP");
@@ -77,7 +79,6 @@ public class AuthPanel extends JPanel {
         btnNavRegister.setForeground(Color.BLACK);
         btnNavRegister.setFocusPainted(false);
         btnNavRegister.setBounds(60, 315, 380, 50);
-        btnNavRegister.addActionListener(listener);
         rightPanelAuth.add(btnNavRegister);
 
         add(rightPanelAuth);

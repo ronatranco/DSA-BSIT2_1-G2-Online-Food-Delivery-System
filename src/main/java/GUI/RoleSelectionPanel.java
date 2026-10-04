@@ -2,16 +2,16 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package gui;
+package GUI;
 
 import java.awt.*;
-import java.awt.event.ActionListener;
 import javax.swing.*;
+
 /**
  *
  * @author rownavanana
+ * ito naman yung pagpili nila ng role if customer, driver, or admin sila
  */
-
 public class RoleSelectionPanel extends JPanel {
     private Color PURPLE_DARK = new Color(74, 20, 140);
     private Color PURPLE_LIGHT = new Color(156, 39, 176);
@@ -22,8 +22,11 @@ public class RoleSelectionPanel extends JPanel {
     private Font REGULAR_FONT = new Font("Segoe UI", Font.PLAIN, 14);
 
     public JButton btnRoleCustomer, btnRoleDriver, btnRoleAdmin, btnRoleBack;
+    private MainFrame mainFrame;
 
-    public RoleSelectionPanel(ActionListener listener) {
+    public RoleSelectionPanel(MainFrame mainFrame) {
+        this.mainFrame = mainFrame;
+
         setLayout(null);
         setBackground(BG_LIGHT);
 
@@ -67,7 +70,6 @@ public class RoleSelectionPanel extends JPanel {
         btnRoleCustomer.setForeground(Color.WHITE);
         btnRoleCustomer.setFocusPainted(false);
         btnRoleCustomer.setBounds(60, 230, 380, 50);
-        btnRoleCustomer.addActionListener(listener);
         rightPanelRole.add(btnRoleCustomer);
 
         btnRoleDriver = new JButton("DRIVER");
@@ -76,7 +78,6 @@ public class RoleSelectionPanel extends JPanel {
         btnRoleDriver.setForeground(Color.BLACK);
         btnRoleDriver.setFocusPainted(false);
         btnRoleDriver.setBounds(60, 295, 380, 50);
-        btnRoleDriver.addActionListener(listener);
         rightPanelRole.add(btnRoleDriver);
 
         btnRoleAdmin = new JButton("ADMIN");
@@ -85,7 +86,6 @@ public class RoleSelectionPanel extends JPanel {
         btnRoleAdmin.setForeground(Color.WHITE);
         btnRoleAdmin.setFocusPainted(false);
         btnRoleAdmin.setBounds(60, 360, 380, 50);
-        btnRoleAdmin.addActionListener(listener);
         rightPanelRole.add(btnRoleAdmin);
 
         btnRoleBack = new JButton("← Go Back");
@@ -96,7 +96,6 @@ public class RoleSelectionPanel extends JPanel {
         btnRoleBack.setFocusPainted(false);
         btnRoleBack.setCursor(new Cursor(Cursor.HAND_CURSOR));
         btnRoleBack.setBounds(50, 425, 120, 30);
-        btnRoleBack.addActionListener(listener);
         rightPanelRole.add(btnRoleBack);
 
         add(rightPanelRole);

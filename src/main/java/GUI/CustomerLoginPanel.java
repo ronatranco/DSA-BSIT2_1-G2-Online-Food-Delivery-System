@@ -2,16 +2,15 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package gui;
+package GUI;
 
 import java.awt.*;
-import java.awt.event.ActionListener;
 import javax.swing.*;
+
 /**
  *
  * @author rownavanana
  */
-
 public class CustomerLoginPanel extends JPanel {
     private Color PURPLE_DARK = new Color(74, 20, 140);
     private Color YELLOW_ACCENT = new Color(255, 193, 7);
@@ -24,8 +23,11 @@ public class CustomerLoginPanel extends JPanel {
     public JPasswordField txtLoginPassword;
     public JCheckBox chkLoginSavePassword;
     public JButton btnCustomerLogin, btnForgotPassword, btnDontHaveAccount, btnCustomerLoginBack;
+    private MainFrame mainFrame;
 
-    public CustomerLoginPanel(ActionListener listener) {
+    public CustomerLoginPanel(MainFrame mainFrame) {
+        this.mainFrame = mainFrame;
+
         setLayout(null);
         setBackground(BG_LIGHT);
 
@@ -95,7 +97,6 @@ public class CustomerLoginPanel extends JPanel {
         btnForgotPassword.setFocusPainted(false);
         btnForgotPassword.setCursor(new Cursor(Cursor.HAND_CURSOR));
         btnForgotPassword.setBounds(300, 338, 140, 25);
-        btnForgotPassword.addActionListener(listener);
         rightPanelCustomer.add(btnForgotPassword);
 
         btnCustomerLogin = new JButton("Login");
@@ -104,7 +105,6 @@ public class CustomerLoginPanel extends JPanel {
         btnCustomerLogin.setForeground(Color.WHITE);
         btnCustomerLogin.setFocusPainted(false);
         btnCustomerLogin.setBounds(60, 385, 380, 48);
-        btnCustomerLogin.addActionListener(listener);
         rightPanelCustomer.add(btnCustomerLogin);
 
         btnDontHaveAccount = new JButton("Don't have acc?");
@@ -115,7 +115,6 @@ public class CustomerLoginPanel extends JPanel {
         btnDontHaveAccount.setFocusPainted(false);
         btnDontHaveAccount.setCursor(new Cursor(Cursor.HAND_CURSOR));
         btnDontHaveAccount.setBounds(60, 445, 380, 30);
-        btnDontHaveAccount.addActionListener(listener);
         rightPanelCustomer.add(btnDontHaveAccount);
 
         btnCustomerLoginBack = new JButton("← Go Back");
@@ -126,7 +125,6 @@ public class CustomerLoginPanel extends JPanel {
         btnCustomerLoginBack.setFocusPainted(false);
         btnCustomerLoginBack.setCursor(new Cursor(Cursor.HAND_CURSOR));
         btnCustomerLoginBack.setBounds(50, 490, 120, 30);
-        btnCustomerLoginBack.addActionListener(listener);
         rightPanelCustomer.add(btnCustomerLoginBack);
 
         add(rightPanelCustomer);
