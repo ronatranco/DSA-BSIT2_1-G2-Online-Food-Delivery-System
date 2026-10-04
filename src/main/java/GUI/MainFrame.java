@@ -20,14 +20,14 @@ public class MainFrame extends JFrame implements ActionListener {
     private RoleSelectionPanel panelRoleSelection;
     private SignupPanel panelSignup;
     private CustomerLoginPanel panelCustomerLogin;
-    private DriverLoginPanel panelDriverLogin;
+    private RestaurantLoginPanel panelRestaurantLogin;    
     private AdminLoginPanel panelAdminLogin;
 
     // Hardcoded Credentials para sa Demo/Testing
     private final String VALID_CUSTOMER_USER = "customer1";
     private final String VALID_CUSTOMER_PASS = "customer123";
-    private final String VALID_DRIVER_USER = "driver1";
-    private final String VALID_DRIVER_PASS = "driver123";
+    private final String VALID_RESTAURANT_USER = "restaurant1";
+    private final String VALID_RESTAURANT_PASS = "restaurant123";
     private final String VALID_ADMIN_USER = "admin1";
     private final String VALID_ADMIN_PASS = "admin123";
 
@@ -50,7 +50,7 @@ public class MainFrame extends JFrame implements ActionListener {
         panelRoleSelection = new RoleSelectionPanel(this);
         panelSignup = new SignupPanel(this);
         panelCustomerLogin = new CustomerLoginPanel(this);
-        panelDriverLogin = new DriverLoginPanel(this);
+        panelRestaurantLogin = new RestaurantLoginPanel(this);        
         panelAdminLogin = new AdminLoginPanel(this);
 
         // Adding to cardLayout container (Inalis na ang duplicate ng panelRoleSelection)
@@ -59,7 +59,7 @@ public class MainFrame extends JFrame implements ActionListener {
         mainContainer.add(panelRoleSelection, "ROLE_SELECTION");
         mainContainer.add(panelSignup, "SIGNUP");
         mainContainer.add(panelCustomerLogin, "CUSTOMER_LOGIN");
-        mainContainer.add(panelDriverLogin, "DRIVER_LOGIN");
+        mainContainer.add(panelRestaurantLogin, "RESTAURANT_LOGIN");
         mainContainer.add(panelAdminLogin, "ADMIN_LOGIN");
 
         // Register ActionListeners
@@ -78,7 +78,7 @@ public class MainFrame extends JFrame implements ActionListener {
 
         // Role Selection Panel
         panelRoleSelection.btnRoleCustomer.addActionListener(this);
-        panelRoleSelection.btnRoleDriver.addActionListener(this);
+        panelRoleSelection.btnRoleRestaurant.addActionListener(this);
         panelRoleSelection.btnRoleAdmin.addActionListener(this);
         panelRoleSelection.btnRoleBack.addActionListener(this);
 
@@ -92,9 +92,9 @@ public class MainFrame extends JFrame implements ActionListener {
         panelCustomerLogin.btnDontHaveAccount.addActionListener(this);
         panelCustomerLogin.btnCustomerLoginBack.addActionListener(this);
 
-        // Driver Login Panel
-        panelDriverLogin.btnDriverLogin.addActionListener(this);
-        panelDriverLogin.btnDriverLoginBack.addActionListener(this);
+      // Restaurant Login Panel
+        panelRestaurantLogin.btnRestaurantLogin.addActionListener(this);
+        panelRestaurantLogin.btnRestaurantLoginBack.addActionListener(this);
 
         // Admin Login Panel
         panelAdminLogin.btnAdminLogin.addActionListener(this);
@@ -124,8 +124,8 @@ public class MainFrame extends JFrame implements ActionListener {
         else if (source == panelRoleSelection.btnRoleCustomer) {
             cardLayout.show(mainContainer, "CUSTOMER_LOGIN");
         } 
-        else if (source == panelRoleSelection.btnRoleDriver) {
-            cardLayout.show(mainContainer, "DRIVER_LOGIN");
+        else if (source == panelRoleSelection.btnRoleRestaurant) {
+            cardLayout.show(mainContainer, "RESTAURANT_LOGIN");
         } 
         else if (source == panelRoleSelection.btnRoleAdmin) {
             cardLayout.show(mainContainer, "ADMIN_LOGIN");
@@ -144,7 +144,7 @@ public class MainFrame extends JFrame implements ActionListener {
 
         // 4. GO BACK BUTTONS
         else if (source == panelCustomerLogin.btnCustomerLoginBack || 
-                 source == panelDriverLogin.btnDriverLoginBack || 
+                 source == panelRestaurantLogin.btnRestaurantLoginBack || 
                  source == panelAdminLogin.btnAdminLoginBack) {
             cardLayout.show(mainContainer, "ROLE_SELECTION");
         }
@@ -183,23 +183,23 @@ public class MainFrame extends JFrame implements ActionListener {
             }
         }
 
-        // 7. DRIVER LOGIN
-        else if (source == panelDriverLogin.btnDriverLogin) {
-            String identifier = panelDriverLogin.txtDriverUser.getText().trim();
-            String password = new String(panelDriverLogin.txtDriverPass.getPassword());
+        // 7. RESTAURANT LOGIN
+        else if (source == panelRestaurantLogin.btnRestaurantLogin) {
+            String identifier = panelRestaurantLogin.txtRestaurantUser.getText().trim();
+            String password = new String(panelRestaurantLogin.txtRestaurantPass.getPassword());
 
             if (identifier.isEmpty() || password.isEmpty()) {
                 JOptionPane.showMessageDialog(this, "Please input a valid username and password!", "Input Error", JOptionPane.ERROR_MESSAGE);
                 return;
             }
 
-            if (identifier.equals(VALID_DRIVER_USER) && password.equals(VALID_DRIVER_PASS)) {
-                String saveMsg = (panelDriverLogin.chkDriverSavePass != null && panelDriverLogin.chkDriverSavePass.isSelected()) ? "\n(Password saved locally)" : "";
-                JOptionPane.showMessageDialog(this, "Login Successful! Welcome Driver." + saveMsg, "Success", JOptionPane.INFORMATION_MESSAGE);
-                panelDriverLogin.txtDriverUser.setText("");
-                panelDriverLogin.txtDriverPass.setText("");
-                if (panelDriverLogin.chkDriverSavePass != null) {
-                    panelDriverLogin.chkDriverSavePass.setSelected(false);
+            if (identifier.equals(VALID_RESTAURANT_USER) && password.equals(VALID_RESTAURANT_PASS)) {
+                String saveMsg = (panelRestaurantLogin.chkRestaurantSavePass != null && panelRestaurantLogin.chkRestaurantSavePass.isSelected()) ? "\n(Password saved locally)" : "";
+                JOptionPane.showMessageDialog(this, "Login Successful! Welcome Restaurant." + saveMsg, "Success", JOptionPane.INFORMATION_MESSAGE);
+                panelRestaurantLogin.txtRestaurantUser.setText("");
+                panelRestaurantLogin.txtRestaurantPass.setText("");
+                if (panelRestaurantLogin.chkRestaurantSavePass != null) {
+                    panelRestaurantLogin.chkRestaurantSavePass.setSelected(false);
                 }
             } else {
                 JOptionPane.showMessageDialog(this, "Invalid Username or Password!", "Login Failed", JOptionPane.ERROR_MESSAGE);

@@ -21,7 +21,7 @@ public class RoleSelectionPanel extends JPanel {
 
     private Font REGULAR_FONT = new Font("Segoe UI", Font.PLAIN, 14);
 
-    public JButton btnRoleCustomer, btnRoleDriver, btnRoleAdmin, btnRoleBack;
+    public JButton btnRoleCustomer, btnRoleRestaurant, btnRoleAdmin, btnRoleBack;
     private MainFrame mainFrame;
 
     public RoleSelectionPanel(MainFrame mainFrame) {
@@ -72,13 +72,13 @@ public class RoleSelectionPanel extends JPanel {
         btnRoleCustomer.setBounds(60, 230, 380, 50);
         rightPanelRole.add(btnRoleCustomer);
 
-        btnRoleDriver = new JButton("DRIVER");
-        btnRoleDriver.setFont(new Font("Segoe UI", Font.BOLD, 14));
-        btnRoleDriver.setBackground(YELLOW_ACCENT);
-        btnRoleDriver.setForeground(Color.BLACK);
-        btnRoleDriver.setFocusPainted(false);
-        btnRoleDriver.setBounds(60, 295, 380, 50);
-        rightPanelRole.add(btnRoleDriver);
+        btnRoleRestaurant = new JButton("RESTAURANT");
+        btnRoleRestaurant.setFont(new Font("Segoe UI", Font.BOLD, 14));
+        btnRoleRestaurant.setBackground(YELLOW_ACCENT);
+        btnRoleRestaurant.setForeground(Color.BLACK);
+        btnRoleRestaurant.setFocusPainted(false);
+        btnRoleRestaurant.setBounds(60, 295, 380, 50);
+        rightPanelRole.add(btnRoleRestaurant);
 
         btnRoleAdmin = new JButton("ADMIN");
         btnRoleAdmin.setFont(new Font("Segoe UI", Font.BOLD, 14));
