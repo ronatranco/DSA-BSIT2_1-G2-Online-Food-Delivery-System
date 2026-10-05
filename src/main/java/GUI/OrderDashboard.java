@@ -93,7 +93,7 @@ public class OrderDashboard extends JPanel{
         btnCheckout.setFocusPainted(false);
         add(btnCheckout);
         
-        System.out.println("HAHAAHA");
+        System.out.println("HFAUFHAF");
     }
     
     public void addCartActions(ActionListener listener) {
