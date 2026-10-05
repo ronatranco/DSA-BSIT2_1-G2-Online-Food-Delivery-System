@@ -10,4 +10,16 @@
         <maven.compiler.release>26</maven.compiler.release>
         <exec.mainClass>com.mycompany.onlinefooddeliverygroup2.OnlineFoodDeliveryGroup2</exec.mainClass>
     </properties>
+    <!-- 1. Ensure you have the plural <dependencies> opening tag here -->
+    <dependencies>
+        
+        <!-- 2. Your MySQL dependency sits cleanly inside it -->
+        <dependency>
+            <groupId>com.mysql</groupId>
+            <artifactId>mysql-connector-j</artifactId>
+            <version>8.4.0</version>
+        </dependency>
+        
+    </dependencies> <!-- 3. Make sure to close it -->
+
 </project>

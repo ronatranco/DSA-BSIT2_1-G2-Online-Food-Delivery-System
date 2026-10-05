@@ -1,9 +1,13 @@
 package GUI;
 
+import Database.databaseConnection;
 import Model.Admin;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import javax.swing.*;
 
 /**
@@ -167,7 +171,10 @@ public class MainFrame extends JFrame implements ActionListener {
             showCard("AUTH");
         }
 
-        // 3. CROSS-NAVIGATION
+        // 3. CROSS-NAVIGATION & SIGNUP
+        else if (source == panelSignup.btnRegister) {
+            registerUser();
+        }
         else if (source == panelSignup.btnAlreadyHaveAccount) {
             showCard("ROLE_SELECTION");
         }
@@ -309,47 +316,63 @@ public class MainFrame extends JFrame implements ActionListener {
             showCard("ROLE_SELECTION");
         }
 
-        // 12. REGISTRATION VALIDATION
-        else if (source == panelSignup.btnRegister) {
-            String name = panelSignup.txtName.getText().trim();
-            String email = panelSignup.txtEmail.getText().trim();
-            String phone = panelSignup.txtPhone.getText().trim();
-            String password = new String(panelSignup.txtPassword.getPassword());
-            String confirmPassword = new String(panelSignup.txtConfirmPassword.getPassword());
+        
+    }
 
-            if (name.isEmpty() || email.isEmpty() || phone.isEmpty() || password.isEmpty() || confirmPassword.isEmpty()) {
-                JOptionPane.showMessageDialog(this, "Please fill in all fields before registering!", "Registration Error", JOptionPane.ERROR_MESSAGE);
-                return;
-            }
+    /** Validates the signup form and inserts the new user into the database. */
+    private void registerUser() {
+        String name     = panelSignup.txtName.getText().trim();
+        String username = panelSignup.txtUsername.getText().trim();
+        String email    = panelSignup.txtEmail.getText().trim();
+        String phone    = panelSignup.txtPhone.getText().trim();
+        String address  = panelSignup.txtAddress.getText().trim();
+        String role     = panelSignup.cmbRole.getSelectedItem().toString().toLowerCase();
+        String password = new String(panelSignup.txtPassword.getPassword());
+        String confirm  = new String(panelSignup.txtConfirmPassword.getPassword());
 
-            if (!email.toLowerCase().endsWith("@gmail.com")) {
-                JOptionPane.showMessageDialog(this, "Email must be a valid @gmail.com address!", "Invalid Email", JOptionPane.ERROR_MESSAGE);
-                return;
-            }
+        if (name.isEmpty() || username.isEmpty() || email.isEmpty()
+                || phone.isEmpty() || address.isEmpty() || password.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Please fill in all fields.");
+            return;
+        }
+        if (!email.toLowerCase().endsWith("@gmail.com")) {
+            JOptionPane.showMessageDialog(this, "Email must be a @gmail.com address.");
+            return;
+        }
+        if (!phone.matches("\\d{11}")) {
+            JOptionPane.showMessageDialog(this, "Phone number must be 11 digits.");
+            return;
+        }
+        if (!password.equals(confirm)) {
+            JOptionPane.showMessageDialog(this, "Passwords do not match.");
+            return;
+        }
 
-            if (!phone.matches("^\\d{11}$")) {
-                JOptionPane.showMessageDialog(this, "Phone number must contain numbers only and exactly 11 digits!", "Invalid Phone Number", JOptionPane.ERROR_MESSAGE);
-                return;
-            }
+        String sql = "INSERT INTO users (full_name, username, email, phone, address, password, role) "
+                   + "VALUES (?, ?, ?, ?, ?, ?, ?)";
 
-            if (!password.equals(confirmPassword)) {
-                JOptionPane.showMessageDialog(this, "Passwords do not match!", "Password Mismatch", JOptionPane.ERROR_MESSAGE);
-                return;
-            }
+        try (Connection con = databaseConnection.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
 
-            String savedMsg = (panelSignup.chkSavePassword != null && panelSignup.chkSavePassword.isSelected()) ? "\n(Password saved locally)" : "";
-            JOptionPane.showMessageDialog(this, "Account successfully created!" + savedMsg, "Success", JOptionPane.INFORMATION_MESSAGE);
+            ps.setString(1, name);
+            ps.setString(2, username);
+            ps.setString(3, email);
+            ps.setString(4, phone);
+            ps.setString(5, address);
+            ps.setString(6, password);
+            ps.setString(7, role);
+            ps.executeUpdate();
 
-            panelSignup.txtName.setText("");
-            panelSignup.txtEmail.setText("");
-            panelSignup.txtPhone.setText("");
-            panelSignup.txtPassword.setText("");
-            panelSignup.txtConfirmPassword.setText("");
-            if (panelSignup.chkSavePassword != null) {
-                panelSignup.chkSavePassword.setSelected(false);
-            }
-
+            JOptionPane.showMessageDialog(this, "Account created!");
+            panelSignup.clearFields();
             showCard("ROLE_SELECTION");
+
+        } catch (SQLException ex) {
+            if (ex.getErrorCode() == 1062) {
+                JOptionPane.showMessageDialog(this, "Username or email already exists.");
+            } else {
+                JOptionPane.showMessageDialog(this, "Database error: " + ex.getMessage());
+            }
         }
     }
 }
