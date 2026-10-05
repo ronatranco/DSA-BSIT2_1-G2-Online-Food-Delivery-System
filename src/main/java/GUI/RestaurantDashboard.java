@@ -9,6 +9,7 @@ import javax.swing.*;
 /**
  *
  * @author christiandar
+ * hello dar welcome sa gui
  */
 public class RestaurantDashboard extends JPanel {
 
