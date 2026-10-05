@@ -6,7 +6,8 @@ package Database;
 
 /**
  *
- * @author rownavanana
+ * @author Gideon Calalang 
+ * @author Mairoh Tocino
  */
 public class databaseConnection {
     
