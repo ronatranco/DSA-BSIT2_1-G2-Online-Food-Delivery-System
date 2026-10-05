@@ -99,7 +99,6 @@ public class MainFrame extends JFrame implements ActionListener {
         panelRoleSelection.btnRoleBack.addActionListener(this);
 
         // Signup Panel
-        panelSignup.btnRegister.addActionListener(this);
         panelSignup.btnAlreadyHaveAccount.addActionListener(this);
 
         // Customer Login Panel
@@ -309,47 +308,6 @@ public class MainFrame extends JFrame implements ActionListener {
             showCard("ROLE_SELECTION");
         }
 
-        // 12. REGISTRATION VALIDATION
-        else if (source == panelSignup.btnRegister) {
-            String name = panelSignup.txtName.getText().trim();
-            String email = panelSignup.txtEmail.getText().trim();
-            String phone = panelSignup.txtPhone.getText().trim();
-            String password = new String(panelSignup.txtPassword.getPassword());
-            String confirmPassword = new String(panelSignup.txtConfirmPassword.getPassword());
-
-            if (name.isEmpty() || email.isEmpty() || phone.isEmpty() || password.isEmpty() || confirmPassword.isEmpty()) {
-                JOptionPane.showMessageDialog(this, "Please fill in all fields before registering!", "Registration Error", JOptionPane.ERROR_MESSAGE);
-                return;
-            }
-
-            if (!email.toLowerCase().endsWith("@gmail.com")) {
-                JOptionPane.showMessageDialog(this, "Email must be a valid @gmail.com address!", "Invalid Email", JOptionPane.ERROR_MESSAGE);
-                return;
-            }
-
-            if (!phone.matches("^\\d{11}$")) {
-                JOptionPane.showMessageDialog(this, "Phone number must contain numbers only and exactly 11 digits!", "Invalid Phone Number", JOptionPane.ERROR_MESSAGE);
-                return;
-            }
-
-            if (!password.equals(confirmPassword)) {
-                JOptionPane.showMessageDialog(this, "Passwords do not match!", "Password Mismatch", JOptionPane.ERROR_MESSAGE);
-                return;
-            }
-
-            String savedMsg = (panelSignup.chkSavePassword != null && panelSignup.chkSavePassword.isSelected()) ? "\n(Password saved locally)" : "";
-            JOptionPane.showMessageDialog(this, "Account successfully created!" + savedMsg, "Success", JOptionPane.INFORMATION_MESSAGE);
-
-            panelSignup.txtName.setText("");
-            panelSignup.txtEmail.setText("");
-            panelSignup.txtPhone.setText("");
-            panelSignup.txtPassword.setText("");
-            panelSignup.txtConfirmPassword.setText("");
-            if (panelSignup.chkSavePassword != null) {
-                panelSignup.chkSavePassword.setSelected(false);
-            }
-
-            showCard("ROLE_SELECTION");
-        }
+        
     }
 }
