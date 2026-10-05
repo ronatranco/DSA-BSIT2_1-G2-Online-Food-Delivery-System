@@ -114,7 +114,7 @@ public class SignupPanel extends JPanel {
         rightPanelSignup.add(lblPassword);
         rightPanelSignup.add(passPanelSignup);
 
-        // 8. Confirm Password
+        // 8. Confirm Password zxz
         JLabel lblConfirmPassword = new JLabel("Confirm Password");
         lblConfirmPassword.setBounds(60, 446, 380, 18);
         txtConfirmPassword = new JPasswordField();
