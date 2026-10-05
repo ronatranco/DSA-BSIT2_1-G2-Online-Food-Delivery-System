@@ -2,7 +2,7 @@ package GUI;
 
 import java.awt.*;
 import javax.swing.*;
-
+//commit
 public class CustomerDashboard extends JPanel {
 
     private MainFrame mainFrame;
