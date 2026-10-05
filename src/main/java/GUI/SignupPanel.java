@@ -6,10 +6,6 @@ package GUI;
 
 import java.awt.*;
 import javax.swing.*;
-import Database.databaseConnection;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
 
 /**
  *
@@ -142,7 +138,6 @@ public class SignupPanel extends JPanel {
         btnRegister.setForeground(Color.WHITE);
         btnRegister.setFocusPainted(false);
         btnRegister.setBounds(60, 534, 380, 42);
-        btnRegister.addActionListener(e -> registerUser());
         rightPanelSignup.add(btnRegister);
 
         // 11. Already have an account Button
@@ -159,70 +154,17 @@ public class SignupPanel extends JPanel {
         add(rightPanelSignup);
     }
 
-    private void registerUser() {
-        String name     = txtName.getText().trim();
-        String username = txtUsername.getText().trim();
-        String email    = txtEmail.getText().trim();
-        String phone    = txtPhone.getText().trim();
-        String address  = txtAddress.getText().trim();
-        String role     = cmbRole.getSelectedItem().toString().toLowerCase();
-        String password = new String(txtPassword.getPassword());
-        String confirm  = new String(txtConfirmPassword.getPassword());
-
-        if (name.isEmpty() || username.isEmpty() || email.isEmpty()
-                || phone.isEmpty() || address.isEmpty() || password.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Please fill in all fields.");
-            return;
-        }
-        if (!email.toLowerCase().endsWith("@gmail.com")) {
-            JOptionPane.showMessageDialog(this, "Email must be a @gmail.com address.");
-            return;
-        }
-        if (!phone.matches("\\d{11}")) {
-            JOptionPane.showMessageDialog(this, "Phone number must be 11 digits.");
-            return;
-        }
-        if (!password.equals(confirm)) {
-            JOptionPane.showMessageDialog(this, "Passwords do not match.");
-            return;
-        }
-
-        String sql = "INSERT INTO users (full_name, username, email, phone, address, password, role) "
-                   + "VALUES (?, ?, ?, ?, ?, ?, ?)";
-
-        try (Connection con = databaseConnection.getConnection();
-             PreparedStatement ps = con.prepareStatement(sql)) {
-
-            ps.setString(1, name);
-            ps.setString(2, username);
-            ps.setString(3, email);
-            ps.setString(4, phone);
-            ps.setString(5, address);
-            ps.setString(6, password);
-            ps.setString(7, role);
-            ps.executeUpdate();
-
-            JOptionPane.showMessageDialog(this, "Account created!");
-
-            txtName.setText("");
-            txtUsername.setText("");
-            txtEmail.setText("");
-            txtPhone.setText("");
-            txtAddress.setText("");
-            txtPassword.setText("");
-            txtConfirmPassword.setText("");
-            cmbRole.setSelectedIndex(0);
-            chkSavePassword.setSelected(false);
-
-            mainFrame.showCard("ROLE_SELECTION");
-
-        } catch (SQLException ex) {
-            if (ex.getErrorCode() == 1062) {
-                JOptionPane.showMessageDialog(this, "Username or email already exists.");
-            } else {
-                JOptionPane.showMessageDialog(this, "Database error: " + ex.getMessage());
-            }
-        }
+    /** Clears every input field on the form (called by MainFrame after a successful signup). */
+    public void clearFields() {
+        txtName.setText("");
+        txtUsername.setText("");
+        txtEmail.setText("");
+        txtPhone.setText("");
+        txtAddress.setText("");
+        txtPassword.setText("");
+        txtConfirmPassword.setText("");
+        cmbRole.setSelectedIndex(0);
+        chkSavePassword.setSelected(false);
     }
 
     private JPanel createPasswordFieldWithEye(JPasswordField passField) {
