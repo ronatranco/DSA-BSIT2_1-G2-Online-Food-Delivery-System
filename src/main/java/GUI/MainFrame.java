@@ -66,8 +66,8 @@ public class MainFrame extends JFrame implements ActionListener {
         panelAdminGUI = new AdminPanelGUI(this);
 
         // Instantiate new dashboard panels (passing 'this' MainFrame instance)
-        panelCustomerDashboard = new CustomerDashboard(this);
         panelRestaurantDashboard = new RestaurantDashboard(this);
+        panelCustomerDashboard = new CustomerDashboard(this);
 
         // Register panels as cards in CardLayout
         mainContainer.add(panelStart, "START");
