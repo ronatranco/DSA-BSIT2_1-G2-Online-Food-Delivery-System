@@ -61,15 +61,29 @@ public class CustomerDashboardViewCart extends JPanel {
     }
 
     public void animateOpen() {
-        setBounds(724, 0, 300, 720); 
+        setBounds(724, 0, 300, 720);
         if (getParent() != null) {
+            // SHRINKS RESTO IF VIEWCART IS OPEN
+            for (Component comp : getParent().getComponents()) {
+                if (comp instanceof CustomerDashboardRestaurant) {
+                    comp.setBounds(0, 0, 724, 720);
+                }
+            }
+            getParent().revalidate();
             getParent().repaint();
         }
     }
 
     public void animateClose() {
-        setBounds(1024, 0, 300, 720); 
+        setBounds(1024, 0, 300, 720);
         if (getParent() != null) {
+            // RETURN BOUNDS WHEN VIEWCART IS EXITED
+            for (Component comp : getParent().getComponents()) {
+                if (comp instanceof CustomerDashboardRestaurant) {
+                    comp.setBounds(0, 0, 1024, 720);
+                }
+            }
+            getParent().revalidate();
             getParent().repaint();
         }
     }
