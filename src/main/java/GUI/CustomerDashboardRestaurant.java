@@ -23,7 +23,7 @@ public class CustomerDashboardRestaurant extends JPanel {
     public JLabel lblRestaurant, lblRestoName1, lblRestoName2, lblRestoName3, lblRestoName4, lblRestoName5, lblRestoName6, 
                   lblRestoName7, lblRestoName8, lblRestoImage1, lblRestoImage2, lblRestoImage3;
     public JScrollPane scrollPane;
-    public JPanel scrollContentPanel, titleSeparator;
+    public JPanel scrollContentPanel, restoLine;
 
     public CustomerDashboardRestaurant(){
         setBounds(0, 0, 1024, 720); 
@@ -41,42 +41,47 @@ public class CustomerDashboardRestaurant extends JPanel {
         scrollContentPanel = new JPanel();
         scrollContentPanel.setLayout(null);
         scrollContentPanel.setOpaque(false);
-        scrollContentPanel.setPreferredSize(new Dimension(1000, 550)); 
+        scrollContentPanel.setPreferredSize(new Dimension(1000, 605)); 
 
         scrollPane = new JScrollPane(scrollContentPanel);
-        scrollPane.setBounds(0, 255, 1024, 465); 
+        scrollPane.setBounds(0, 320, 1024, 400); 
         scrollPane.setOpaque(false);
         scrollPane.getViewport().setOpaque(false);
-        scrollPane.setBorder(null);
+        scrollPane.setBorder(javax.swing.BorderFactory.createEmptyBorder(20, 0, 0, 0));
         
         scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_NEVER);
         add(scrollPane);
-        
-        setComponentZOrder(topBannerQuote, 0);
-        setComponentZOrder(scrollPane, 1);
 
-        // == TITLE LABEL ==
+        // == RESTAURANT LABEL ==
         lblRestaurant = new JLabel("Restaurants");
         lblRestaurant.setFont(TITLE_FONT);
         lblRestaurant.setForeground(PURPLE_DARK);
-        lblRestaurant.setBounds(110, 15, 400, 50); 
-        scrollContentPanel.add(lblRestaurant);
+        lblRestaurant.setBounds(110, 270, 400, 50); 
+        add(lblRestaurant); 
         
-        titleSeparator = new JPanel();
-        titleSeparator.setBackground(PURPLE_DARK); 
-        titleSeparator.setBounds(330, 43, 644, 5); 
-        scrollContentPanel.add(titleSeparator);
+        restoLine = new JPanel();
+        restoLine.setBackground(PURPLE_DARK); 
+        restoLine.setBounds(330, 298, 644, 5);
+        add(restoLine); 
+        
+        // == LAYER ORDER ==
+        setComponentZOrder(lblRestaurant, 0);
+        setComponentZOrder(restoLine, 1);
+        setComponentZOrder(scrollPane, 2);
+        if (topBannerQuote != null) {
+            setComponentZOrder(topBannerQuote, 3);
+        }
         
         // == RESTAURANT CARDS ==
 
-        // == ROW RESTAURANT ==
+        // == ROW 1 RESTAURANT ==
         
         // == RESTAURANT 1 (MCDOLLIBEE) ==
         pnlRestoCard1 = new JPanel();
         pnlRestoCard1.setLayout(null);
         pnlRestoCard1.setBackground(COLOR_WHITE); 
-        pnlRestoCard1.setBounds(110, 140, 200, 130); 
+        pnlRestoCard1.setBounds(110, 110, 200, 130); 
         pnlRestoCard1.setBorder(BorderFactory.createLineBorder(YELLOW_ACCENT, 1));
         scrollContentPanel.add(pnlRestoCard1);
 
@@ -92,7 +97,7 @@ public class CustomerDashboardRestaurant extends JPanel {
         pnlRestoCard2 = new JPanel();
         pnlRestoCard2.setLayout(null);
         pnlRestoCard2.setBackground(COLOR_WHITE); 
-        pnlRestoCard2.setBounds(330, 140, 200, 130); 
+        pnlRestoCard2.setBounds(330, 110, 200, 130); 
         pnlRestoCard2.setBorder(BorderFactory.createLineBorder(YELLOW_ACCENT, 1));
         scrollContentPanel.add(pnlRestoCard2);
 
@@ -108,7 +113,7 @@ public class CustomerDashboardRestaurant extends JPanel {
         pnlRestoCard3 = new JPanel();
         pnlRestoCard3.setLayout(null);
         pnlRestoCard3.setBackground(COLOR_WHITE); 
-        pnlRestoCard3.setBounds(550, 140, 200, 130);
+        pnlRestoCard3.setBounds(550, 110, 200, 130);
         pnlRestoCard3.setBorder(BorderFactory.createLineBorder(YELLOW_ACCENT, 1));
         scrollContentPanel.add(pnlRestoCard3);
 
@@ -120,12 +125,12 @@ public class CustomerDashboardRestaurant extends JPanel {
         pnlRestoCard3.add(lblRestoName3);
         
         
-        // == RESTAURANT 4 (NAME) ==
+        // == RESTAURANT 4 (KAMOTE KORNER) ==
         
         pnlRestoCard4 = new JPanel();
         pnlRestoCard4.setLayout(null);
         pnlRestoCard4.setBackground(COLOR_WHITE); 
-        pnlRestoCard4.setBounds(770, 140, 200, 130); 
+        pnlRestoCard4.setBounds(770, 110, 200, 130); 
         pnlRestoCard4.setBorder(BorderFactory.createLineBorder(YELLOW_ACCENT, 1));
         scrollContentPanel.add(pnlRestoCard4);
 
@@ -137,10 +142,11 @@ public class CustomerDashboardRestaurant extends JPanel {
         pnlRestoCard4.add(lblRestoName4);
         
         // ROW 2 RESTAURANT
+        // == RESTAURANT 5 (PETSA HUT) ==
         pnlRestoCard5 = new JPanel();
         pnlRestoCard5.setLayout(null);
         pnlRestoCard5.setBackground(COLOR_WHITE); 
-        pnlRestoCard5.setBounds(110, 350, 200, 130); 
+        pnlRestoCard5.setBounds(110, 330, 200, 130); 
         pnlRestoCard5.setBorder(BorderFactory.createLineBorder(YELLOW_ACCENT, 1));
         scrollContentPanel.add(pnlRestoCard5);
 
@@ -151,10 +157,11 @@ public class CustomerDashboardRestaurant extends JPanel {
         addHoverEffect(lblRestoName5);
         pnlRestoCard5.add(lblRestoName5);
         
+        // == RESTAURANT 6 (BIBANG'S) ==
         pnlRestoCard6 = new JPanel();
         pnlRestoCard6.setLayout(null);
         pnlRestoCard6.setBackground(COLOR_WHITE); 
-        pnlRestoCard6.setBounds(330, 350, 200, 130); 
+        pnlRestoCard6.setBounds(330, 330, 200, 130); 
         pnlRestoCard6.setBorder(BorderFactory.createLineBorder(YELLOW_ACCENT, 1));
         scrollContentPanel.add(pnlRestoCard6);
 
@@ -165,10 +172,11 @@ public class CustomerDashboardRestaurant extends JPanel {
         addHoverEffect(lblRestoName6);
         pnlRestoCard6.add(lblRestoName6);
         
+        // == RESTAURANT 7 (SINABON) ==
         pnlRestoCard7 = new JPanel();
         pnlRestoCard7.setLayout(null);
         pnlRestoCard7.setBackground(COLOR_WHITE); 
-        pnlRestoCard7.setBounds(550, 350, 200, 130); 
+        pnlRestoCard7.setBounds(550, 330, 200, 130); 
         pnlRestoCard7.setBorder(BorderFactory.createLineBorder(YELLOW_ACCENT, 1));
         scrollContentPanel.add(pnlRestoCard7);
 
@@ -179,10 +187,11 @@ public class CustomerDashboardRestaurant extends JPanel {
         addHoverEffect(lblRestoName7);
         pnlRestoCard7.add(lblRestoName7);
         
+        // == RESTAURANT 8 (KUYA'S FRIED CHICKEN) ==
         pnlRestoCard8 = new JPanel();
         pnlRestoCard8.setLayout(null);
         pnlRestoCard8.setBackground(COLOR_WHITE); 
-        pnlRestoCard8.setBounds(770, 350, 200, 130); 
+        pnlRestoCard8.setBounds(770, 330, 200, 130); 
         pnlRestoCard8.setBorder(BorderFactory.createLineBorder(YELLOW_ACCENT, 1));
         scrollContentPanel.add(pnlRestoCard8);
 

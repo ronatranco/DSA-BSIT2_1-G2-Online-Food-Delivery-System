@@ -32,7 +32,6 @@ public class CustomerDashboardHistory extends JPanel{
         setBounds(1024, 0, 944, 720); 
         setBorder(BorderFactory.createMatteBorder(0, 1, 0, 0, YELLOW_ACCENT));
         
-        // FIX 1: Initializing the missing close 'X' button so it exists!
         btnExitHistory = new JButton("X");
         btnExitHistory.setFont(new Font("Segoe UI", Font.BOLD, 20));
         btnExitHistory.setForeground(YELLOW_ACCENT);

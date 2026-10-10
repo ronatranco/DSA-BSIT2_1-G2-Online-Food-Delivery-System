@@ -268,47 +268,50 @@ public class Customer implements ActionListener, MouseListener {
     }
 
     private void applyWidthLayout(int width) {
-        view.getLeftBannerNav().setBounds(0, 0, width, 720);
-        int baseX = width + 30;
+    view.getLeftBannerNav().setBounds(0, 0, width, 720);
+    int baseX = width + 30;
 
-        if (view.getLblName() != null) {
-            view.getLblName().setBounds(baseX, 34, 420, 35);
-        }
-
-        view.getSearchBarContainer().setBounds(baseX, 80, 420, 35);
-        view.getPnlRestoCard().topBannerQuote.setBounds(baseX, 135, 865, 120);
-        view.getPnlRestoCard().scrollPane.setBounds(0, 255, 1024, 465);
-        GUI.CustomerDashboardRestaurant restoCard = view.getPnlRestoCard();
-        restoCard.lblRestaurant.setBounds(baseX, 15, 400, 50);
-        
-        if (restoCard.titleSeparator != null) {
-        restoCard.titleSeparator.setBounds(baseX + 220, 43, 644, 5);
-}
-        // == ROW 1 RESTAURANT ==
-        restoCard.pnlRestoCard1.setBounds(baseX, 140, 200, 130);
-        if (restoCard.lblRestoImage1 != null) {
-            restoCard.lblRestoImage1.setBounds(baseX + 45, 50, 110, 110);
-        }
-        restoCard.pnlRestoCard2.setBounds(baseX + 220, 140, 200, 130);
-        if (restoCard.lblRestoImage2 != null) {
-            restoCard.lblRestoImage2.setBounds(baseX + 265, 50, 110, 110);
-        }
-        restoCard.pnlRestoCard3.setBounds(baseX + 440, 140, 200, 130);
-        if (restoCard.lblRestoImage3 != null) {
-            restoCard.lblRestoImage3.setBounds(baseX + 485, 50, 110, 110);
-        }
-        restoCard.pnlRestoCard4.setBounds(baseX + 660, 140, 200, 130);
-
-        // == ROW 2 RESTAURANT ==
-        restoCard.pnlRestoCard5.setBounds(baseX, 350, 200, 130);
-        restoCard.pnlRestoCard6.setBounds(baseX + 220, 350, 200, 130);
-        restoCard.pnlRestoCard7.setBounds(baseX + 440, 350, 200, 130);
-        restoCard.pnlRestoCard8.setBounds(baseX + 660, 350, 200, 130);
-
-        restoCard.scrollContentPanel.setPreferredSize(new Dimension(1000, 550));
-        restoCard.scrollContentPanel.revalidate();
-        view.getPnlMainBg().repaint();
+    if (view.getLblName() != null) {
+        view.getLblName().setBounds(baseX, 34, 420, 35);
     }
+
+    view.getSearchBarContainer().setBounds(baseX, 80, 420, 35);
+    view.getPnlRestoCard().topBannerQuote.setBounds(baseX, 135, 865, 120);
+    
+    GUI.CustomerDashboardRestaurant restoCard = view.getPnlRestoCard();
+    // == RESTAURANT SCROLL ==
+    restoCard.scrollPane.setBounds(0, 320, 1024, 400);
+    // == RESTAURANT LABEL ==
+    restoCard.lblRestaurant.setBounds(baseX, 270, 400, 50);
+    if (restoCard.restoLine != null) {
+        restoCard.restoLine.setBounds(baseX + 220, 298, 644, 5); 
+    }
+    
+    // == ROW 1 RESTAURANT ==
+    restoCard.pnlRestoCard1.setBounds(baseX, 110, 200, 130);
+    if (restoCard.lblRestoImage1 != null) {
+        restoCard.lblRestoImage1.setBounds(45, 10, 110, 110);
+    }
+    restoCard.pnlRestoCard2.setBounds(baseX + 220, 110, 200, 130);
+    if (restoCard.lblRestoImage2 != null) {
+        restoCard.lblRestoImage2.setBounds(45, 10, 110, 110);
+    }
+    restoCard.pnlRestoCard3.setBounds(baseX + 440, 110, 200, 130);
+    if (restoCard.lblRestoImage3 != null) {
+        restoCard.lblRestoImage3.setBounds(45, 10, 110, 110);
+    }
+    restoCard.pnlRestoCard4.setBounds(baseX + 660, 110, 200, 130);
+
+    // == ROW 2 RESTAURANT ==
+    restoCard.pnlRestoCard5.setBounds(baseX, 330,200, 130);
+    restoCard.pnlRestoCard6.setBounds(baseX + 220, 330, 200, 130);
+    restoCard.pnlRestoCard7.setBounds(baseX + 440, 330, 200, 130);
+    restoCard.pnlRestoCard8.setBounds(baseX + 660,330, 200, 130);
+    
+    restoCard.scrollContentPanel.setPreferredSize(new Dimension(1000, 605));
+    restoCard.scrollContentPanel.revalidate();
+    view.getPnlMainBg().repaint();
+}
 
     public void expandSidebar() {
         if (animationTimer != null && animationTimer.isRunning()) {
