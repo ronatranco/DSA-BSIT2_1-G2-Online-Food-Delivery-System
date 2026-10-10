@@ -30,21 +30,22 @@ public class StartPanel extends JPanel {
         setLayout(null);
         setBackground(BG_LIGHT);
 
+        // Increased height from 200 to 220 and shifted Y slightly up so the ears have plenty of space
         JLabel logoStart = new JLabel("🐼", SwingConstants.CENTER);
-        logoStart.setFont(new Font("Segoe UI Emoji", Font.PLAIN, 150));
-        logoStart.setBounds(312, 70, 400, 190);
+        logoStart.setFont(new Font("Segoe UI Emoji", Font.PLAIN, 180));
+        logoStart.setBounds(262, 85, 500, 220);
         add(logoStart);
 
         JLabel titleStart = new JLabel("GrabPanda Delivery", SwingConstants.CENTER);
         titleStart.setFont(HEADER_FONT);
         titleStart.setForeground(PURPLE_DARK);
-        titleStart.setBounds(262, 270, 500, 40);
+        titleStart.setBounds(262, 315, 500, 40);
         add(titleStart);
 
         JLabel subtitleStart = new JLabel("Delicious Food Delivered Right To Your Doorstep", SwingConstants.CENTER);
         subtitleStart.setFont(REGULAR_FONT);
         subtitleStart.setForeground(TEXT_DARK);
-        subtitleStart.setBounds(262, 315, 500, 30);
+        subtitleStart.setBounds(262, 360, 500, 30);
         add(subtitleStart);
 
         btnStart = new JButton("Get Started");
@@ -52,7 +53,7 @@ public class StartPanel extends JPanel {
         btnStart.setBackground(YELLOW_ACCENT);
         btnStart.setForeground(Color.BLACK);
         btnStart.setFocusPainted(false);
-        btnStart.setBounds(382, 380, 260, 55);
+        btnStart.setBounds(382, 430, 260, 55);
         add(btnStart);
     }
 }
