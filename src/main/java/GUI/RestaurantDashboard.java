@@ -43,7 +43,7 @@ public class RestaurantDashboard extends JPanel {
         contentPanel.setBorder(BorderFactory.createEmptyBorder(60, 100, 60, 100));
 
         btnManageMenu = new JButton("Manage Menu Items");
-        btnViewOrders = new JButton("View Incoming Orders");
+        btnViewOrders = new JButton("View Incoming Orderss");
         btnUpdateStatus = new JButton("Update Delivery Status");
         btnLogout = new JButton("Logout");
 
