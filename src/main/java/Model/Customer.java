@@ -188,12 +188,9 @@ public class Customer implements ActionListener, MouseListener {
                     || label == view.getLblProfile() || label == view.getLblExit()) {
                 label.setForeground(new Color(210, 210, 210));
             }
-        }
-
-        if (isProfileVisible || isTrackOrderVisible || isHistoryVisible) {
+        }   if (isProfileVisible || isTrackOrderVisible || isHistoryVisible) {
             return;
-        }
-        if (!targetsExpand) {
+        }   if (!targetsExpand) {
             targetsExpand = true;
             setupAnimationTracking();
         }
@@ -209,9 +206,7 @@ public class Customer implements ActionListener, MouseListener {
                     || label == view.getLblProfile() || label == view.getLblExit()) {
                 label.setForeground(Color.WHITE);
             }
-        }
-
-        if (isProfileVisible || isTrackOrderVisible || isHistoryVisible) {
+        }   if (isProfileVisible || isTrackOrderVisible || isHistoryVisible) {
             return;
         }
         Point mousePoint = e.getPoint();
@@ -222,14 +217,12 @@ public class Customer implements ActionListener, MouseListener {
             }
         }
     }
-
     private void setupAnimationTracking() {
         if (animationTimer != null && animationTimer.isRunning()) {
             animationTimer.stop();
-        }
-        animationStartTime = System.currentTimeMillis();
-        startWidth = preciseWidth;
-        startAnimation();
+        }   animationStartTime = System.currentTimeMillis();
+            startWidth = preciseWidth;
+            startAnimation();
     }
 
     private void startAnimation() {
@@ -273,12 +266,9 @@ public class Customer implements ActionListener, MouseListener {
 
     if (view.getLblName() != null) {
         view.getLblName().setBounds(baseX, 34, 420, 35);
-    }
-
-    view.getSearchBarContainer().setBounds(baseX, 80, 420, 35);
-    view.getPnlRestoCard().topBannerQuote.setBounds(baseX, 135, 865, 120);
-    
-    GUI.CustomerDashboardRestaurant restoCard = view.getPnlRestoCard();
+    }   view.getSearchBarContainer().setBounds(baseX, 80, 420, 35);
+        view.getPnlRestoCard().topBannerQuote.setBounds(baseX, 135, 865, 120);
+        GUI.CustomerDashboardRestaurant restoCard = view.getPnlRestoCard();
     // == RESTAURANT SCROLL ==
     restoCard.scrollPane.setBounds(0, 320, 1024, 400);
     // == RESTAURANT LABEL ==
@@ -288,26 +278,39 @@ public class Customer implements ActionListener, MouseListener {
     }
     
     // == ROW 1 RESTAURANT ==
-    restoCard.pnlRestoCard1.setBounds(baseX, 110, 200, 130);
+    restoCard.pnlRestoCard1.setBounds(baseX, 113, 200, 130);
     if (restoCard.lblRestoImage1 != null) {
-        restoCard.lblRestoImage1.setBounds(45, 10, 110, 110);
+        restoCard.lblRestoImage1.setBounds(baseX - 14, 3, 230, 190);
     }
-    restoCard.pnlRestoCard2.setBounds(baseX + 220, 110, 200, 130);
+    restoCard.pnlRestoCard2.setBounds(baseX + 220, 113, 200, 130);
     if (restoCard.lblRestoImage2 != null) {
-        restoCard.lblRestoImage2.setBounds(45, 10, 110, 110);
+        restoCard.lblRestoImage2.setBounds(baseX + 206, 45, 230, 150);
     }
-    restoCard.pnlRestoCard3.setBounds(baseX + 440, 110, 200, 130);
+    restoCard.pnlRestoCard3.setBounds(baseX + 440, 113, 200, 130);
     if (restoCard.lblRestoImage3 != null) {
-        restoCard.lblRestoImage3.setBounds(45, 10, 110, 110);
+        restoCard.lblRestoImage3.setBounds(baseX + 426, 45, 230, 150);
     }
-    restoCard.pnlRestoCard4.setBounds(baseX + 660, 110, 200, 130);
-
+    restoCard.pnlRestoCard4.setBounds(baseX + 660, 113, 200, 130);
+    if (restoCard.lblRestoImage4 != null) {
+        restoCard.lblRestoImage4.setBounds(baseX + 646, 45, 230, 150);
+    }
     // == ROW 2 RESTAURANT ==
     restoCard.pnlRestoCard5.setBounds(baseX, 330,200, 130);
+    if (restoCard.lblRestoImage5 != null) {
+        restoCard.lblRestoImage5.setBounds(baseX - 14, 260, 230, 160);
+    }
     restoCard.pnlRestoCard6.setBounds(baseX + 220, 330, 200, 130);
+    if (restoCard.lblRestoImage6 != null) {
+        restoCard.lblRestoImage6.setBounds(baseX + 206, 260, 230, 160);
+    }
     restoCard.pnlRestoCard7.setBounds(baseX + 440, 330, 200, 130);
+    if (restoCard.lblRestoImage7 != null) {
+        restoCard.lblRestoImage7.setBounds(baseX + 426, 260, 230, 160);
+    }
     restoCard.pnlRestoCard8.setBounds(baseX + 660,330, 200, 130);
-    
+    if (restoCard.lblRestoImage8 != null) {
+        restoCard.lblRestoImage8.setBounds(baseX + 646, 260, 230, 160);
+    }
     restoCard.scrollContentPanel.setPreferredSize(new Dimension(1000, 605));
     restoCard.scrollContentPanel.revalidate();
     view.getPnlMainBg().repaint();
@@ -316,23 +319,21 @@ public class Customer implements ActionListener, MouseListener {
     public void expandSidebar() {
         if (animationTimer != null && animationTimer.isRunning()) {
             animationTimer.stop();
-        }
-        targetsExpand = true;
-        currentWidth = MAX_WIDTH;
-        preciseWidth = MAX_WIDTH;
-        view.setLabelsVisible(true);
-        applyWidthLayout(MAX_WIDTH);
+        }   targetsExpand = true;
+            currentWidth = MAX_WIDTH;
+            preciseWidth = MAX_WIDTH;
+            view.setLabelsVisible(true);
+            applyWidthLayout(MAX_WIDTH);
     }
 
     public void collapseSidebar() {
         if (animationTimer != null && animationTimer.isRunning()) {
             animationTimer.stop();
-        }
-        targetsExpand = false;
-        currentWidth = MIN_WIDTH;
-        preciseWidth = MIN_WIDTH;
-        view.setLabelsVisible(false);
-        applyWidthLayout(MIN_WIDTH);
+        }   targetsExpand = false;
+            currentWidth = MIN_WIDTH;
+            preciseWidth = MIN_WIDTH;
+            view.setLabelsVisible(false);
+            applyWidthLayout(MIN_WIDTH);
     }
 
     private void closeAllSidebarsExcept(String exception) {
@@ -387,95 +388,107 @@ public class Customer implements ActionListener, MouseListener {
         if (query.trim().isEmpty() || query.equals("What are you craving today?")) {
             showAllRestaurants(restoCard, true);
             return;
-        }
-        String lowerQuery = query.toLowerCase().trim();
-        boolean matches1 = "mcdollibee".contains(lowerQuery);
+        } String lowerQuery = query.toLowerCase().trim();
+        // == RESTAURANT 1 ==
+        boolean smatch1 = "mcdollibee".contains(lowerQuery);
         if (restoCard.pnlRestoCard1 != null) {
-            restoCard.pnlRestoCard1.setVisible(matches1);
+            restoCard.pnlRestoCard1.setVisible(smatch1);
         }
         if (restoCard.lblRestoImage1 != null) {
-            restoCard.lblRestoImage1.setVisible(matches1);
+            restoCard.lblRestoImage1.setVisible(smatch1);
         }
-        boolean matches2 = "brain cells milk tea".contains(lowerQuery);
+        // == RESTAURANT 2 ==
+        boolean smatch2 = "brain cells milk tea".contains(lowerQuery);
         if (restoCard.pnlRestoCard2 != null) {
-            restoCard.pnlRestoCard2.setVisible(matches2);
+            restoCard.pnlRestoCard2.setVisible(smatch2);
         }
         if (restoCard.lblRestoImage2 != null) {
-            restoCard.lblRestoImage2.setVisible(matches2);
-        }
-        boolean matches3 = "mang pinaasa".contains(lowerQuery);
+            restoCard.lblRestoImage2.setVisible(smatch2);
+        } 
+        // == RESTAURANT 3 ==
+        boolean smatch3 = "mang pinaasa".contains(lowerQuery);
         if (restoCard.pnlRestoCard3 != null) {
-            restoCard.pnlRestoCard3.setVisible(matches3);
+            restoCard.pnlRestoCard3.setVisible(smatch3);
         }
         if (restoCard.lblRestoImage3 != null) {
-            restoCard.lblRestoImage3.setVisible(matches3);
-        }
-        boolean matches4 = "kamote korner".contains(lowerQuery);
+            restoCard.lblRestoImage3.setVisible(smatch3);
+        }  
+        // == RESTAURANT 4 ==
+        boolean smatch4 = "kamote korner".contains(lowerQuery);
         if (restoCard.pnlRestoCard4 != null) {
-            restoCard.pnlRestoCard4.setVisible(matches4);
+            restoCard.pnlRestoCard4.setVisible(smatch4);
         }
-        boolean matches5 = "petsa hut".contains(lowerQuery);
+        if (restoCard.lblRestoImage4 != null) {
+            restoCard.lblRestoImage4.setVisible(smatch4);
+        }
+        // == RESTAURANT 5 ==
+        boolean smatch5 = "petsa hut".contains(lowerQuery);
         if (restoCard.pnlRestoCard5 != null) {
-            restoCard.pnlRestoCard5.setVisible(matches5);
+            restoCard.pnlRestoCard5.setVisible(smatch5);
         }
-        boolean matches6 = "bibang's".contains(lowerQuery);
+        if (restoCard.lblRestoImage5 != null) {
+            restoCard.lblRestoImage5.setVisible(smatch5);
+        }  
+        // == RESTAURANT 6 ==
+        boolean smatch6 = "bibang's".contains(lowerQuery);
         if (restoCard.pnlRestoCard6 != null) {
-            restoCard.pnlRestoCard6.setVisible(matches6);
+            restoCard.pnlRestoCard6.setVisible(smatch6);
         }
-        boolean matches7 = "sinabon".contains(lowerQuery);
+        if (restoCard.lblRestoImage6 != null) {
+            restoCard.lblRestoImage6.setVisible(smatch6);
+        } 
+        // == RESTAURANT 7 ==
+        boolean smatch7 = "sinabon".contains(lowerQuery);
         if (restoCard.pnlRestoCard7 != null) {
-            restoCard.pnlRestoCard7.setVisible(matches7);
+            restoCard.pnlRestoCard7.setVisible(smatch7);
         }
-        boolean matches8 = "kuya's fried chicken".contains(lowerQuery);
+        if (restoCard.lblRestoImage7 != null) {
+            restoCard.lblRestoImage7.setVisible(smatch7);
+        }
+        // == RESTAURANT 8 ==
+        boolean smatch8 = "kuya's fried chicken".contains(lowerQuery);
         if (restoCard.pnlRestoCard8 != null) {
-            restoCard.pnlRestoCard8.setVisible(matches8);
+            restoCard.pnlRestoCard8.setVisible(smatch8);
         }
+        if (restoCard.lblRestoImage8 != null) {
+            restoCard.lblRestoImage8.setVisible(smatch8);
+        }  
         restoCard.scrollContentPanel.revalidate();
         view.getPnlMainBg().repaint();
     }
 
     private void showAllRestaurants(GUI.CustomerDashboardRestaurant restoCard, boolean visible) {
-        if (restoCard.pnlRestoCard1 != null) {
-            restoCard.pnlRestoCard1.setVisible(visible);
-        }
-        if (restoCard.lblRestoImage1 != null) {
-            restoCard.lblRestoImage1.setVisible(visible);
-        }
-        if (restoCard.pnlRestoCard2 != null) {
-            restoCard.pnlRestoCard2.setVisible(visible);
-        }
-        if (restoCard.lblRestoImage2 != null) {
-            restoCard.lblRestoImage2.setVisible(visible);
-        }
-        if (restoCard.pnlRestoCard3 != null) {
-            restoCard.pnlRestoCard3.setVisible(visible);
-        }
-        if (restoCard.lblRestoImage3 != null) {
-            restoCard.lblRestoImage3.setVisible(visible);
-        }
-        if (restoCard.pnlRestoCard4 != null) {
-            restoCard.pnlRestoCard4.setVisible(visible);
-        }
-        if (restoCard.pnlRestoCard5 != null) {
-            restoCard.pnlRestoCard5.setVisible(visible);
-        }
-        if (restoCard.pnlRestoCard6 != null) {
-            restoCard.pnlRestoCard6.setVisible(visible);
-        }
-        if (restoCard.pnlRestoCard7 != null) {
-            restoCard.pnlRestoCard7.setVisible(visible);
-        }
-        if (restoCard.pnlRestoCard8 != null) {
-            restoCard.pnlRestoCard8.setVisible(visible);
-        }
-        restoCard.scrollContentPanel.revalidate();
-        view.getPnlMainBg().repaint();
-    }
-
+        // == RESTAURANT 1 ==
+        if (restoCard.pnlRestoCard1 != null) restoCard.pnlRestoCard1.setVisible(visible);
+        if (restoCard.lblRestoImage1 != null) restoCard.lblRestoImage1.setVisible(visible);
+        // == RESTAURANT 2 ==
+        if (restoCard.pnlRestoCard2 != null) restoCard.pnlRestoCard2.setVisible(visible);
+        if (restoCard.lblRestoImage2 != null) restoCard.lblRestoImage2.setVisible(visible);
+        // == RESTAURANT 3 ==
+        if (restoCard.pnlRestoCard3 != null) restoCard.pnlRestoCard3.setVisible(visible);
+        if (restoCard.lblRestoImage3 != null) restoCard.lblRestoImage3.setVisible(visible);
+        // == RESTAURANT 4 ==
+        if (restoCard.pnlRestoCard4 != null) restoCard.pnlRestoCard4.setVisible(visible);
+        if (restoCard.lblRestoImage4 != null) restoCard.lblRestoImage4.setVisible(visible); 
+        // == RESTAURANT 5 ==
+        if (restoCard.pnlRestoCard5 != null) restoCard.pnlRestoCard5.setVisible(visible);
+        if (restoCard.lblRestoImage5 != null) restoCard.lblRestoImage5.setVisible(visible); 
+        // == RESTAURANT 6 ==
+        if (restoCard.pnlRestoCard6 != null) restoCard.pnlRestoCard6.setVisible(visible);
+        if (restoCard.lblRestoImage6 != null) restoCard.lblRestoImage6.setVisible(visible); 
+        // == RESTAURANT 7 ==
+        if (restoCard.pnlRestoCard7 != null) restoCard.pnlRestoCard7.setVisible(visible);
+        if (restoCard.lblRestoImage7 != null) restoCard.lblRestoImage7.setVisible(visible);
+        // == RESTAURANT 8 ==
+        if (restoCard.pnlRestoCard8 != null) restoCard.pnlRestoCard8.setVisible(visible);
+        if (restoCard.lblRestoImage8 != null) restoCard.lblRestoImage8.setVisible(visible); 
+    
+            restoCard.scrollContentPanel.revalidate();
+            view.getPnlMainBg().repaint();
+}
     @Override
     public void mousePressed(MouseEvent e) {
     }
-
     @Override
     public void mouseReleased(MouseEvent e) {
     }
