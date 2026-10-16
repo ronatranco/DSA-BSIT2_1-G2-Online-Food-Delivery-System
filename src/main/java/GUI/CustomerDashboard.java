@@ -424,4 +424,8 @@ public class CustomerDashboard extends JPanel {
     public JButton getBtnLogout() {
         return btnNavExit;
     }
+    
+    public MainFrame getMainFrame() {
+    return mainFrame;
+}
 }

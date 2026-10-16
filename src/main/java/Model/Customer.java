@@ -95,14 +95,12 @@ public class Customer implements ActionListener, MouseListener {
             collapseSidebar();
             view.getPnlRightProfile().animateClose();
         } else if (view.getPnlRightHistory() != null && e.getSource() == view.getPnlRightHistory().getCloseButton()) {
-            System.out.println("Routing: History close triggered. Returning to home.");
             closeAllSidebarsExcept("none");
             view.getTxtSearchBar().setText("What are you craving today?");
             view.getTxtSearchBar().setForeground(new Color(120, 120, 120));
             showAllRestaurants(view.getPnlRestoCard(), true);
 
         } else if (view.getPnlRightTrackOrder() != null && e.getSource() == view.getPnlRightTrackOrder().getCloseButton()) {
-            System.out.println("Routing: Track Order close triggered. Returning to home.");
             closeAllSidebarsExcept("none");
             view.getTxtSearchBar().setText("What are you craving today?");
             view.getTxtSearchBar().setForeground(new Color(120, 120, 120));
@@ -111,14 +109,12 @@ public class Customer implements ActionListener, MouseListener {
         else if (e.getSource() == view.getBtnNavLogoPanda()) {
             System.out.println("Routing: Logo action triggered.");
         } else if (e.getSource() == view.getBtnNavHome()) {
-            System.out.println("Routing: Home tab requested. Clearing active sidebars.");
             closeAllSidebarsExcept("none");
             view.getTxtSearchBar().setText("What are you craving today?");
             view.getTxtSearchBar().setForeground(new Color(120, 120, 120));
             showAllRestaurants(view.getPnlRestoCard(), true);
         } else if (e.getSource() == view.getBtnNavExit()) {
-            System.out.println("Logging out via Button...");
-            System.exit(0);
+            System.out.println("Logging out...");
         }
         view.getPnlMainBg().repaint();
     }
@@ -173,7 +169,8 @@ public class Customer implements ActionListener, MouseListener {
                 view.getPnlRightHistory().animateClose();
             }
         } else if (e.getSource() == view.getLblExit()) {
-            System.exit(0);
+            System.out.println("Logging out...");
+            view.getMainFrame().showCard("ROLE_SELECTION");
         }
         view.getPnlMainBg().repaint();
     }
