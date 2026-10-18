@@ -27,6 +27,9 @@ public class CustomerDashboard extends JPanel {
     private JLabel lblLogoPanda, lblName, lblHome, lblTrack, lblCart, lblHistory, lblProfile, lblExit, lblSearchIcon, lblDateRn;
 
     private CustomerDashboardRestaurant pnlRestoCard;
+    private CustomerDashboardRestaurantMenus pnlMenuMcDollibee; 
+    private CustomerDashboardRestaurantMenus pnlMenuBrainCells;  
+    private CustomerDashboardRestaurantMenus pnlMenuMangPinaasa;
     private CustomerDashboardTrackOrder pnlRightTrackOrder;
     private CustomerDashboardHistory pnlRightHistory;
     private CustomerDashboardProfile pnlRightProfile;
@@ -36,8 +39,6 @@ public class CustomerDashboard extends JPanel {
         this.mainFrame = mainFrame;
         setLayout(null); 
         setBounds(0, 0, 1024, 720);
-
-        this.controller = new Customer(this);
 
         pnlMainBg = new JPanel();
         pnlMainBg.setLayout(null);
@@ -229,26 +230,45 @@ public class CustomerDashboard extends JPanel {
         lblExit.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         pnlMainBg.add(leftBannerNav);
 // == MODEL CONNECTOR ==
+        //RESTO CARD
         pnlRestoCard = new CustomerDashboardRestaurant();
         pnlMainBg.add(pnlRestoCard);
         pnlRestoCard.setVisible(true);
-
+        //RESTO MENU 1
+        pnlMenuMcDollibee = new CustomerDashboardRestaurantMenus("McDollibee"); 
+        pnlMainBg.add(pnlMenuMcDollibee);
+        pnlMenuMcDollibee.setVisible(false); 
+        //RESTO MENU 2
+        pnlMenuBrainCells = new CustomerDashboardRestaurantMenus("Brain Cells Milk Tea"); 
+        pnlMainBg.add(pnlMenuBrainCells);
+        pnlMenuBrainCells.setVisible(false);
+        //RESTO MENU 3
+        pnlMenuMangPinaasa = new CustomerDashboardRestaurantMenus("Mang Pinaasa"); 
+        pnlMainBg.add(pnlMenuMangPinaasa);
+        pnlMenuMangPinaasa.setVisible(false);
+        //VIEW CART
         pnlRightCart = new CustomerDashboardViewCart();
         pnlMainBg.add(pnlRightCart);
         pnlRightCart.addCartActions(controller);
-
+        //TRACK ORDER
         pnlRightTrackOrder = new CustomerDashboardTrackOrder();
         pnlMainBg.add(pnlRightTrackOrder);
         pnlRightTrackOrder.addProfileActions(controller);
-
+        //HISTORY
         pnlRightHistory = new CustomerDashboardHistory();
         pnlMainBg.add(pnlRightHistory);
         pnlRightHistory.addProfileActions(controller);
-
+        //PROFILE
         pnlRightProfile = new CustomerDashboardProfile();
         pnlMainBg.add(pnlRightProfile);
         pnlRightProfile.addProfileActions(controller);
-
+        
+        this.controller = new Customer(this);
+        pnlRightCart.addCartActions(controller);
+        pnlRightTrackOrder.addProfileActions(controller);
+        pnlRightHistory.addProfileActions(controller);
+        pnlRightProfile.addProfileActions(controller);
+        
         pnlMainBg.add(leftBannerNav);
         add(pnlMainBg);
 
@@ -306,14 +326,17 @@ public class CustomerDashboard extends JPanel {
             }
         });
         // == LAYER ORDER == 
-        pnlMainBg.setComponentZOrder(leftBannerNav, 0);       // Left Nav Panel
-        pnlMainBg.setComponentZOrder(pnlRightCart, 1);         // Order Summary Panel 
-        pnlMainBg.setComponentZOrder(pnlRightProfile, 2);      // Profile Screen Panel
-        pnlMainBg.setComponentZOrder(pnlRightTrackOrder, 3);   // Track Order Screen
-        pnlMainBg.setComponentZOrder(pnlRightHistory, 4);      // History Panel
-        pnlMainBg.setComponentZOrder(pnlsearchBar, 5);         // Search Input Box Container
-        pnlMainBg.setComponentZOrder(lblDateRn, 6);            // Live Date Header Label
-        pnlMainBg.setComponentZOrder(pnlRestoCard, 7);         // Bottom Layer
+        pnlMainBg.setComponentZOrder(leftBannerNav, 0);         // Left Nav Panel
+        pnlMainBg.setComponentZOrder(pnlRightCart, 1);          // Order Summary Panel 
+        pnlMainBg.setComponentZOrder(pnlMenuMcDollibee, 2);     // Resto Menu 1
+        pnlMainBg.setComponentZOrder(pnlMenuBrainCells, 3);     // Resto Menu 2
+        pnlMainBg.setComponentZOrder(pnlMenuMangPinaasa, 4);    // Resto Menu 3
+        pnlMainBg.setComponentZOrder(pnlRightProfile, 5);       // Profile Screen Panel
+        pnlMainBg.setComponentZOrder(pnlRightTrackOrder, 6);    // Track Order Screen
+        pnlMainBg.setComponentZOrder(pnlRightHistory, 7);       // History Panel
+        pnlMainBg.setComponentZOrder(pnlsearchBar, 8);          // Search Input Box Container
+        pnlMainBg.setComponentZOrder(lblDateRn, 9);             // Live Date Header Label
+        pnlMainBg.setComponentZOrder(pnlRestoCard, 10);         // Bottom Layer
 
         pnlMainBg.revalidate();
         pnlMainBg.repaint();
@@ -369,63 +392,41 @@ public class CustomerDashboard extends JPanel {
         lblExit.setVisible(visible);
     }
 
-    public JButton getBtnNavCart() {
-        return btnNavCart;
+        public JButton getBtnNavCart() {
+            return btnNavCart;
+    }   public JButton getBtnNavProfile() {
+            return btnNavProfile;
+    }   public JButton getBtnNavTrack() {
+            return btnNavTrack;
+    }   public JButton getBtnNavHistory() {
+         return btnNavHistory;
+    }   public JButton getBtnNavHome() {
+         return btnNavHome;
+    }   public JButton getBtnNavExit() {
+         return btnNavExit;
+    }   public JButton getBtnNavLogoPanda() {
+         return btnNavLogoPanda;
+    }   public CustomerDashboardViewCart getPnlRightCart() {
+         return pnlRightCart;
+    }   public CustomerDashboardProfile getPnlRightProfile() {
+         return pnlRightProfile;
+    }   public CustomerDashboardTrackOrder getPnlRightTrackOrder() {
+         return pnlRightTrackOrder;
+    }   public CustomerDashboardHistory getPnlRightHistory() {
+            return pnlRightHistory;
+    }   public CustomerDashboardRestaurantMenus getPnlMenuMcDollibee() { 
+        return pnlMenuMcDollibee;
+    }   public CustomerDashboardRestaurantMenus getPnlMenuBrainCells() { 
+            return pnlMenuBrainCells;
+    }   public CustomerDashboardRestaurantMenus getPnlMenuMangPinaasa() { 
+            return pnlMenuMangPinaasa;
+    }   public JPanel getPnlMainBg() {
+            return pnlMainBg;
+    }   public JLabel getLblName() {
+            return lblName;
+    }   public JButton getBtnLogout() {
+            return btnNavExit;
+    }   public MainFrame getMainFrame() {
+            return mainFrame;
     }
-
-    public JButton getBtnNavProfile() {
-        return btnNavProfile;
-    }
-
-    public JButton getBtnNavTrack() {
-        return btnNavTrack;
-    }
-
-    public JButton getBtnNavHistory() {
-        return btnNavHistory;
-    }
-
-    public JButton getBtnNavHome() {
-        return btnNavHome;
-    }
-
-    public JButton getBtnNavExit() {
-        return btnNavExit;
-    }
-
-    public JButton getBtnNavLogoPanda() {
-        return btnNavLogoPanda;
-    }
-
-    public CustomerDashboardViewCart getPnlRightCart() {
-        return pnlRightCart;
-    }
-
-    public CustomerDashboardProfile getPnlRightProfile() {
-        return pnlRightProfile;
-    }
-
-    public CustomerDashboardTrackOrder getPnlRightTrackOrder() {
-        return pnlRightTrackOrder;
-    }
-
-    public CustomerDashboardHistory getPnlRightHistory() {
-        return pnlRightHistory;
-    }
-
-    public JPanel getPnlMainBg() {
-        return pnlMainBg;
-    }
-    
-    public JLabel getLblName() {
-        return lblName;
-    }
-    
-    public JButton getBtnLogout() {
-        return btnNavExit;
-    }
-    
-    public MainFrame getMainFrame() {
-    return mainFrame;
-}
 }

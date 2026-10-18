@@ -287,4 +287,11 @@ public class CustomerDashboardRestaurant extends JPanel {
             }
         });
     }
+        public JLabel getLblRestoName1() {
+            return lblRestoName1;
+    }   public JLabel getLblRestoName2() {
+            return lblRestoName2;
+    }   public JLabel getLblRestoName3() {
+            return lblRestoName3;
+    }
 }
