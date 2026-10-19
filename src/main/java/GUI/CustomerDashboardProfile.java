@@ -35,6 +35,7 @@ public class CustomerDashboardProfile extends JPanel {
         btnSaveProfile.setForeground(YELLOW_ACCENT);
         btnSaveProfile.setBackground(PURPLE_DARK);
         btnSaveProfile.setBounds(347, 610, 250, 45);
+        btnSaveProfile.setFocusPainted(false);
         add(btnSaveProfile);
     }
 
