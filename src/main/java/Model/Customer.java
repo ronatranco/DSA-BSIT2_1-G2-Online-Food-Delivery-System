@@ -36,6 +36,18 @@ public class Customer implements ActionListener, MouseListener {
 
     public Customer(CustomerDashboard view) {
         this.view = view;
+        // Resto Menu 1
+        if (this.view.getPnlRestoCard() != null && this.view.getPnlRestoCard().getLblRestoName1() != null) {
+            this.view.getPnlRestoCard().getLblRestoName1().addMouseListener(this);
+        }
+        // Resto Menu 2
+        if (this.view.getPnlRestoCard() != null && this.view.getPnlRestoCard().getLblRestoName2() != null) {
+            this.view.getPnlRestoCard().getLblRestoName2().addMouseListener(this);
+        }
+        // Resto Menu 3
+        if (this.view.getPnlRestoCard() != null && this.view.getPnlRestoCard().getLblRestoName3() != null) {
+            this.view.getPnlRestoCard().getLblRestoName3().addMouseListener(this);
+        }
     }
 
     @Override
@@ -121,6 +133,27 @@ public class Customer implements ActionListener, MouseListener {
 
     @Override
     public void mouseClicked(MouseEvent e) {
+        // Resto Menu 1
+        if (e.getSource() == view.getPnlRestoCard().getLblRestoName1()) {
+            view.getPnlMenuMcDollibee().setVisible(true);
+            view.getPnlMenuBrainCells().setVisible(false);
+            view.getPnlMenuMangPinaasa().setVisible(false);
+            closeAllSidebarsExcept("menu"); 
+        } 
+        // Resto Menu 2
+        else if (e.getSource() == view.getPnlRestoCard().getLblRestoName2()) {
+            view.getPnlMenuMcDollibee().setVisible(false);
+            view.getPnlMenuBrainCells().setVisible(true);
+            view.getPnlMenuMangPinaasa().setVisible(false);
+            closeAllSidebarsExcept("menu");
+        } 
+        // Resto Menu 3
+        else if (e.getSource() == view.getPnlRestoCard().getLblRestoName3()) {
+            view.getPnlMenuMcDollibee().setVisible(false);
+            view.getPnlMenuBrainCells().setVisible(false);
+            view.getPnlMenuMangPinaasa().setVisible(true);
+            closeAllSidebarsExcept("menu");
+        }
         if (e.getSource() == view.getLblHome()) {
             closeAllSidebarsExcept("none");
             view.getTxtSearchBar().setText("What are you craving today?");
@@ -178,18 +211,28 @@ public class Customer implements ActionListener, MouseListener {
     @Override
     public void mouseEntered(MouseEvent e) {
         Object source = e.getSource();
-        if (source instanceof JLabel && source != view.getSearchBarContainer()) {
-            JLabel label = (JLabel) source;
+            if (source instanceof JLabel && source != view.getSearchBarContainer()) {
+                JLabel label = (JLabel) source;
             if (label == view.getLblHome() || label == view.getLblCart()
-                    || label == view.getLblTrack() || label == view.getLblHistory()
-                    || label == view.getLblProfile() || label == view.getLblExit()) {
-                label.setForeground(new Color(210, 210, 210));
-            }
+                || label == view.getLblTrack() || label == view.getLblHistory()
+                || label == view.getLblProfile() || label == view.getLblExit()) {
+                   label.setForeground(new Color(210, 210, 210));
+                }
         }   if (isProfileVisible || isTrackOrderVisible || isHistoryVisible) {
-            return;
-        }   if (!targetsExpand) {
-            targetsExpand = true;
-            setupAnimationTracking();
+                return;
+        }   if (source == view.getLeftBannerNav() 
+                || source == view.getBtnNavLogoPanda() || source == view.getBtnNavHome() 
+                || source == view.getBtnNavCart() || source == view.getBtnNavTrack() 
+                || source == view.getBtnNavHistory() || source == view.getBtnNavProfile() 
+                || source == view.getBtnNavExit() || source == view.getLblHome() 
+                || source == view.getLblCart() || source == view.getLblTrack() 
+                || source == view.getLblHistory() || source == view.getLblProfile() 
+                || source == view.getLblExit()) {
+        
+            if (!targetsExpand) {
+                targetsExpand = true;
+                setupAnimationTracking();
+            }
         }
     }
 
@@ -334,7 +377,17 @@ public class Customer implements ActionListener, MouseListener {
     }
 
     private void closeAllSidebarsExcept(String exception) {
-        boolean hideRestaurantView = false;
+        boolean isMenuVisible = (view.getPnlMenuMcDollibee() != null && view.getPnlMenuMcDollibee().isVisible())
+                             || (view.getPnlMenuBrainCells() != null && view.getPnlMenuBrainCells().isVisible())
+                             || (view.getPnlMenuMangPinaasa() != null && view.getPnlMenuMangPinaasa().isVisible());
+
+        if (exception.equals("profile") || exception.equals("history") || exception.equals("track") || exception.equals("none")) {
+        if (view.getPnlMenuMcDollibee() != null) view.getPnlMenuMcDollibee().setVisible(false);
+        if (view.getPnlMenuBrainCells() != null) view.getPnlMenuBrainCells().setVisible(false);
+        if (view.getPnlMenuMangPinaasa() != null) view.getPnlMenuMangPinaasa().setVisible(false);
+            isMenuVisible = false;
+    }
+        boolean hideRestaurantView = isMenuVisible;
         if (!exception.equals("cart")) {
             view.getPnlRightCart().animateClose();
             isCartVisible = false;
@@ -374,9 +427,9 @@ public class Customer implements ActionListener, MouseListener {
             view.getPnlRestoCard().setVisible(!hideRestaurantView);
             view.getSearchBarContainer().setVisible(!hideRestaurantView);
 
-            if (view.getLblName() != null) {
-                view.getLblName().setVisible(!hideRestaurantView);
-            }
+        if (view.getLblName() != null) {
+            view.getLblName().setVisible(!hideRestaurantView);
+        }
         }
     }
 

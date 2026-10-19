@@ -63,14 +63,17 @@ public class CustomerDashboardViewCart extends JPanel {
     public void animateOpen() {
         setBounds(724, 0, 300, 720);
         if (getParent() != null) {
-            // SHRINKS RESTO IF VIEWCART IS OPEN
+            // SHRINKS BOUNDS WHEN VIEWCART IS OPEN
             for (Component comp : getParent().getComponents()) {
                 if (comp instanceof CustomerDashboardRestaurant) {
                     comp.setBounds(0, 0, 724, 720);
                 }
+                if (comp instanceof CustomerDashboardRestaurantMenus) {
+                    comp.setBounds(80, 0, 644, 720);
+                }
             }
-            getParent().revalidate();
-            getParent().repaint();
+                getParent().revalidate();
+                getParent().repaint();
         }
     }
 
@@ -82,9 +85,12 @@ public class CustomerDashboardViewCart extends JPanel {
                 if (comp instanceof CustomerDashboardRestaurant) {
                     comp.setBounds(0, 0, 1024, 720);
                 }
+                if (comp instanceof CustomerDashboardRestaurantMenus) {
+                    comp.setBounds(80, 0, 944, 720);
+                }
             }
-            getParent().revalidate();
-            getParent().repaint();
+                getParent().revalidate();
+                getParent().repaint();
         }
     }
 
