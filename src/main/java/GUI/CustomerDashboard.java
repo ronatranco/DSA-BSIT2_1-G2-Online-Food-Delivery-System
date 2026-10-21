@@ -50,7 +50,7 @@ public class CustomerDashboard extends JPanel {
         leftBannerNav.setBackground(PURPLE_DARK);
         leftBannerNav.setBounds(0, 0, 80, 720);
         
-        lblName = new JLabel("Hello, Rona!");
+        lblName = new JLabel("Hello, User!");
         lblName.setFont( new Font("Segoe UI", Font.BOLD, 18));
         lblName.setForeground(PURPLE_DARK);
         lblName. setBounds(110, 34, 420, 35);
