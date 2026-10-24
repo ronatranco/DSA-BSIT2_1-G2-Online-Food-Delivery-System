@@ -90,7 +90,6 @@ public class CustomerDashboard extends JPanel {
         txtSearchBar.setBorder(null);
         txtSearchBar.setBounds(40, 3, 375, 31);
         pnlsearchBar.add(txtSearchBar);
-
         pnlMainBg.add(pnlsearchBar);
 
         // FOR DATE
@@ -229,7 +228,8 @@ public class CustomerDashboard extends JPanel {
         leftBannerNav.add(lblExit);
         lblExit.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         pnlMainBg.add(leftBannerNav);
-// == MODEL CONNECTOR ==
+        
+        // == MODEL CONNECTOR ==
         //RESTO CARD
         pnlRestoCard = new CustomerDashboardRestaurant();
         pnlMainBg.add(pnlRestoCard);
@@ -272,7 +272,7 @@ public class CustomerDashboard extends JPanel {
         pnlMainBg.add(leftBannerNav);
         add(pnlMainBg);
 
-        // --- LISTENERS ---
+        // == LISTENERS ==
         btnNavLogoPanda.addActionListener(controller);
         btnNavHome.addActionListener(controller);
         btnNavCart.addActionListener(controller);
@@ -312,8 +312,7 @@ public class CustomerDashboard extends JPanel {
                     txtSearchBar.setForeground(COLOR_MUTED);
                 }
             }
-        });
-        txtSearchBar.addActionListener(new java.awt.event.ActionListener() {
+        }); txtSearchBar.addActionListener(new java.awt.event.ActionListener() {
             @Override
             public void actionPerformed(java.awt.event.ActionEvent e) {
                 String text = txtSearchBar.getText().trim();
@@ -337,61 +336,39 @@ public class CustomerDashboard extends JPanel {
         pnlMainBg.setComponentZOrder(pnlsearchBar, 8);          // Search Input Box Container
         pnlMainBg.setComponentZOrder(lblDateRn, 9);             // Live Date Header Label
         pnlMainBg.setComponentZOrder(pnlRestoCard, 10);         // Bottom Layer
-
         pnlMainBg.revalidate();
         pnlMainBg.repaint();
     }
-
-    public JLabel getLblHome() {
-        return lblHome;
+        public JLabel getLblHome() {
+            return lblHome;
+    }   public JLabel getLblCart() {
+            return lblCart;
+    }   public JLabel getLblTrack() {
+            return lblTrack;
+    }   public JLabel getLblHistory() {
+            return lblHistory;
+    }   public JLabel getLblProfile() {
+            return lblProfile;
+    }   public JLabel getLblExit() {
+            return lblExit;
+    }   public JPanel getLeftBannerNav() {
+            return leftBannerNav;
+    }   public JPanel getSearchBarContainer() {
+            return pnlsearchBar;
+    }   public CustomerDashboardRestaurant getPnlRestoCard() {
+            return pnlRestoCard;
+    }   public JTextField getTxtSearchBar() {
+            return txtSearchBar;
     }
-
-    public JLabel getLblCart() {
-        return lblCart;
+        public void setLabelsVisible(boolean visible) {
+            lblLogoPanda.setVisible(visible);
+            lblHome.setVisible(visible);
+            lblCart.setVisible(visible);
+            lblTrack.setVisible(visible);
+            lblHistory.setVisible(visible);
+            lblProfile.setVisible(visible);
+            lblExit.setVisible(visible);
     }
-
-    public JLabel getLblTrack() {
-        return lblTrack;
-    }
-
-    public JLabel getLblHistory() {
-        return lblHistory;
-    }
-
-    public JLabel getLblProfile() {
-        return lblProfile;
-    }
-
-    public JLabel getLblExit() {
-        return lblExit;
-    }
-
-    public JPanel getLeftBannerNav() {
-        return leftBannerNav;
-    }
-
-    public JPanel getSearchBarContainer() {
-        return pnlsearchBar;
-    }
-
-    public CustomerDashboardRestaurant getPnlRestoCard() {
-        return pnlRestoCard;
-    }
-
-    public JTextField getTxtSearchBar() {
-        return txtSearchBar;
-    }
-
-    public void setLabelsVisible(boolean visible) {
-        lblLogoPanda.setVisible(visible);
-        lblHome.setVisible(visible);
-        lblCart.setVisible(visible);
-        lblTrack.setVisible(visible);
-        lblHistory.setVisible(visible);
-        lblProfile.setVisible(visible);
-        lblExit.setVisible(visible);
-    }
-
         public JButton getBtnNavCart() {
             return btnNavCart;
     }   public JButton getBtnNavProfile() {
