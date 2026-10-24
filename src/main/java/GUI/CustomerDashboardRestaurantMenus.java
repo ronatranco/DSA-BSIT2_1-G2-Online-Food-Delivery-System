@@ -316,7 +316,7 @@ public class CustomerDashboardRestaurantMenus extends JPanel {
         lblDesc.setVerticalAlignment(SwingConstants.TOP);
         foodCard.add(lblDesc);
         // PRICE CONTAINER
-        JPanel pnlPrice = new JPanel();
+        JPanel pnlPrice = new JPanel(new BorderLayout());
         pnlPrice.setBounds(15, 112, 65, 18);
         pnlPrice.setBackground(new Color(245, 240, 252));
         pnlPrice.setBorder(new LineBorder(PURPLE_DARK, 1));
