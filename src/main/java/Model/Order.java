@@ -9,5 +9,5 @@ package Model;
  * @author rownavanana
  */
 public class Order {
-    
+
 }
