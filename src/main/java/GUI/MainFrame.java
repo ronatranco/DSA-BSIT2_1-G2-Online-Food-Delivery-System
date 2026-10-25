@@ -31,7 +31,7 @@ public class MainFrame extends JFrame implements ActionListener {
     private CustomerLoginPanel panelCustomerLogin;
     private RestaurantLoginPanel panelRestaurantLogin;    
     private AdminLoginPanel panelAdminLogin;
-    private AdminPanelGUI panelAdminGUI;
+    private AdminDashboard panelAdminGUI;
     
     // DASHBOARD PANELS
     private CustomerDashboard panelCustomerDashboard;
@@ -69,7 +69,7 @@ public class MainFrame extends JFrame implements ActionListener {
         panelCustomerLogin = new CustomerLoginPanel(this);
         panelRestaurantLogin = new RestaurantLoginPanel(this);        
         panelAdminLogin = new AdminLoginPanel(this);
-        panelAdminGUI = new AdminPanelGUI(this);
+        panelAdminGUI = new AdminDashboard(this);
 
         // Instantiate new dashboard panels (passing 'this' MainFrame instance)
         panelRestaurantDashboard = new RestaurantDashboard(this);
