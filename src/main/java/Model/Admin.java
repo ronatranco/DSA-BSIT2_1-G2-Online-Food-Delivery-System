@@ -24,7 +24,6 @@ public class Admin implements ActionListener {
     private String currentView = "OVERVIEW";
 
     public Admin() {
-        // Default constructor
     }
 
     public void setAdminDashboard(AdminDashboard adminDashboard) {
@@ -82,7 +81,6 @@ public class Admin implements ActionListener {
         }
     }
 
-    /** Refreshes current view content */
     public void refreshCurrentView() {
         switch (currentView) {
             case "OVERVIEW":
@@ -101,7 +99,6 @@ public class Admin implements ActionListener {
         JOptionPane.showMessageDialog(adminDashboard, "Content refreshed successfully!", "Refreshed", JOptionPane.INFORMATION_MESSAGE);
     }
 
-    /** Loads overview statistics */
     public void loadOverviewData() {
         String sqlUsers = "SELECT COUNT(*) FROM users";
 
@@ -122,7 +119,6 @@ public class Admin implements ActionListener {
         }
     }
 
-    /** Loads all users into the table */
     public void loadUsersFromDatabase() {
         String[] columns = {"ID", "Full Name", "Username", "Email", "Role", "Phone"};
         adminDashboard.getTableModel().setColumnIdentifiers(columns);
@@ -151,7 +147,6 @@ public class Admin implements ActionListener {
         }
     }
 
-    /** Loads restaurant accounts */
     public void loadRestaurantsFromDatabase() {
         String[] columns = {"ID", "Restaurant Name", "Username", "Email", "Phone", "Address"};
         adminDashboard.getTableModel().setColumnIdentifiers(columns);
@@ -180,19 +175,16 @@ public class Admin implements ActionListener {
         }
     }
 
-    /** Loads customer live orders */
     public void loadOrdersFromDatabase() {
         String[] columns = {"Order ID", "Customer Name", "Restaurant", "Items", "Total Amount", "Status"};
         adminDashboard.getTableModel().setColumnIdentifiers(columns);
         adminDashboard.getTableModel().setRowCount(0);
 
-        // Sample live order rows representation
         adminDashboard.getTableModel().addRow(new Object[]{101, "customer1", "Panda Bistro", "Blueberry Cheesecake x2", "₱450.00", "Out for Delivery"});
         adminDashboard.getTableModel().addRow(new Object[]{102, "customer2", "Milktea House", "Wintermelon Milk Tea", "₱180.00", "Preparing"});
         adminDashboard.getTableModel().addRow(new Object[]{103, "customer3", "Burger Joint", "Cheeseburger Meal", "₱250.00", "Delivered"});
     }
 
-    /** Deletes selected record with validation check */
     public void deleteSelectedRecord() {
         int selectedRow = adminDashboard.getDataTable().getSelectedRow();
         if (selectedRow == -1) {
@@ -200,7 +192,6 @@ public class Admin implements ActionListener {
             return;
         }
 
-        // Only allow deletion from database if viewing users or restaurants
         if (currentView.equals("ORDERS")) {
             adminDashboard.getTableModel().removeRow(selectedRow);
             JOptionPane.showMessageDialog(adminDashboard, "Live order removed from view.", "Success", JOptionPane.INFORMATION_MESSAGE);
