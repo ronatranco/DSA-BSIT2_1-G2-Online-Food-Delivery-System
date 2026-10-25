@@ -41,7 +41,6 @@ public class AdminDashboard extends JPanel {
         setLayout(null);
         setBackground(BG_LIGHT);
 
-        // --- SIDEBAR PANEL ---
         JPanel sidebar = new JPanel(null);
         sidebar.setBounds(0, 0, 240, 720);
         sidebar.setBackground(PURPLE_DARK);
@@ -58,11 +57,10 @@ public class AdminDashboard extends JPanel {
         lblRole.setBounds(10, 70, 220, 20);
         sidebar.add(lblRole);
 
-        // Sidebar Navigation Buttons with Emojis
-        btnNavOverview = createSidebarButton("📊 Overview", 140);
-        btnNavUsers = createSidebarButton("👥 Manage Users", 195);
-        btnNavRestaurants = createSidebarButton("🏪 Restaurants", 250);
-        btnNavOrders = createSidebarButton("📦 Live Orders", 305);
+        btnNavOverview = createSidebarButton("Overview", 140);
+        btnNavUsers = createSidebarButton("Manage Users", 195);
+        btnNavRestaurants = createSidebarButton("Restaurants", 250);
+        btnNavOrders = createSidebarButton("Live Orders", 305);
         
         sidebar.add(btnNavOverview);
         sidebar.add(btnNavUsers);
@@ -80,7 +78,6 @@ public class AdminDashboard extends JPanel {
 
         add(sidebar);
 
-        // --- MAIN CONTENT AREA ---
         JPanel contentArea = new JPanel(null);
         contentArea.setBounds(240, 0, 784, 720);
         contentArea.setBackground(BG_LIGHT);
@@ -91,7 +88,6 @@ public class AdminDashboard extends JPanel {
         lblDashboardTitle.setBounds(30, 30, 450, 40);
         contentArea.add(lblDashboardTitle);
 
-        // Metric Cards Container Panel (Overview Mode)
         cardMetricsContainer = new JPanel(null);
         cardMetricsContainer.setBounds(30, 85, 724, 110);
         cardMetricsContainer.setBackground(BG_LIGHT);
@@ -105,7 +101,6 @@ public class AdminDashboard extends JPanel {
         cardMetricsContainer.add(card3);
         contentArea.add(cardMetricsContainer);
 
-        // Action Toolbar (Add User button removed as requested)
         btnDeleteSelectedUser = new JButton("🗑 Delete Selected");
         styleActionButton(btnDeleteSelectedUser, 30, 210, 170, 35);
         contentArea.add(btnDeleteSelectedUser);
@@ -114,7 +109,6 @@ public class AdminDashboard extends JPanel {
         styleActionButton(btnRefreshData, 215, 210, 130, 35);
         contentArea.add(btnRefreshData);
 
-        // Data Table
         String[] columns = {"ID", "Full Name", "Username", "Email", "Role", "Phone"};
         tableModel = new DefaultTableModel(columns, 0);
         dataTable = new JTable(tableModel);
@@ -170,7 +164,6 @@ public class AdminDashboard extends JPanel {
         btn.setCursor(new Cursor(Cursor.HAND_CURSOR));
     }
 
-    // --- GETTERS ---
     public JButton getBtnLogout() { return btnLogout; }
     public JButton getBtnNavOverview() { return btnNavOverview; }
     public JButton getBtnNavUsers() { return btnNavUsers; }
