@@ -1,3 +1,8 @@
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
+ */
+
 package GUI;
 
 import Database.databaseConnection;
@@ -11,6 +16,7 @@ import java.sql.SQLException;
 import javax.swing.*;
 
 /**
+ * @author rownavanana and gideon
  * CLASS FOR LOGICS AND CARDLAYOUT NAVIGATION
  */
 public class MainFrame extends JFrame implements ActionListener {
