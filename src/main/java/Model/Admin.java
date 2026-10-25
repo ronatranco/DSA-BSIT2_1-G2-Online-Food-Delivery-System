@@ -4,47 +4,227 @@
  */
 package Model;
 
-import GUI.AdminLoginPanel;
+import Database.databaseConnection;
+import GUI.AdminDashboard;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import javax.swing.JOptionPane;
+
 /**
- *
- * @author rownavanana
+ * @author rownavanana and gideon
+ * CLASS FOR ADMIN BUSINESS LOGIC & BUTTON FUNCTIONALITY
  */
-public class Admin {
-    private final String VALID_ADMIN_USER = "admin1";
-    private final String VALID_ADMIN_PASS = "admin123";
+public class Admin implements ActionListener {
 
-    public int validateLogin(AdminLoginPanel panel) {
-        String username = panel.txtAdminUser.getText().trim();
-        String password = new String(panel.txtAdminPass.getPassword());
+    private AdminDashboard adminDashboard;
+    private String currentView = "OVERVIEW";
 
-        if (username.isEmpty() || password.isEmpty()) {
-            return 0;
-        }
-
-        if (username.equals(VALID_ADMIN_USER) && password.equals(VALID_ADMIN_PASS)) {
-            return 1;
-        }
-
-        return -1;
+    public Admin() {
+        // Default constructor
     }
 
-    public boolean handleForgotPassword(AdminLoginPanel panel) {
-        String username = panel.txtAdminUser.getText().trim();
-        String password = new String(panel.txtAdminPass.getPassword());
+    public void setAdminDashboard(AdminDashboard adminDashboard) {
+        this.adminDashboard = adminDashboard;
+        registerAdminListeners();
+        loadOverviewData();
+    }
 
-        if (username.isEmpty() && password.isEmpty()) {
-            return false;
-        } else {
-            clearFields(panel);
-            return true;
+    private void registerAdminListeners() {
+        if (adminDashboard != null) {
+            adminDashboard.getBtnNavOverview().addActionListener(this);
+            adminDashboard.getBtnNavUsers().addActionListener(this);
+            adminDashboard.getBtnNavRestaurants().addActionListener(this);
+            adminDashboard.getBtnNavOrders().addActionListener(this);
+            adminDashboard.getBtnDeleteSelectedUser().addActionListener(this);
+            adminDashboard.getBtnRefreshData().addActionListener(this);
         }
     }
 
-    public void clearFields(AdminLoginPanel panel) {
-        panel.txtAdminUser.setText("");
-        panel.txtAdminPass.setText("");
-        if (panel.chkAdminSavePass != null) {
-            panel.chkAdminSavePass.setSelected(false);
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        if (adminDashboard == null) return;
+
+        Object source = e.getSource();
+
+        if (source == adminDashboard.getBtnNavOverview()) {
+            currentView = "OVERVIEW";
+            adminDashboard.getLblDashboardTitle().setText("System Overview");
+            adminDashboard.getCardMetricsContainer().setVisible(true);
+            loadOverviewData();
+        } 
+        else if (source == adminDashboard.getBtnNavUsers()) {
+            currentView = "USERS";
+            adminDashboard.getLblDashboardTitle().setText("Manage Users Accounts");
+            adminDashboard.getCardMetricsContainer().setVisible(false);
+            loadUsersFromDatabase();
+        } 
+        else if (source == adminDashboard.getBtnNavRestaurants()) {
+            currentView = "RESTAURANTS";
+            adminDashboard.getLblDashboardTitle().setText("Restaurant Accounts");
+            adminDashboard.getCardMetricsContainer().setVisible(false);
+            loadRestaurantsFromDatabase();
+        } 
+        else if (source == adminDashboard.getBtnNavOrders()) {
+            currentView = "ORDERS";
+            adminDashboard.getLblDashboardTitle().setText("Customer Live Orders");
+            adminDashboard.getCardMetricsContainer().setVisible(false);
+            loadOrdersFromDatabase();
+        } 
+        else if (source == adminDashboard.getBtnDeleteSelectedUser()) {
+            deleteSelectedRecord();
+        } 
+        else if (source == adminDashboard.getBtnRefreshData()) {
+            refreshCurrentView();
+        }
+    }
+
+    /** Refreshes current view content */
+    public void refreshCurrentView() {
+        switch (currentView) {
+            case "OVERVIEW":
+                loadOverviewData();
+                break;
+            case "USERS":
+                loadUsersFromDatabase();
+                break;
+            case "RESTAURANTS":
+                loadRestaurantsFromDatabase();
+                break;
+            case "ORDERS":
+                loadOrdersFromDatabase();
+                break;
+        }
+        JOptionPane.showMessageDialog(adminDashboard, "Content refreshed successfully!", "Refreshed", JOptionPane.INFORMATION_MESSAGE);
+    }
+
+    /** Loads overview statistics */
+    public void loadOverviewData() {
+        String sqlUsers = "SELECT COUNT(*) FROM users";
+
+        try (Connection con = databaseConnection.getConnection();
+             PreparedStatement ps1 = con.prepareStatement(sqlUsers);
+             ResultSet rs1 = ps1.executeQuery()) {
+
+            if (rs1.next()) {
+                adminDashboard.getLblValUsers().setText(String.valueOf(rs1.getInt(1)));
+            }
+            adminDashboard.getLblValOrders().setText("3");
+            adminDashboard.getLblValRevenue().setText("₱4,250.00");
+
+        } catch (SQLException ex) {
+            adminDashboard.getLblValUsers().setText("0");
+            adminDashboard.getLblValOrders().setText("0");
+            adminDashboard.getLblValRevenue().setText("₱0.00");
+        }
+    }
+
+    /** Loads all users into the table */
+    public void loadUsersFromDatabase() {
+        String[] columns = {"ID", "Full Name", "Username", "Email", "Role", "Phone"};
+        adminDashboard.getTableModel().setColumnIdentifiers(columns);
+        adminDashboard.getTableModel().setRowCount(0);
+
+        String sql = "SELECT id, full_name, username, email, role, phone FROM users";
+
+        try (Connection con = databaseConnection.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+
+            while (rs.next()) {
+                Object[] row = {
+                    rs.getInt("id"),
+                    rs.getString("full_name"),
+                    rs.getString("username"),
+                    rs.getString("email"),
+                    rs.getString("role"),
+                    rs.getString("phone")
+                };
+                adminDashboard.getTableModel().addRow(row);
+            }
+
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(adminDashboard, "Error loading users: " + ex.getMessage(), "Database Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    /** Loads restaurant accounts */
+    public void loadRestaurantsFromDatabase() {
+        String[] columns = {"ID", "Restaurant Name", "Username", "Email", "Phone", "Address"};
+        adminDashboard.getTableModel().setColumnIdentifiers(columns);
+        adminDashboard.getTableModel().setRowCount(0);
+
+        String sql = "SELECT id, full_name, username, email, phone, address FROM users WHERE role = 'restaurant'";
+
+        try (Connection con = databaseConnection.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+
+            while (rs.next()) {
+                Object[] row = {
+                    rs.getInt("id"),
+                    rs.getString("full_name"),
+                    rs.getString("username"),
+                    rs.getString("email"),
+                    rs.getString("phone"),
+                    rs.getString("address")
+                };
+                adminDashboard.getTableModel().addRow(row);
+            }
+
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(adminDashboard, "Error loading restaurants: " + ex.getMessage(), "Database Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    /** Loads customer live orders */
+    public void loadOrdersFromDatabase() {
+        String[] columns = {"Order ID", "Customer Name", "Restaurant", "Items", "Total Amount", "Status"};
+        adminDashboard.getTableModel().setColumnIdentifiers(columns);
+        adminDashboard.getTableModel().setRowCount(0);
+
+        // Sample live order rows representation
+        adminDashboard.getTableModel().addRow(new Object[]{101, "customer1", "Panda Bistro", "Blueberry Cheesecake x2", "₱450.00", "Out for Delivery"});
+        adminDashboard.getTableModel().addRow(new Object[]{102, "customer2", "Milktea House", "Wintermelon Milk Tea", "₱180.00", "Preparing"});
+        adminDashboard.getTableModel().addRow(new Object[]{103, "customer3", "Burger Joint", "Cheeseburger Meal", "₱250.00", "Delivered"});
+    }
+
+    /** Deletes selected record with validation check */
+    public void deleteSelectedRecord() {
+        int selectedRow = adminDashboard.getDataTable().getSelectedRow();
+        if (selectedRow == -1) {
+            JOptionPane.showMessageDialog(adminDashboard, "Please select an item from the table first before deleting!", "Selection Required", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        // Only allow deletion from database if viewing users or restaurants
+        if (currentView.equals("ORDERS")) {
+            adminDashboard.getTableModel().removeRow(selectedRow);
+            JOptionPane.showMessageDialog(adminDashboard, "Live order removed from view.", "Success", JOptionPane.INFORMATION_MESSAGE);
+            return;
+        }
+
+        int id = Integer.parseInt(adminDashboard.getTableModel().getValueAt(selectedRow, 0).toString());
+
+        int confirm = JOptionPane.showConfirmDialog(adminDashboard, "Are you sure you want to delete account ID " + id + "?", "Confirm Delete", JOptionPane.YES_NO_OPTION);
+        if (confirm != JOptionPane.YES_OPTION) return;
+
+        String sql = "DELETE FROM users WHERE id = ?";
+
+        try (Connection con = databaseConnection.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+
+            ps.setInt(1, id);
+            ps.executeUpdate();
+
+            adminDashboard.getTableModel().removeRow(selectedRow);
+            JOptionPane.showMessageDialog(adminDashboard, "Record deleted successfully from database.", "Success", JOptionPane.INFORMATION_MESSAGE);
+
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(adminDashboard, "Error deleting record: " + ex.getMessage(), "Database Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 }
