@@ -52,7 +52,19 @@ public class Customer implements ActionListener, MouseListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        // --- BUTTON CART ---
+        // == NAME DASHBOARD == 
+        if (e.getSource() == view.getPnlRightProfile().getBtnSaveInfo() || 
+            e.getSource() == view.getPnlRightProfile().getTxtFieldName1() ||
+            e.getSource() == view.getPnlRightProfile().getTxtFullAdd()) { 
+            String name = view.getPnlRightProfile().getName(); 
+            String address = view.getPnlRightProfile().getAddress();
+            if (name.isEmpty()) {
+                view.getLblName().setText("Hello, User!");
+            } else {
+                view.getLblName().setText("Hello, " + name + "!");
+            }
+        }
+        // == BUTTON CART ==
         if (e.getSource() == view.getBtnNavCart()) {
             closeAllSidebarsExcept("cart");
             if (!isCartVisible) {
@@ -62,7 +74,7 @@ public class Customer implements ActionListener, MouseListener {
                 view.getPnlRightCart().animateClose();
                 isCartVisible = false;
             }
-        } // --- BUTTON PROFILE ---
+        } // == BUTTON PROFILE ==
         else if (e.getSource() == view.getBtnNavProfile()) {
             closeAllSidebarsExcept("profile");
             if (!isProfileVisible) {
@@ -74,7 +86,7 @@ public class Customer implements ActionListener, MouseListener {
                 collapseSidebar();
                 view.getPnlRightProfile().animateClose();
             }
-        } // --- BUTTON TRACK ORDER ---
+        } // == BUTTON TRACK ORDER ==
         else if (e.getSource() == view.getBtnNavTrack()) {
             closeAllSidebarsExcept("track");
             if (!isTrackOrderVisible) {
@@ -86,7 +98,7 @@ public class Customer implements ActionListener, MouseListener {
                 collapseSidebar();
                 view.getPnlRightTrackOrder().animateClose();
             }
-        } // --- BUTTON HISTORY ---
+        } // == BUTTON HISTORY ==
         else if (e.getSource() == view.getBtnNavHistory()) {
             closeAllSidebarsExcept("history");
             if (!isHistoryVisible) {
@@ -98,7 +110,7 @@ public class Customer implements ActionListener, MouseListener {
                 collapseSidebar();
                 view.getPnlRightHistory().animateClose();
             }
-        } // --- SUBPANEL & BUTTON LISTENERS ---
+        } // == SUBPANEL & BUTTON LISTENERS ==
         else if (e.getSource() == view.getPnlRightCart().getCloseButton()) {
             view.getPnlRightCart().animateClose();
             isCartVisible = false;
@@ -117,7 +129,7 @@ public class Customer implements ActionListener, MouseListener {
             view.getTxtSearchBar().setText("What are you craving today?");
             view.getTxtSearchBar().setForeground(new Color(120, 120, 120));
             showAllRestaurants(view.getPnlRestoCard(), true);
-        } // --- NAVIGATION ---
+        } // == NAVIGATION ==
         else if (e.getSource() == view.getBtnNavLogoPanda()) {
             System.out.println("Routing: Logo action triggered.");
         } else if (e.getSource() == view.getBtnNavHome()) {

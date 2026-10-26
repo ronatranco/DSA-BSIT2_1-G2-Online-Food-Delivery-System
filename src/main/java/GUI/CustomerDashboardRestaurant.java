@@ -34,6 +34,28 @@ public class CustomerDashboardRestaurant extends JPanel {
         topBannerQuote.setLayout(null);
         topBannerQuote.setBounds(110, 135, 865, 120);
         add(topBannerQuote);
+        topBannerQuote.setBorder(BorderFactory.createLineBorder(YELLOW_ACCENT, 2));
+        add(topBannerQuote);
+        java.awt.Image bannerImg = new ImageIcon("src/main/java/gui/images/cdrestaurantbanner.png").getImage()
+                                                 .getScaledInstance(480, 76, java.awt.Image.SCALE_SMOOTH);
+        JLabel lblBannerImage = new JLabel(new ImageIcon(bannerImg));
+        lblBannerImage.setBounds(350, 27, 480, 76);
+        topBannerQuote.add(lblBannerImage);
+        JLabel lblText = new JLabel("<html><div style='text-align: left;'>YOUR HOT DELIVERY ON<br>HIGH-SPEED PRIORITY!</div></html>");
+        lblText.setBounds(40, 15, 360, 70); 
+        lblText.setForeground(YELLOW_ACCENT);
+        lblText.setFont(new Font("Arial", Font.BOLD, 23)); 
+        topBannerQuote.add(lblText);
+        topBannerQuote.setComponentZOrder(lblText, 0); 
+        topBannerQuote.setComponentZOrder(lblBannerImage, 1);
+        
+        JLabel lblsubText = new JLabel("Order Now >");
+        lblsubText.setBounds(40, 80, 390, 30);
+        lblsubText.setForeground(Color.WHITE);
+        lblsubText.setFont(new Font("Arial", Font.BOLD, 13));
+        topBannerQuote.add(lblsubText);
+        topBannerQuote.setComponentZOrder(lblsubText, 0); 
+        topBannerQuote.setComponentZOrder(lblBannerImage, 1);
         
         // == SCROLL ==
         scrollContentPanel = new JPanel();
