@@ -18,7 +18,7 @@ public class CustomerDashboardProfile extends JPanel {
     private Font REGULAR_FONT = new Font("Segoe UI", Font.PLAIN, 14);
     private Font HEADER_FONT  = new Font("Segoe UI", Font.BOLD, 26);
 
-    private JTextField txtFirstName, txtFullName, txtFullAdd, txtNumber, txtEmail, txtCPw, txtNPw;
+    private JTextField txtName1, txtName2, txtFullAdd, txtNumber, txtEmail, txtCPw, txtNPw;
     private JButton btnSaveInfo, btnSaveEmail, btnSavePassword, btnDelAcc;
     private JScrollPane scrollPane;
     
@@ -48,12 +48,12 @@ public class CustomerDashboardProfile extends JPanel {
         // FIRST NAME FIELD
         pnlOutlineField pnlFirstName = new pnlOutlineField("First Name");
         pnlFirstName.setBounds(85, 130, 300, 55);
-        txtFirstName = pnlFirstName.getTextField();
+        txtName1 = pnlFirstName.getTextField();
         pnlMainProfile.add(pnlFirstName);
         // LAST NAME FIELD
         pnlOutlineField pnlFullName = new pnlOutlineField("Last Name");
         pnlFullName.setBounds(402, 130, 300, 55);
-        txtFullName = pnlFullName.getTextField();
+        txtName2 = pnlFullName.getTextField();
         pnlMainProfile.add(pnlFullName);
         // ADDRESS FIELD
         pnlOutlineField pnlAddress = new pnlOutlineField("Full Address");
@@ -181,14 +181,20 @@ public class CustomerDashboardProfile extends JPanel {
     public void animateClose() {
         setBounds(1024, 0, 824, 720); 
     }
-    public String getFirstNameText() { 
-        return txtFirstName.getText().trim();
-    }
-    public JTextField getTxtFirstName() { 
-        return txtFirstName;
-    }   
+    public String getName() {
+            return txtName1.getText().trim();
+    }   public JTextField getTxtFieldName1() { 
+            return txtName1;
+    }   public JTextField getTxtFieldName2() { 
+            return txtName2;
+    }   public String getAddress() { 
+            return txtFullAdd.getText().trim();
+    }   public JTextField getTxtFullAdd() { 
+            return txtFullAdd;
+    } 
     public void addProfileActions(ActionListener listener) {
-        txtFirstName.addActionListener(listener); 
+        txtName1.addActionListener(listener); 
+        txtFullAdd.addActionListener(listener);
         btnSaveInfo.addActionListener(listener); 
         btnSaveEmail.addActionListener(listener); 
         btnSavePassword.addActionListener(listener); 

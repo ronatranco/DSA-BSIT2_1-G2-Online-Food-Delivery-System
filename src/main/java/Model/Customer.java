@@ -52,14 +52,16 @@ public class Customer implements ActionListener, MouseListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        // == UPDATES NAME IN DASHBOARD == 
+        // == NAME DASHBOARD == 
         if (e.getSource() == view.getPnlRightProfile().getBtnSaveInfo() || 
-            e.getSource() == view.getPnlRightProfile().getTxtFirstName()) {
-            String firstName = view.getPnlRightProfile().getFirstNameText();
-            if (firstName.isEmpty()) {
+            e.getSource() == view.getPnlRightProfile().getTxtFieldName1() ||
+            e.getSource() == view.getPnlRightProfile().getTxtFullAdd()) { 
+            String name = view.getPnlRightProfile().getName(); 
+            String address = view.getPnlRightProfile().getAddress();
+            if (name.isEmpty()) {
                 view.getLblName().setText("Hello, User!");
             } else {
-                view.getLblName().setText("Hello, " + firstName + "!");
+                view.getLblName().setText("Hello, " + name + "!");
             }
         }
         // == BUTTON CART ==

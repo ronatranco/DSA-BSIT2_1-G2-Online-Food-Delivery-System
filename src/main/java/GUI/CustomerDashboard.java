@@ -21,11 +21,14 @@ public class CustomerDashboard extends JPanel {
     private Color COLOR_WHITE = new Color(255, 255, 255);
     private Color COLOR_MUTED = new Color(120, 120, 120);
 
-    private JPanel pnlMainBg, leftBannerNav, pnlsearchBar;
-    private JButton btnNavLogoPanda, btnNavHome, btnNavTrack, btnNavCart, btnNavHistory, btnNavProfile, btnNavExit;
+    private JPanel pnlMainBg, leftBannerNav, pnlsearchBar, pnlLocationBanner, pnlExpandedLocation;
+    private JButton btnExpandLocation, btnNavLogoPanda, btnNavHome, btnNavTrack, btnNavCart, btnNavHistory, btnNavProfile, btnNavExit;
     private JTextField txtSearchBar;
-    private JLabel lblLogoPanda, lblName, lblHome, lblTrack, lblCart, lblHistory, lblProfile, lblExit, lblSearchIcon, lblDateRn;
-
+    private JLabel lblPlaceholder, lblLocationText, lblLogoPanda, lblName, lblHome, lblTrack, lblCart, lblHistory, lblProfile, lblExit, lblSearchIcon, lblDateRn;
+    private Timer slideTimer;
+    private int bannerTargetX = 530; 
+    private int bannerCurrentX = 110;
+ 
     private CustomerDashboardRestaurant pnlRestoCard;
     private CustomerDashboardRestaurantMenus pnlMenuMcDollibee; 
     private CustomerDashboardRestaurantMenus pnlMenuBrainCells;  
@@ -91,6 +94,108 @@ public class CustomerDashboard extends JPanel {
         txtSearchBar.setBounds(40, 3, 375, 31);
         pnlsearchBar.add(txtSearchBar);
         pnlMainBg.add(pnlsearchBar);
+        
+        // LOCATION 
+        pnlLocationBanner = new JPanel();
+        pnlLocationBanner.setLayout(null);
+        pnlLocationBanner.setBackground(YELLOW_ACCENT);
+        pnlLocationBanner.setBounds(530, 80, 0, 35);
+        lblLocationText = new JLabel("Your Location", SwingConstants.CENTER);
+        lblLocationText.setFont(new Font("Segoe UI", Font.BOLD, 14));
+        lblLocationText.setForeground(PURPLE_DARK);
+        lblLocationText.setBounds(6, 0, 120, 35); 
+        pnlLocationBanner.add(lblLocationText);
+        // == BUTTON FOR EXPANDER ==
+        btnExpandLocation = new JButton(">");
+        btnExpandLocation.setFont(new Font("Segoe UI", Font.BOLD, 15));
+        btnExpandLocation.setForeground(PURPLE_DARK);
+        btnExpandLocation.setBounds(101, 3, 50, 25);
+        btnExpandLocation.setContentAreaFilled(false);
+        btnExpandLocation.setBorderPainted(false);
+        btnExpandLocation.setFocusPainted(false);
+        btnExpandLocation.setFocusable(true);
+        btnExpandLocation.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        pnlLocationBanner.add(btnExpandLocation);
+        pnlMainBg.add(pnlLocationBanner);
+        // == EXPAND LOCATION PANEL ==
+        pnlExpandedLocation = new JPanel();
+        pnlExpandedLocation.setLayout(null);
+        pnlExpandedLocation.setBackground(COLOR_WHITE);
+        pnlExpandedLocation.setBounds(675, 80, 300, 35); 
+        pnlExpandedLocation.setVisible(false); 
+        // == DROP DOWN LOCATION ==
+        JButton btnLocationDropDown = new JButton("▼");
+        btnLocationDropDown.setFont(new Font("Segoe UI", Font.PLAIN, 12));
+        btnLocationDropDown.setForeground(PURPLE_DARK);
+        btnLocationDropDown.setBounds(230, 5, 45, 25); 
+        btnLocationDropDown.setContentAreaFilled(false);
+        btnLocationDropDown.setBorderPainted(false);
+        btnLocationDropDown.setFocusPainted(false);
+        btnLocationDropDown.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        btnLocationDropDown.addActionListener(new java.awt.event.ActionListener() {
+            @Override
+            public void actionPerformed(java.awt.event.ActionEvent e) {
+                JPopupMenu dropdownMenu = new JPopupMenu();
+                
+                JMenuItem item1 = new JMenuItem("Location A");
+                JMenuItem item2 = new JMenuItem("Location B");
+                JMenuItem item3 = new JMenuItem("Location C");
+                
+                java.awt.event.ActionListener menuListener = new java.awt.event.ActionListener() {
+                    @Override
+                    public void actionPerformed(java.awt.event.ActionEvent ev) {
+                        lblPlaceholder.setText(ev.getActionCommand());
+                    }
+                };
+                item1.addActionListener(menuListener);
+                item2.addActionListener(menuListener);
+                item3.addActionListener(menuListener);
+                dropdownMenu.add(item1);
+                dropdownMenu.add(item2);
+                dropdownMenu.add(item3);
+                dropdownMenu.pack(); 
+                int pixelBuffer = 35;
+                int xOffset = btnLocationDropDown.getWidth() - dropdownMenu.getPreferredSize().width - pixelBuffer;
+                dropdownMenu.show(btnLocationDropDown, xOffset, btnLocationDropDown.getHeight());
+            }
+        });
+        
+        pnlExpandedLocation.add(btnLocationDropDown);
+        pnlMainBg.add(pnlExpandedLocation);
+        btnExpandLocation.addActionListener(new java.awt.event.ActionListener() {
+            @Override
+            public void actionPerformed(java.awt.event.ActionEvent e) {
+                // Toggles hidden panel visibility state
+                boolean isCurrentlyVisible = pnlExpandedLocation.isVisible();
+                pnlExpandedLocation.setVisible(!isCurrentlyVisible);
+            }
+        });
+        Timer slideOutTimer = new Timer(10, new java.awt.event.ActionListener() {
+        @Override
+            public void actionPerformed(java.awt.event.ActionEvent e) {
+                int currentW = pnlLocationBanner.getWidth();
+                if (currentW < 145) {
+                    pnlLocationBanner.setSize(Math.min(145, currentW + 15), 35);
+                    pnlMainBg.repaint();
+            }   else {
+                    ((Timer)e.getSource()).stop();
+        }
+    }
+});     Timer slideInTimer = new Timer(10, new java.awt.event.ActionListener() {
+        @Override
+            public void actionPerformed(java.awt.event.ActionEvent e) {
+                int currentW = pnlLocationBanner.getWidth();
+                if (currentW > 0) {
+                    pnlLocationBanner.setSize(Math.max(0, currentW - 15), 35);
+                    pnlMainBg.repaint();
+                    // Close expanded panel safely if search bar closes/loses focus
+                    pnlExpandedLocation.setVisible(false);
+                    btnExpandLocation.setText(">");
+            }   else {
+                    ((Timer)e.getSource()).stop();
+        }
+    }
+});
 
         // FOR DATE
         LocalDate today = LocalDate.now();
@@ -303,6 +408,8 @@ public class CustomerDashboard extends JPanel {
                     txtSearchBar.setText("");
                     txtSearchBar.setForeground(TEXT_DARK);
                 }
+                    slideInTimer.stop();  
+                    slideOutTimer.start();
             }
 
             @Override
@@ -311,31 +418,39 @@ public class CustomerDashboard extends JPanel {
                     txtSearchBar.setText("What are you craving today?");
                     txtSearchBar.setForeground(COLOR_MUTED);
                 }
+                 Component opposite = e.getOppositeComponent();
+                if (opposite == btnExpandLocation || opposite == pnlExpandedLocation) {
+                    return; 
+                }
+                    slideOutTimer.stop(); 
+                    slideInTimer.start();
             }
-        }); txtSearchBar.addActionListener(new java.awt.event.ActionListener() {
+        });
+        txtSearchBar.addActionListener(new java.awt.event.ActionListener() {
             @Override
             public void actionPerformed(java.awt.event.ActionEvent e) {
                 String text = txtSearchBar.getText().trim();
                 if (text.isEmpty() || text.equals("What are you craving today?")) {
                     txtSearchBar.setText("What are you craving today?");
                     txtSearchBar.setForeground(COLOR_MUTED);
-                }
-                controller.searchRestaurants(txtSearchBar.getText());
-                pnlMainBg.requestFocusInWindow();
+                }   controller.searchRestaurants(txtSearchBar.getText());
+                    pnlMainBg.requestFocusInWindow();
             }
         });
         // == LAYER ORDER == 
-        pnlMainBg.setComponentZOrder(leftBannerNav, 0);         // Left Nav Panel
-        pnlMainBg.setComponentZOrder(pnlRightCart, 1);          // Order Summary Panel 
-        pnlMainBg.setComponentZOrder(pnlMenuMcDollibee, 2);     // Resto Menu 1
-        pnlMainBg.setComponentZOrder(pnlMenuBrainCells, 3);     // Resto Menu 2
-        pnlMainBg.setComponentZOrder(pnlMenuMangPinaasa, 4);    // Resto Menu 3
-        pnlMainBg.setComponentZOrder(pnlRightProfile, 5);       // Profile Screen Panel
-        pnlMainBg.setComponentZOrder(pnlRightTrackOrder, 6);    // Track Order Screen
-        pnlMainBg.setComponentZOrder(pnlRightHistory, 7);       // History Panel
-        pnlMainBg.setComponentZOrder(pnlsearchBar, 8);          // Search Input Box Container
-        pnlMainBg.setComponentZOrder(lblDateRn, 9);             // Live Date Header Label
-        pnlMainBg.setComponentZOrder(pnlRestoCard, 10);         // Bottom Layer
+        pnlMainBg.setComponentZOrder(leftBannerNav, 0);       // Left Nav Panel
+        pnlMainBg.setComponentZOrder(pnlRightCart, 1);         // Order Summary Panel 
+        pnlMainBg.setComponentZOrder(pnlMenuMcDollibee, 2);
+        pnlMainBg.setComponentZOrder(pnlMenuBrainCells, 3); 
+        pnlMainBg.setComponentZOrder(pnlMenuMangPinaasa, 4);
+        pnlMainBg.setComponentZOrder(pnlRightProfile, 5);      // Profile Screen Panel
+        pnlMainBg.setComponentZOrder(pnlRightTrackOrder, 6);   // Track Order Screen
+        pnlMainBg.setComponentZOrder(pnlRightHistory, 7);      // History Panel
+        pnlMainBg.setComponentZOrder(pnlsearchBar, 8);         // Search Input Box Container
+        pnlMainBg.setComponentZOrder(pnlExpandedLocation, 9);   // Location Expander
+        pnlMainBg.setComponentZOrder(pnlLocationBanner, 10);    // Location Banner
+        pnlMainBg.setComponentZOrder(lblDateRn, 11);            // Live Date Header Label
+        pnlMainBg.setComponentZOrder(pnlRestoCard, 12);         // Bottom Layer
         pnlMainBg.revalidate();
         pnlMainBg.repaint();
     }
