@@ -6,6 +6,7 @@
 package GUI;
 
 import Database.databaseConnection;
+import Database.UserAuthentication;
 import Model.Admin;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -16,7 +17,7 @@ import java.sql.SQLException;
 import javax.swing.*;
 
 /**
- * @author rownavanana and gideon
+ * @author rownavanana and calalang
  * CLASS FOR LOGICS AND CARDLAYOUT NAVIGATION
  */
 public class MainFrame extends JFrame implements ActionListener {
@@ -29,25 +30,26 @@ public class MainFrame extends JFrame implements ActionListener {
     private RoleSelectionPanel panelRoleSelection;
     private SignupPanel panelSignup;
     private CustomerLoginPanel panelCustomerLogin;
-    private RestaurantLoginPanel panelRestaurantLogin;    
+    private RestaurantLoginPanel panelRestaurantLogin;
     private AdminLoginPanel panelAdminLogin;
     private AdminDashboard panelAdminGUI;
-    
+
     // DASHBOARD PANELS
     private CustomerDashboard panelCustomerDashboard;
     private RestaurantDashboard panelRestaurantDashboard;
-
+    private final UserAuthentication userAuth;
     private Admin adminLogic;
 
     public MainFrame() {
+        userAuth = new UserAuthentication();
         setTitle("GrabPanda Food Delivery");
         setSize(1024, 720);
-        
+
         setLayout(new BorderLayout());
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
         setResizable(false);
-        
+
         adminLogic = new Admin();
 
         cardLayout = new CardLayout();
@@ -60,7 +62,7 @@ public class MainFrame extends JFrame implements ActionListener {
         panelRoleSelection = new RoleSelectionPanel(this);
         panelSignup = new SignupPanel(this);
         panelCustomerLogin = new CustomerLoginPanel(this);
-        panelRestaurantLogin = new RestaurantLoginPanel(this);        
+        panelRestaurantLogin = new RestaurantLoginPanel(this);
         panelAdminLogin = new AdminLoginPanel(this);
         panelAdminGUI = new AdminDashboard(this);
 
@@ -77,7 +79,7 @@ public class MainFrame extends JFrame implements ActionListener {
         mainContainer.add(panelRestaurantLogin, "RESTAURANT_LOGIN");
         mainContainer.add(panelAdminLogin, "ADMIN_LOGIN");
         mainContainer.add(panelAdminGUI, "ADMIN_DASHBOARD");
-        
+
         // Add customer and restaurant dashboards
         mainContainer.add(panelCustomerDashboard, "CUSTOMER_DASHBOARD");
         mainContainer.add(panelRestaurantDashboard, "RESTAURANT_DASHBOARD");
@@ -131,7 +133,7 @@ public class MainFrame extends JFrame implements ActionListener {
         if (panelRestaurantDashboard.getBtnLogout() != null) {
             panelRestaurantDashboard.getBtnLogout().addActionListener(this);
         }
-    } 
+    }
 
     public void showCard(String cardName) {
         cardLayout.show(mainContainer, cardName);
@@ -148,10 +150,10 @@ public class MainFrame extends JFrame implements ActionListener {
         // 1. START & AUTH PANEL NAVIGATION
         if (source == panelStart.btnStart) {
             showCard("AUTH");
-        } 
+        }
         else if (source == panelAuth.btnNavLogin) {
             showCard("ROLE_SELECTION");
-        } 
+        }
         else if (source == panelAuth.btnNavRegister) {
             showCard("SIGNUP");
         }
@@ -159,13 +161,13 @@ public class MainFrame extends JFrame implements ActionListener {
         // 2. ROLE SELECTION NAVIGATION
         else if (source == panelRoleSelection.btnRoleCustomer) {
             showCard("CUSTOMER_LOGIN");
-        } 
+        }
         else if (source == panelRoleSelection.btnRoleRestaurant) {
             showCard("RESTAURANT_LOGIN");
-        } 
+        }
         else if (source == panelRoleSelection.btnRoleAdmin) {
             showCard("ADMIN_LOGIN");
-        } 
+        }
         else if (source == panelRoleSelection.btnRoleBack) {
             showCard("AUTH");
         }
@@ -182,8 +184,8 @@ public class MainFrame extends JFrame implements ActionListener {
         }
 
         // 4. GO BACK BUTTONS
-        else if (source == panelCustomerLogin.btnCustomerLoginBack || 
-                 source == panelRestaurantLogin.btnRestaurantLoginBack || 
+        else if (source == panelCustomerLogin.btnCustomerLoginBack ||
+                 source == panelRestaurantLogin.btnRestaurantLoginBack ||
                  source == panelAdminLogin.btnAdminLoginBack) {
             showCard("ROLE_SELECTION");
         }
@@ -222,7 +224,7 @@ public class MainFrame extends JFrame implements ActionListener {
             }
         }
 
-        // 7. FORGOT PASSWORD - ADMIN 
+        // 7. FORGOT PASSWORD - ADMIN
         else if (source == panelAdminLogin.btnAdminForgotPassword) {
             String user = panelAdminLogin.txtAdminUser.getText().trim();
             String pass = new String(panelAdminLogin.txtAdminPass.getPassword());
@@ -239,49 +241,81 @@ public class MainFrame extends JFrame implements ActionListener {
             }
         }
 
-        // 8. CUSTOMER LOGIN -> PROCEEDS TO CUSTOMER_DASHBOARD AUTOMATICALLY
+        // 8. CUSTOMER LOGIN (checks the database)
         else if (source == panelCustomerLogin.btnCustomerLogin) {
-            panelCustomerLogin.txtLoginEmailOrUser.setText("");
-            panelCustomerLogin.txtLoginPassword.setText("");
-            if (panelCustomerLogin.chkLoginSavePassword != null) {
-                panelCustomerLogin.chkLoginSavePassword.setSelected(false);
+            String identifier = panelCustomerLogin.txtLoginEmailOrUser.getText().trim();
+            String password = new String(panelCustomerLogin.txtLoginPassword.getPassword());
+
+            if (authenticate(identifier, password, "customer")) {
+                panelCustomerLogin.txtLoginEmailOrUser.setText("");
+                panelCustomerLogin.txtLoginPassword.setText("");
+                if (panelCustomerLogin.chkLoginSavePassword != null) {
+                    panelCustomerLogin.chkLoginSavePassword.setSelected(false);
+                }
+                showCard("CUSTOMER_DASHBOARD");
             }
-            showCard("CUSTOMER_DASHBOARD");
         }
 
-        // 9. RESTAURANT LOGIN -> PROCEEDS TO RESTAURANT_DASHBOARD AUTOMATICALLY
+        // 9. RESTAURANT LOGIN (checks the database)
         else if (source == panelRestaurantLogin.btnRestaurantLogin) {
-            panelRestaurantLogin.txtRestaurantUser.setText("");
-            panelRestaurantLogin.txtRestaurantPass.setText("");
-            if (panelRestaurantLogin.chkRestaurantSavePass != null) {
-                panelRestaurantLogin.chkRestaurantSavePass.setSelected(false);
+            String identifier = panelRestaurantLogin.txtRestaurantUser.getText().trim();
+            String password = new String(panelRestaurantLogin.txtRestaurantPass.getPassword());
+
+            if (authenticate(identifier, password, "restaurant")) {
+                panelRestaurantLogin.txtRestaurantUser.setText("");
+                panelRestaurantLogin.txtRestaurantPass.setText("");
+                if (panelRestaurantLogin.chkRestaurantSavePass != null) {
+                    panelRestaurantLogin.chkRestaurantSavePass.setSelected(false);
+                }
+                showCard("RESTAURANT_DASHBOARD");
             }
-            showCard("RESTAURANT_DASHBOARD");
         }
 
-        // 10. ADMIN LOGIN -> PROCEEDS TO ADMIN_DASHBOARD AUTOMATICALLY
+        // 10. ADMIN LOGIN (checks the database)
         else if (source == panelAdminLogin.btnAdminLogin) {
-            panelAdminLogin.txtAdminUser.setText("");
-            panelAdminLogin.txtAdminPass.setText("");
-            if (panelAdminLogin.chkAdminSavePass != null) {
-                panelAdminLogin.chkAdminSavePass.setSelected(false);
+            String username = panelAdminLogin.txtAdminUser.getText().trim();
+            String password = new String(panelAdminLogin.txtAdminPass.getPassword());
+
+            if (authenticate(username, password, "admin")) {
+                panelAdminLogin.txtAdminUser.setText("");
+                panelAdminLogin.txtAdminPass.setText("");
+                if (panelAdminLogin.chkAdminSavePass != null) {
+                    panelAdminLogin.chkAdminSavePass.setSelected(false);
+                }
+                showCard("ADMIN_DASHBOARD");
             }
-            showCard("ADMIN_DASHBOARD");
         }
 
         // 11. LOGOUT ACTIONS FROM ANY DASHBOARD (RETURNS TO ROLE SELECTION)
-        else if ((panelAdminGUI.getBtnLogout() != null && source == panelAdminGUI.getBtnLogout()) || 
-                 (panelCustomerDashboard.getBtnLogout() != null && source == panelCustomerDashboard.getBtnLogout()) || 
+        else if ((panelAdminGUI.getBtnLogout() != null && source == panelAdminGUI.getBtnLogout()) ||
+                 (panelCustomerDashboard.getBtnLogout() != null && source == panelCustomerDashboard.getBtnLogout()) ||
                  (panelRestaurantDashboard.getBtnLogout() != null && source == panelRestaurantDashboard.getBtnLogout())) {
             showCard("ROLE_SELECTION");
         }
+    }
 
-        
+    /** Checks the database. Shows an error dialog and returns false on failure. */
+    private boolean authenticate(String login, String password, String role) {
+        if (login.isEmpty() || password.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Please input a valid username and password!",
+                    "Input Error", JOptionPane.ERROR_MESSAGE);
+            return false;
+        }
+        try {
+            if (userAuth.authenticate(login, password, role)) {
+                return true;
+            }
+            JOptionPane.showMessageDialog(this, "Invalid Username or Password!",
+                    "Login Failed", JOptionPane.ERROR_MESSAGE);
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(this, "Database error: " + ex.getMessage());
+        }
+        return false;
     }
 
     /** Validates the signup form and inserts the new user into the database. */
     private void registerUser() {
-        String name   = panelSignup.txtName.getText().trim();
+        String name     = panelSignup.txtName.getText().trim();
         String username = panelSignup.txtUsername.getText().trim();
         String email    = panelSignup.txtEmail.getText().trim();
         String phone    = panelSignup.txtPhone.getText().trim();
