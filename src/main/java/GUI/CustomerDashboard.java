@@ -5,6 +5,7 @@
 package GUI;
 
 import Model.Customer;
+import Model.Order;
 import java.awt.*;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -99,6 +100,17 @@ public class CustomerDashboard extends JPanel {
         pnlsearchBar.add(txtSearchBar);
         pnlMainBg.add(pnlsearchBar);
         
+         // FOR DATE
+        LocalDate today = LocalDate.now();
+        DateTimeFormatter format = DateTimeFormatter.ofPattern("MMMM d, yyyy" + " |");
+        String formattedDate = today.format(format);
+
+        lblDateRn = new JLabel(formattedDate, SwingConstants.RIGHT);
+        lblDateRn.setFont(new Font("Segoe UI", Font.BOLD, 18));
+        lblDateRn.setForeground(PURPLE_DARK);
+        lblDateRn.setBounds(794, 38, 180, 35);
+        pnlMainBg.add(lblDateRn);
+
         // LOCATION 
         pnlLocationBanner = new JPanel();
         pnlLocationBanner.setLayout(null);
@@ -201,11 +213,7 @@ public class CustomerDashboard extends JPanel {
     }
 });
 
-        // FOR DATE
-        LocalDate today = LocalDate.now();
-        DateTimeFormatter format = DateTimeFormatter.ofPattern("MMMM d, yyyy" + " |");
-        String formattedDate = today.format(format);
-
+        
         lblDateRn = new JLabel(formattedDate, SwingConstants.RIGHT);
         lblDateRn.setFont(new Font("Segoe UI", Font.BOLD, 18));
         lblDateRn.setForeground(PURPLE_DARK);
@@ -470,6 +478,9 @@ public class CustomerDashboard extends JPanel {
             return lblProfile;
     }   public JLabel getLblExit() {
             return lblExit;
+    }
+        public JLabel getLblDateRn() {
+            return lblDateRn;
     }   public JPanel getLeftBannerNav() {
             return leftBannerNav;
     }   public JPanel getSearchBarContainer() {

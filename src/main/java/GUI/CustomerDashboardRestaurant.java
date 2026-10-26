@@ -191,8 +191,6 @@ public class CustomerDashboardRestaurant extends JPanel {
         lblRestoImage4.setBounds(756, 45, 230, 150); 
         scrollContentPanel.add(lblRestoImage4);
         scrollContentPanel.setComponentZOrder(lblRestoImage4, 0);
-        scrollContentPanel.revalidate();
-        scrollContentPanel.repaint();
 
         lblRestoName4 = new JLabel("Kamote Korner", SwingConstants.CENTER);
         lblRestoName4.setFont(new Font("Segoe UI", Font.BOLD, 18));

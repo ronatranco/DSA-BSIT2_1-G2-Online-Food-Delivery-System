@@ -326,13 +326,42 @@ public class CustomerDashboardRestaurantMenus extends JPanel {
         lblPrice.setForeground(PURPLE_DARK);
         pnlPrice.add(lblPrice, BorderLayout.CENTER);
         foodCard.add(pnlPrice);
+        
         // BUTTON
         JLabel btnAdd = new JLabel("ADD TO ORDER", SwingConstants.RIGHT);
         btnAdd.setFont(new Font("Segoe UI", Font.BOLD, 12));
         btnAdd.setForeground(YELLOW_ACCENT2);
         btnAdd.setBounds(240, 110, 145, 20);
         btnAdd.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        
+        // == ADD TO CART LISTENER ==
+        btnAdd.addMouseListener(new java.awt.event.MouseAdapter() {
+            @Override
+            public void mouseClicked(java.awt.event.MouseEvent e) {
+                // Prevent adding unavailable items or items without a valid price
+                String cleanPrice = priceText.replace("₱", "").trim();
+                if (foodName.equalsIgnoreCase("Unavailable") || cleanPrice.isEmpty()) {
+                    return;
+                }
+
+                Container root = getParent();
+                while (root != null && !(root instanceof CustomerDashboard)) {
+                    root = root.getParent();
+                }
+                if (root instanceof CustomerDashboard) {
+                    CustomerDashboard dashboard = (CustomerDashboard) root;
+                    CustomerDashboardViewCart cart = dashboard.getPnlRightCart();
+                    
+                    String[][] itemToAdd = { { foodName, "1", cleanPrice } };
+                    
+                    cart.addRestaurantCards(restaurantName, itemToAdd);
+                    cart.updateCartTotals();
+                    cart.animateOpen(); // Automatically slides open the cart panel
+                }
+            }
+        }); 
         foodCard.add(btnAdd);
         return foodCard;
-    }
+            
+        }
 }

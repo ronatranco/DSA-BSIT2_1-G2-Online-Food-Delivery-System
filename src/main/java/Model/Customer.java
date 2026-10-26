@@ -397,7 +397,7 @@ public class Customer implements ActionListener, MouseListener {
                              || (view.getPnlMenuBrainCells() != null && view.getPnlMenuBrainCells().isVisible())
                              || (view.getPnlMenuMangPinaasa() != null && view.getPnlMenuMangPinaasa().isVisible());
 
-        if (exception.equals("profile") || exception.equals("history") || exception.equals("track") || exception.equals("none")) {
+        if (exception.equals("profile") || exception.equals("history") || exception.equals("track") || exception.equals("cart") || exception.equals("none")) {
         if (view.getPnlMenuMcDollibee() != null) view.getPnlMenuMcDollibee().setVisible(false);
         if (view.getPnlMenuBrainCells() != null) view.getPnlMenuBrainCells().setVisible(false);
         if (view.getPnlMenuMangPinaasa() != null) view.getPnlMenuMangPinaasa().setVisible(false);
