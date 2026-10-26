@@ -1,3 +1,8 @@
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
+ */
+
 package GUI;
 
 import Database.databaseConnection;
@@ -11,6 +16,7 @@ import java.sql.SQLException;
 import javax.swing.*;
 
 /**
+ * @author rownavanana and gideon
  * CLASS FOR LOGICS AND CARDLAYOUT NAVIGATION
  */
 public class MainFrame extends JFrame implements ActionListener {
@@ -25,20 +31,13 @@ public class MainFrame extends JFrame implements ActionListener {
     private CustomerLoginPanel panelCustomerLogin;
     private RestaurantLoginPanel panelRestaurantLogin;    
     private AdminLoginPanel panelAdminLogin;
-    private AdminPanelGUI panelAdminGUI;
+    private AdminDashboard panelAdminGUI;
     
     // DASHBOARD PANELS
     private CustomerDashboard panelCustomerDashboard;
     private RestaurantDashboard panelRestaurantDashboard;
 
     private Admin adminLogic;
-
-    private final String VALID_CUSTOMER_USER = "customer1";
-    private final String VALID_CUSTOMER_PASS = "customer123";
-    private final String VALID_RESTAURANT_USER = "restaurant1";
-    private final String VALID_RESTAURANT_PASS = "restaurant123";
-    private final String VALID_ADMIN_USER = "admin1";
-    private final String VALID_ADMIN_PASS = "admin123";
 
     public MainFrame() {
         setTitle("GrabPanda Food Delivery");
@@ -63,7 +62,7 @@ public class MainFrame extends JFrame implements ActionListener {
         panelCustomerLogin = new CustomerLoginPanel(this);
         panelRestaurantLogin = new RestaurantLoginPanel(this);        
         panelAdminLogin = new AdminLoginPanel(this);
-        panelAdminGUI = new AdminPanelGUI(this);
+        panelAdminGUI = new AdminDashboard(this);
 
         // Instantiate new dashboard panels (passing 'this' MainFrame instance)
         panelRestaurantDashboard = new RestaurantDashboard(this);
@@ -240,73 +239,34 @@ public class MainFrame extends JFrame implements ActionListener {
             }
         }
 
-        // 8. CUSTOMER LOGIN -> PROCEEDS TO CUSTOMER_DASHBOARD
+        // 8. CUSTOMER LOGIN -> PROCEEDS TO CUSTOMER_DASHBOARD AUTOMATICALLY
         else if (source == panelCustomerLogin.btnCustomerLogin) {
-            String identifier = panelCustomerLogin.txtLoginEmailOrUser.getText().trim();
-            String password = new String(panelCustomerLogin.txtLoginPassword.getPassword());
-
-            if (identifier.isEmpty() || password.isEmpty()) {
-                JOptionPane.showMessageDialog(this, "Please input a valid email/username and password!", "Input Error", JOptionPane.ERROR_MESSAGE);
-                return;
+            panelCustomerLogin.txtLoginEmailOrUser.setText("");
+            panelCustomerLogin.txtLoginPassword.setText("");
+            if (panelCustomerLogin.chkLoginSavePassword != null) {
+                panelCustomerLogin.chkLoginSavePassword.setSelected(false);
             }
-
-            if (identifier.equals(VALID_CUSTOMER_USER) && password.equals(VALID_CUSTOMER_PASS)) {
-                panelCustomerLogin.txtLoginEmailOrUser.setText("");
-                panelCustomerLogin.txtLoginPassword.setText("");
-                if (panelCustomerLogin.chkLoginSavePassword != null) {
-                    panelCustomerLogin.chkLoginSavePassword.setSelected(false);
-                }
-
-                showCard("CUSTOMER_DASHBOARD");
-            } else {
-                JOptionPane.showMessageDialog(this, "Invalid Email/Username or Password!", "Login Failed", JOptionPane.ERROR_MESSAGE);
-            }
+            showCard("CUSTOMER_DASHBOARD");
         }
 
-        // 9. RESTAURANT LOGIN -> PROCEEDS TO RESTAURANT_DASHBOARD
+        // 9. RESTAURANT LOGIN -> PROCEEDS TO RESTAURANT_DASHBOARD AUTOMATICALLY
         else if (source == panelRestaurantLogin.btnRestaurantLogin) {
-            String identifier = panelRestaurantLogin.txtRestaurantUser.getText().trim();
-            String password = new String(panelRestaurantLogin.txtRestaurantPass.getPassword());
-
-            if (identifier.isEmpty() || password.isEmpty()) {
-                JOptionPane.showMessageDialog(this, "Please input a valid username and password!", "Input Error", JOptionPane.ERROR_MESSAGE);
-                return;
+            panelRestaurantLogin.txtRestaurantUser.setText("");
+            panelRestaurantLogin.txtRestaurantPass.setText("");
+            if (panelRestaurantLogin.chkRestaurantSavePass != null) {
+                panelRestaurantLogin.chkRestaurantSavePass.setSelected(false);
             }
-
-            if (identifier.equals(VALID_RESTAURANT_USER) && password.equals(VALID_RESTAURANT_PASS)) {
-                panelRestaurantLogin.txtRestaurantUser.setText("");
-                panelRestaurantLogin.txtRestaurantPass.setText("");
-                if (panelRestaurantLogin.chkRestaurantSavePass != null) {
-                    panelRestaurantLogin.chkRestaurantSavePass.setSelected(false);
-                }
-
-                showCard("RESTAURANT_DASHBOARD");
-            } else {
-                JOptionPane.showMessageDialog(this, "Invalid Username or Password!", "Login Failed", JOptionPane.ERROR_MESSAGE);
-            }
+            showCard("RESTAURANT_DASHBOARD");
         }
 
-        // 10. ADMIN LOGIN -> PROCEEDS TO ADMIN_DASHBOARD
+        // 10. ADMIN LOGIN -> PROCEEDS TO ADMIN_DASHBOARD AUTOMATICALLY
         else if (source == panelAdminLogin.btnAdminLogin) {
-            String username = panelAdminLogin.txtAdminUser.getText().trim();
-            String password = new String(panelAdminLogin.txtAdminPass.getPassword());
-
-            if (username.isEmpty() || password.isEmpty()) {
-                JOptionPane.showMessageDialog(this, "Please input a valid username and password!", "Input Error", JOptionPane.ERROR_MESSAGE);
-                return;
+            panelAdminLogin.txtAdminUser.setText("");
+            panelAdminLogin.txtAdminPass.setText("");
+            if (panelAdminLogin.chkAdminSavePass != null) {
+                panelAdminLogin.chkAdminSavePass.setSelected(false);
             }
-
-            if (username.equals(VALID_ADMIN_USER) && password.equals(VALID_ADMIN_PASS)) {
-                panelAdminLogin.txtAdminUser.setText("");
-                panelAdminLogin.txtAdminPass.setText("");
-                if (panelAdminLogin.chkAdminSavePass != null) {
-                    panelAdminLogin.chkAdminSavePass.setSelected(false);
-                }
-
-                showCard("ADMIN_DASHBOARD");
-            } else {
-                JOptionPane.showMessageDialog(this, "Invalid Username or Password!", "Login Failed", JOptionPane.ERROR_MESSAGE);
-            }
+            showCard("ADMIN_DASHBOARD");
         }
 
         // 11. LOGOUT ACTIONS FROM ANY DASHBOARD (RETURNS TO ROLE SELECTION)
@@ -321,7 +281,7 @@ public class MainFrame extends JFrame implements ActionListener {
 
     /** Validates the signup form and inserts the new user into the database. */
     private void registerUser() {
-        String name     = panelSignup.txtName.getText().trim();
+        String name   = panelSignup.txtName.getText().trim();
         String username = panelSignup.txtUsername.getText().trim();
         String email    = panelSignup.txtEmail.getText().trim();
         String phone    = panelSignup.txtPhone.getText().trim();
