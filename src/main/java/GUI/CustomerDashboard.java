@@ -1,7 +1,6 @@
 package GUI;
 
 import Model.Customer;
-import Model.Order;
 import java.awt.*;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -35,7 +34,6 @@ public class CustomerDashboard extends JPanel {
     private CustomerDashboardHistory pnlRightHistory;
     private CustomerDashboardProfile pnlRightProfile;
     private CustomerDashboardViewCart pnlRightCart;
-    private CustomerDashboardCheckout pnlRightCheckout;
 
     public CustomerDashboard(MainFrame mainFrame) {
         this.mainFrame = mainFrame;
@@ -231,11 +229,7 @@ public class CustomerDashboard extends JPanel {
         leftBannerNav.add(lblExit);
         lblExit.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         pnlMainBg.add(leftBannerNav);
-        
-        
 // == MODEL CONNECTOR ==
-        this.controller = new Customer(this);
-                
         //RESTO CARD
         pnlRestoCard = new CustomerDashboardRestaurant();
         pnlMainBg.add(pnlRestoCard);
@@ -252,15 +246,9 @@ public class CustomerDashboard extends JPanel {
         pnlMenuMangPinaasa = new CustomerDashboardRestaurantMenus("Mang Pinaasa"); 
         pnlMainBg.add(pnlMenuMangPinaasa);
         pnlMenuMangPinaasa.setVisible(false);
-        //CHECKOUT
-        pnlRightCheckout = new CustomerDashboardCheckout();
-        pnlMainBg.add(pnlRightCheckout);
-        pnlRightCheckout.setVisible(false);
         //VIEW CART
         pnlRightCart = new CustomerDashboardViewCart();
         pnlMainBg.add(pnlRightCart);
-        //CHECKOUT
-        pnlMainBg.setComponentZOrder(pnlRightCheckout, 1);
         pnlRightCart.addCartActions(controller);
         //TRACK ORDER
         pnlRightTrackOrder = new CustomerDashboardTrackOrder();
@@ -376,10 +364,6 @@ public class CustomerDashboard extends JPanel {
 
     public JLabel getLblExit() {
         return lblExit;
-    }
-    
-    public JLabel getLblDateRn() {
-        return lblDateRn;
     }
 
     public JPanel getLeftBannerNav() {
