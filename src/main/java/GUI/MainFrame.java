@@ -297,7 +297,7 @@ public class MainFrame extends JFrame implements ActionListener {
     /** Checks the database. Shows an error dialog and returns false on failure. */
     private boolean authenticate(String login, String password, String role) {
         if (login.isEmpty() || password.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Please input a valid username and password!",
+            JOptionPane.showMessageDialog(this, "Invalid Username or Password! \nIf you don't have an account, please create one.",
                     "Input Error", JOptionPane.ERROR_MESSAGE);
             return false;
         }
