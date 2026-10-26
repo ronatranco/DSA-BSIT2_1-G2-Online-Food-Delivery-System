@@ -25,6 +25,8 @@ public class CustomerDashboardRestaurantMenus extends JPanel {
     private String restaurantName;
     private JLabel lblTitle;
     
+    private JLabel lblItemName1, lblItemPrice1, lblItemName2, lblItemPrice2;
+    
     public CustomerDashboardRestaurantMenus(String restaurantName) {
         this.restaurantName = restaurantName;
 
@@ -136,8 +138,8 @@ public class CustomerDashboardRestaurantMenus extends JPanel {
             lblPSub1.setBounds(40, 160, 300, 30);
             add(lblPSub1);
             // FOOD CARD ROW 1 (POPULAR)
-            add(menuResto(40, 205));
-            add(menuResto(474, 205));
+            add(menuResto(40, 205, "Chicken Joy Meal", "₱99.00"));
+            add(menuResto(474, 205, "Burger Steak", "₱75.00"));
             // LABEL 3
             JLabel lblWhatsNew1 = new JLabel("What's New");
             lblWhatsNew1.setFont(new Font("Segoe UI", Font.BOLD, 29));
@@ -145,8 +147,9 @@ public class CustomerDashboardRestaurantMenus extends JPanel {
             lblWhatsNew1.setBounds(40, 390, 200, 30);
             add(lblWhatsNew1);
             // FOOD CARD ROW 2 (WHAT'S NEW)
-            add(menuResto(40, 445));
-            add(menuResto(474, 445));
+            add(menuResto(40, 445, "Jolly Spaghetti", "₱65.00"));
+            add(menuResto(474, 445, "Extra Rice", "₱25.00"));
+        
             
         } else if (restaurantName.equalsIgnoreCase("Brain Cells Milk Tea")) {
             lblTitle.setVisible(false);
@@ -175,8 +178,8 @@ public class CustomerDashboardRestaurantMenus extends JPanel {
             lblPSub2.setBounds(40, 160, 300, 30);
             add(lblPSub2);
             // FOOD CARD ROW 1 (POPULAR)
-            add(menuResto(40, 205));
-            add(menuResto(474, 205));
+            add(menuResto(40, 205, "Wintermelon Milk Tea", "₱110.00"));
+            add(menuResto(474, 205, "Cheese Wintermelon", "₱125.00"));
             // LABEL 3
             JLabel lblWhatsNew2 = new JLabel("What's New");
             lblWhatsNew2.setFont(new Font("Segoe UI", Font.BOLD, 29));
@@ -184,8 +187,8 @@ public class CustomerDashboardRestaurantMenus extends JPanel {
             lblWhatsNew2.setBounds(40, 390, 200, 30);
             add(lblWhatsNew2);
             // FOOD CARD ROW 2 (WHAT'S NEW)
-            add(menuResto(40, 445));
-            add(menuResto(474, 445));
+            add(menuResto(40, 445, "Dark Choco Matcha", "₱135.00"));    
+            add(menuResto(474, 445, "Oreo Overload", "₱140.00"));
             
         } else if (restaurantName.equalsIgnoreCase("Mang Pinaasa")) {
             lblTitle.setVisible(false);
@@ -214,8 +217,8 @@ public class CustomerDashboardRestaurantMenus extends JPanel {
             lblPSub3.setBounds(40, 160, 300, 30);
             add(lblPSub3);
             // FOOD CARD ROW 1 (POPULAR)
-            add(menuResto(40, 205));
-            add(menuResto(474, 205));
+            add(menuResto(40, 205, "Pork Sisig Meal", "₱120.00"));
+            add(menuResto(474, 205, "Bangus Sisig", "₱130.00"));
             // LABEL 3
             JLabel lblWhatsNew3 = new JLabel("What's New");
             lblWhatsNew3.setFont(new Font("Segoe UI", Font.BOLD, 29));
@@ -223,35 +226,99 @@ public class CustomerDashboardRestaurantMenus extends JPanel {
             lblWhatsNew3.setBounds(40, 390, 200, 30);
             add(lblWhatsNew3);
             // FOOD CARD ROW 2 (WHAT'S NEW)
-            add(menuResto(40, 445));
-            add(menuResto(474, 445));
+            add(menuResto(40, 445, "Bulalo Special", "₱180.00"));
+            add(menuResto(474, 445, "Lechon Kawali", "₱160.00"));
         }
     }
     // HELPER METHOD
-    private JPanel menuResto(int x, int y) {
+    private JPanel menuResto(int x, int y, String itemName, String itemPrice) {
         // FOOD CARD
         JPanel foodCard = new JPanel(null);
         foodCard.setBounds(x, y, 410, 145);
         foodCard.setBackground(COLOR_WHITE);
         foodCard.setBorder(new LineBorder(PURPLE_DARK, 1));
-        // FOOD IMAGE
-        JPanel imageBlock = new JPanel();
+        // FOOD IMAGE PLACEHOLDER
+        JLabel imageBlock = new JLabel();
         imageBlock.setBounds(15, 15, 120, 85);
-        imageBlock.setBackground(new Color(242, 240, 245));
-        imageBlock.setBorder(new LineBorder(new Color(225, 222, 230), 1));
+        imageBlock.setHorizontalAlignment(SwingConstants.CENTER);
+        
+        String fileName = itemName.toLowerCase().replace(" ", "_") + ".png";
+        ImageIcon loadedIcon = null;
+        
+        String[] pathsToTry = {
+            "src/main/java/GUI/images/" + fileName,
+            "GUI/images/" + fileName,
+            "/GUI/images/" + fileName
+        };
+        
+        for (String path : pathsToTry) {
+            if (path.startsWith("src/")) {
+                java.io.File file = new java.io.File(path);
+                if (file.exists()) {
+                    loadedIcon = new ImageIcon(path);
+                    break;
+                }
+            } else {
+                java.net.URL url = getClass().getResource(path);
+                if (url != null) {
+                    loadedIcon = new ImageIcon(url);
+                    break;
+                }
+            }
+        }
+        
+        if (loadedIcon != null && loadedIcon.getIconWidth() > 0) {
+            Image scaledImg = loadedIcon.getImage().getScaledInstance(120, 85, Image.SCALE_SMOOTH);
+            imageBlock.setIcon(new ImageIcon(scaledImg));
+            imageBlock.setOpaque(false);
+        } else {
+            imageBlock.setBorder(new LineBorder(new Color(225, 222, 230), 1));
+            imageBlock.setBackground(new Color(242, 240, 245));
+            imageBlock.setOpaque(true);
+        }
         foodCard.add(imageBlock);
-        // DETAILS
-        JPanel pnlPrice = new JPanel();
-        pnlPrice.setBounds(15, 112, 60, 18);
-        pnlPrice.setBackground(new Color(245, 240, 252));
-        pnlPrice.setBorder(new LineBorder(PURPLE_DARK, 1));
-        foodCard.add(pnlPrice);
+        
+        // ITEM NAME LABEL 
+        JLabel lblItemName = new JLabel(itemName);
+        lblItemName.setFont(new Font("Segoe UI", Font.BOLD, 15));
+        lblItemName.setForeground(TEXT_DARK);
+        lblItemName.setBounds(148, 15, 245, 22);
+        foodCard.add(lblItemName);
+        // DETAILS / PRICE
+        JLabel lblPrice = new JLabel(itemPrice);
+        lblPrice.setFont(new Font("Segoe UI", Font.BOLD, 13));
+        lblPrice.setForeground(PURPLE_DARK);
+        lblPrice.setBounds(15, 112, 80, 18);
+        foodCard.add(lblPrice);
         // BUTTON
         JLabel btnAdd = new JLabel("ADD TO ORDER", SwingConstants.RIGHT);
         btnAdd.setFont(new Font("Segoe UI", Font.BOLD, 12));
         btnAdd.setForeground(YELLOW_ACCENT2);
         btnAdd.setBounds(240, 110, 145, 20);
         btnAdd.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        
+        btnAdd.addMouseListener(new java.awt.event.MouseAdapter() {
+            @Override
+            public void mouseClicked(java.awt.event.MouseEvent e) {
+                Container parent = getParent();
+                while (parent != null && !(parent instanceof CustomerDashboard)) {
+                    parent = parent.getParent();
+                }
+
+                if (parent instanceof CustomerDashboard) {
+                    CustomerDashboard dashboard = (CustomerDashboard) parent;
+                    
+                    String priceClean = itemPrice.replace("₱", "").trim();
+                    double priceVal = Double.parseDouble(priceClean);
+                    String[][] itemRow = {{ itemName, "1", String.valueOf(priceVal) }};
+                    
+                    dashboard.getPnlRightCart().addRestaurantCards(restaurantName, itemRow);
+                    dashboard.getPnlRightCart().updateCartTotals();
+                    dashboard.getPnlRightCart().animateOpen();
+                }
+            }
+        });
+
         foodCard.add(btnAdd);
         return foodCard;
     }
