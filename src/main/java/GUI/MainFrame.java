@@ -305,7 +305,7 @@ public class MainFrame extends JFrame implements ActionListener {
             if (userAuth.authenticate(login, password, role)) {
                 return true;
             }
-            JOptionPane.showMessageDialog(this, "Invalid Username or Password!",
+            JOptionPane.showMessageDialog(this, "Invalid Username or Password! \nIf you don't have an account, please create one.",
                     "Login Failed", JOptionPane.ERROR_MESSAGE);
         } catch (SQLException ex) {
             JOptionPane.showMessageDialog(this, "Database error: " + ex.getMessage());
