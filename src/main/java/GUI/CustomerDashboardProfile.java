@@ -66,48 +66,35 @@ public class CustomerDashboardProfile extends JPanel {
         pnlAddress.setBounds(85, 200, 300, 55);
         txtFullAdd = pnlAddress.getTextField();
         pnlMainProfile.add(pnlAddress);
-     
-         // NUMBER FIELD CONTAINER
+        // MOBILE NUMBER FIELD
         pnlOutlineField pnlNumber = new pnlOutlineField("Mobile Number");
         pnlNumber.setBounds(402, 200, 300, 55); 
         txtNumber = pnlNumber.getTextField();
         pnlMainProfile.add(pnlNumber);
-
-        // Configure Layout on the existing field panel to place elements inside it
         pnlNumber.setLayout(new BorderLayout());
         txtNumber.setBorder(BorderFactory.createEmptyBorder(2, 5, 2, 12)); 
-
-        // == POPUP MENU OPTIONS ==
+        // == COUNTRY CODE OPTION ==
         JPopupMenu codeMenu = new JPopupMenu();
         String[] countryCodes = {"+63", "+1", "+44", "+81"};
-        
-        // == THE DROPDOWN BUTTON (Acts exactly like a borderless combobox) ==
         btnCodeSelector = new JButton("+63 ▼");
         btnCodeSelector.setFont(REGULAR_FONT);
         btnCodeSelector.setForeground(TEXT_DARK);
         btnCodeSelector.setBackground(COLOR_WHITE);
         btnCodeSelector.setOpaque(true);
         btnCodeSelector.setBorder(BorderFactory.createEmptyBorder(0, 8, 0, 8));
-        btnCodeSelector.setContentAreaFilled(false); // Removes all background boxes/borders
+        btnCodeSelector.setContentAreaFilled(false); 
         btnCodeSelector.setFocusPainted(false);
         btnCodeSelector.setPreferredSize(new Dimension(65, 55));
 
-        // Build the dropdown choices
         for (String code : countryCodes) {
             JMenuItem item = new JMenuItem(code);
             item.setFont(REGULAR_FONT);
             item.addActionListener(e -> btnCodeSelector.setText(code + " ▼"));
             codeMenu.add(item);
-        }
+        }   btnCodeSelector.addActionListener(e -> codeMenu.show(btnCodeSelector, 0, btnCodeSelector.getHeight()));
+            pnlNumber.add(btnCodeSelector, BorderLayout.WEST);
+            pnlNumber.add(txtNumber, BorderLayout.CENTER);
 
-        // Show the dropdown menu when the button is clicked
-        btnCodeSelector.addActionListener(e -> codeMenu.show(btnCodeSelector, 0, btnCodeSelector.getHeight()));
-
-        // Inject elements into your existing custom container
-        pnlNumber.add(btnCodeSelector, BorderLayout.WEST);
-        pnlNumber.add(txtNumber, BorderLayout.CENTER);
-
-        // Strict 10-Digit Numeric Key Filter Control
         txtNumber.addKeyListener(new java.awt.event.KeyAdapter() {
             @Override
             public void keyTyped(java.awt.event.KeyEvent e) {
@@ -245,7 +232,7 @@ public class CustomerDashboardProfile extends JPanel {
         }   return (first + " " + last).trim(); 
     }
          public String getMobileNumber() {
-        // Strip out the arrow icon character when grabbing the value
+
         String selectedCode = btnCodeSelector.getText().replace(" ▼", "").trim();
         return selectedCode + " " + txtNumber.getText().trim(); 
     }   
@@ -255,11 +242,8 @@ public class CustomerDashboardProfile extends JPanel {
             txtNumber.setText("");
             btnCodeSelector.setText("+63 ▼");
             return;
-        }   
-        
-        fullPhoneNumber = fullPhoneNumber.trim();
-        String[] countryCodes = {"+63", "+1", "+44", "+81"};
-        
+        }   fullPhoneNumber = fullPhoneNumber.trim();
+            String[] countryCodes = {"+63", "+1", "+44", "+81"};
         for (String code : countryCodes) {
             if (fullPhoneNumber.startsWith(code)) {
                 btnCodeSelector.setText(code + " ▼");
@@ -269,8 +253,8 @@ public class CustomerDashboardProfile extends JPanel {
                 txtNumber.setText(cleanLocal);
                 return;
             }
-        }
-        txtNumber.setText(fullPhoneNumber);
+        }       txtNumber.setText(fullPhoneNumber);
+        
     }   public JTextField getTxtFieldName1() { 
             return txtName1;
     }   public JTextField getTxtFieldName2() { 
