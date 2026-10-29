@@ -60,8 +60,12 @@ public class Customer implements ActionListener, MouseListener {
         if (e.getSource() == view.getPnlRightProfile().getBtnSaveInfo() || 
             e.getSource() == view.getPnlRightProfile().getTxtFieldName1() ||
             e.getSource() == view.getPnlRightProfile().getTxtFullAdd()) { 
+            view.setSavedFirstName(view.getPnlRightProfile().getTxtFieldName1().getText().trim());
+            view.setSavedLastName(view.getPnlRightProfile().getTxtFieldName2().getText().trim());
+            view.setSavedMobileNumber(view.getPnlRightProfile().getMobileNumber());
+            view.setSavedFullAddress(view.getPnlRightProfile().getAddress());
+            
             String name = view.getPnlRightProfile().getName(); 
-            String address = view.getPnlRightProfile().getAddress();
             if (name.isEmpty()) {
                 view.getLblName().setText("Hello, User!");
             } else {
@@ -149,6 +153,9 @@ public class Customer implements ActionListener, MouseListener {
 
     @Override
     public void mouseClicked(MouseEvent e) {
+        if (e.getClickCount() > 1) {
+            return;
+        }
         // Resto Menu 1
         if (e.getSource() == view.getPnlRestoCard().getLblRestoName1()) {
             view.getPnlMenuMcDollibee().setVisible(true);
@@ -397,7 +404,7 @@ public class Customer implements ActionListener, MouseListener {
                              || (view.getPnlMenuBrainCells() != null && view.getPnlMenuBrainCells().isVisible())
                              || (view.getPnlMenuMangPinaasa() != null && view.getPnlMenuMangPinaasa().isVisible());
 
-        if (exception.equals("profile") || exception.equals("history") || exception.equals("track") || exception.equals("cart") || exception.equals("none")) {
+        if (exception.equals("profile") || exception.equals("history") || exception.equals("track") || exception.equals("none")) {
         if (view.getPnlMenuMcDollibee() != null) view.getPnlMenuMcDollibee().setVisible(false);
         if (view.getPnlMenuBrainCells() != null) view.getPnlMenuBrainCells().setVisible(false);
         if (view.getPnlMenuMangPinaasa() != null) view.getPnlMenuMangPinaasa().setVisible(false);
@@ -407,7 +414,7 @@ public class Customer implements ActionListener, MouseListener {
         if (!exception.equals("cart")) {
             view.getPnlRightCart().animateClose();
             isCartVisible = false;
-        }
+        } 
         if (!exception.equals("profile")) {
             view.getPnlRightProfile().animateClose();
             if (isProfileVisible) {
@@ -415,7 +422,7 @@ public class Customer implements ActionListener, MouseListener {
                 collapseSidebar();
             }
         } else {
-            hideRestaurantView = true; // Full screen panel -> hide background
+            hideRestaurantView = true; 
         }
         if (!exception.equals("history")) {
             view.getPnlRightHistory().animateClose();
@@ -424,7 +431,7 @@ public class Customer implements ActionListener, MouseListener {
                 collapseSidebar();
             }
         } else {
-            hideRestaurantView = true; // Full screen panel -> hide background
+            hideRestaurantView = true; 
         }
         if (!exception.equals("track")) {
             view.getPnlRightTrackOrder().animateClose();
@@ -433,7 +440,7 @@ public class Customer implements ActionListener, MouseListener {
                 collapseSidebar();
             }
         } else {
-            hideRestaurantView = true; // Full screen panel -> hide background
+            hideRestaurantView = true; 
         }
         if (exception.equals("none")) {
             collapseSidebar();
@@ -551,6 +558,7 @@ public class Customer implements ActionListener, MouseListener {
     
             restoCard.scrollContentPanel.revalidate();
             view.getPnlMainBg().repaint();
+            
 }
     @Override
     public void mousePressed(MouseEvent e) {

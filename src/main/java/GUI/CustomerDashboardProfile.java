@@ -23,7 +23,8 @@ public class CustomerDashboardProfile extends JPanel {
     private Font HEADER_FONT  = new Font("Segoe UI", Font.BOLD, 26);
 
     private JTextField txtName1, txtName2, txtFullAdd, txtNumber, txtEmail, txtCPw, txtNPw;
-    private JButton btnSaveInfo, btnSaveEmail, btnSavePassword, btnDelAcc;
+    private JComboBox<String> cmbCountryCode;
+    private JButton btnCodeSelector, btnSaveInfo, btnSaveEmail, btnSavePassword, btnDelAcc;
     private JScrollPane scrollPane;
     
     public CustomerDashboardProfile() {
@@ -64,11 +65,61 @@ public class CustomerDashboardProfile extends JPanel {
         pnlAddress.setBounds(85, 200, 300, 55);
         txtFullAdd = pnlAddress.getTextField();
         pnlMainProfile.add(pnlAddress);
-        // NUMBER FIELD
+     
+         // NUMBER FIELD CONTAINER
         pnlOutlineField pnlNumber = new pnlOutlineField("Mobile Number");
-        pnlNumber.setBounds(402, 200, 300, 55);
+        pnlNumber.setBounds(402, 200, 300, 55); 
         txtNumber = pnlNumber.getTextField();
         pnlMainProfile.add(pnlNumber);
+
+        // Configure Layout on the existing field panel to place elements inside it
+        pnlNumber.setLayout(new BorderLayout());
+        txtNumber.setBorder(BorderFactory.createEmptyBorder(2, 5, 2, 12)); 
+
+        // == POPUP MENU OPTIONS ==
+        JPopupMenu codeMenu = new JPopupMenu();
+        String[] countryCodes = {"+63", "+1", "+44", "+81"};
+        
+        // == THE DROPDOWN BUTTON (Acts exactly like a borderless combobox) ==
+        JButton btnCodeSelector = new JButton("+63 ▼");
+        btnCodeSelector.setFont(REGULAR_FONT);
+        btnCodeSelector.setForeground(TEXT_DARK);
+        btnCodeSelector.setBackground(COLOR_WHITE);
+        btnCodeSelector.setOpaque(true);
+        btnCodeSelector.setBorder(BorderFactory.createEmptyBorder(0, 8, 0, 8));
+        btnCodeSelector.setContentAreaFilled(false); // Removes all background boxes/borders
+        btnCodeSelector.setFocusPainted(false);
+        btnCodeSelector.setPreferredSize(new Dimension(65, 55));
+
+        // Build the dropdown choices
+        for (String code : countryCodes) {
+            JMenuItem item = new JMenuItem(code);
+            item.setFont(REGULAR_FONT);
+            item.addActionListener(e -> btnCodeSelector.setText(code + " ▼"));
+            codeMenu.add(item);
+        }
+
+        // Show the dropdown menu when the button is clicked
+        btnCodeSelector.addActionListener(e -> codeMenu.show(btnCodeSelector, 0, btnCodeSelector.getHeight()));
+
+        // Inject elements into your existing custom container
+        pnlNumber.add(btnCodeSelector, BorderLayout.WEST);
+        pnlNumber.add(txtNumber, BorderLayout.CENTER);
+
+        // Strict 10-Digit Numeric Key Filter Control
+        txtNumber.addKeyListener(new java.awt.event.KeyAdapter() {
+            @Override
+            public void keyTyped(java.awt.event.KeyEvent e) {
+                char c = e.getKeyChar();
+                if (!Character.isDigit(c)) {
+                    e.consume();
+                    return;
+                }   
+                if (txtNumber.getText().length() >= 10) {
+                    e.consume();
+                }
+            }
+        });
         // SAVE BTN INFO
         btnSaveInfo = styleBtnSave("Save");
         btnSaveInfo.setBounds(85, 270, 100, 35);
@@ -178,15 +229,47 @@ public class CustomerDashboardProfile extends JPanel {
         btn.setBorder(BorderFactory.createEmptyBorder(5, 15, 5, 15)); 
         return btn;
     }
-    public void animateOpen() {
-        setBounds(200, 0, 824, 720); 
+        public void animateOpen() {
+            setBounds(200, 0, 824, 720); 
+    }   public void animateClose() {
+            setBounds(1024, 0, 824, 720); 
     }
-
-    public void animateClose() {
-        setBounds(1024, 0, 824, 720); 
-    }
-    public String getName() {
+        public String getName() {
             return txtName1.getText().trim();
+    }   public String getFullName() {
+        String first = txtName1.getText().trim();
+        String last = txtName2.getText().trim();
+        if (first.isEmpty() && last.isEmpty()) {
+            return "User"; 
+        }   return (first + " " + last).trim(); 
+    }
+         public String getMobileNumber() {
+        // Strip out the arrow icon character when grabbing the value
+        String selectedCode = btnCodeSelector.getText().replace(" ▼", "").trim();
+        return selectedCode + " " + txtNumber.getText().trim(); 
+    }   
+
+    public void loadPhoneNumber(String fullPhoneNumber) {
+        if (fullPhoneNumber == null || fullPhoneNumber.isEmpty()) {
+            txtNumber.setText("");
+            btnCodeSelector.setText("+63 ▼");
+            return;
+        }   
+        
+        fullPhoneNumber = fullPhoneNumber.trim();
+        String[] countryCodes = {"+63", "+1", "+44", "+81"};
+        
+        for (String code : countryCodes) {
+            if (fullPhoneNumber.startsWith(code)) {
+                btnCodeSelector.setText(code + " ▼");
+                String cleanLocal = fullPhoneNumber.substring(code.length())
+                                                   .replace(" ", "")
+                                                   .trim();
+                txtNumber.setText(cleanLocal);
+                return;
+            }
+        }
+        txtNumber.setText(fullPhoneNumber);
     }   public JTextField getTxtFieldName1() { 
             return txtName1;
     }   public JTextField getTxtFieldName2() { 

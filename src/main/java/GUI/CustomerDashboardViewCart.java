@@ -260,7 +260,7 @@ public class CustomerDashboardViewCart extends JPanel {
         btnCheckout.setBounds(14, 558, 260, 44);
         add(btnCheckout); 
 
-        btnCheckout.addActionListener(e -> {
+                btnCheckout.addActionListener(e -> {
             if (currentlySelectedRestaurant == null){
                 showCustomWarningDialog("No Selection", "Please select a restaurant to checkout.");
                 return;
@@ -268,7 +268,39 @@ public class CustomerDashboardViewCart extends JPanel {
 
             boolean proceed = showCustomConfirmDialog("Confirm Checkout", "Do you want to proceed to checkout?");
             if (proceed) {
-                Order newOrder = generateOrderFromSelection("CUST-001");
+                // 1. Traverse up the tree to find the CustomerDashboard master panel
+                Container root = this.getParent();
+                while (root != null && !(root instanceof CustomerDashboard)) {
+                    root = root.getParent();
+                }
+
+                // Default fallbacks if profile fields are blank or dashboard isn't found
+                String liveName = "User";
+                String livePhone = "09123456789";
+                String liveAddress = "City, Province"; 
+
+                // 2. Safely extract the live text data directly from your profile components
+                if (root instanceof CustomerDashboard) {
+                    CustomerDashboard dashboard = (CustomerDashboard) root;
+                    
+                    String first = dashboard.getSavedFirstName();
+                    String last = dashboard.getSavedLastName();
+                    String phone = dashboard.getSavedMobileNumber();
+                    String address = dashboard.getSavedFullAddress();
+
+                    if ((first != null && !first.isEmpty()) || (last != null && !last.isEmpty())) {
+                        liveName = ((first != null ? first : "") + " " + (last != null ? last : "")).trim();
+                    }
+                    if (phone != null && !phone.isEmpty()) {
+                        livePhone = phone;
+                    }
+                    if (address != null && !address.isEmpty()) {
+                        liveAddress = address;
+                    }
+                }
+
+                // Generate order object with all live profile data parameters
+                Order newOrder = generateOrderFromSelection("CUST-001", liveName, livePhone, liveAddress);
 
                 if (newOrder != null) {
                     Container parent = this.getParent();
@@ -301,12 +333,12 @@ public class CustomerDashboardViewCart extends JPanel {
                             parent.add(this); 
 
                             // 3. Bring back date label and restore full-screen widths
-                            Container root = parent;
-                            while (root != null && !(root instanceof CustomerDashboard)) {
-                                root = root.getParent();
+                            Container dashboardRoot = parent;
+                            while (dashboardRoot != null && !(dashboardRoot instanceof CustomerDashboard)) {
+                                dashboardRoot = dashboardRoot.getParent();
                             }
-                            if (root instanceof CustomerDashboard) {
-                                CustomerDashboard dashboard = (CustomerDashboard) root;
+                            if (dashboardRoot instanceof CustomerDashboard) {
+                                CustomerDashboard dashboard = (CustomerDashboard) dashboardRoot;
                                 dashboard.getLblDateRn().setVisible(true);
                                 
                                 // --- AUTOMATICALLY REGISTER THE ORDER IN HISTORY ---
@@ -315,9 +347,10 @@ public class CustomerDashboardViewCart extends JPanel {
                                 String deliveryDateStr = java.time.LocalDateTime.now().plusMinutes(30).format(dtf);
                                 double finalTotal = placedOrder.calculateFinalTotal(40.0, 0.0);
                                 
+                                // Dynamic delivery address fed straight from the order object data
                                 dashboard.getPnlRightHistory().registerOrder(
                                     placedOrder.getRestaurantId(),
-                                    "Biñan, Laguna",
+                                    placedOrder.getDeliveryAddress(),
                                     placedOrder.getOrderId(),
                                     orderDateStr,
                                     deliveryDateStr,
@@ -347,7 +380,8 @@ public class CustomerDashboardViewCart extends JPanel {
                     }
                 }
             }
-        }); 
+        });
+
 
         lblFooterQuote = new JLabel("Total price may vary at checkout", SwingConstants.CENTER);
         lblFooterQuote.setFont(new Font("Segoe UI", Font.ITALIC, 11));
@@ -1087,7 +1121,7 @@ public class CustomerDashboardViewCart extends JPanel {
     }
 
     //16. Generate Order From Selected Restaurant
-    public Order generateOrderFromSelection(String customerId) {
+    public Order generateOrderFromSelection(String customerId, String customerName, String customerPhone, String deliveryAddress) {
         if (currentlySelectedRestaurant == null) {
             return null;
         }
@@ -1174,7 +1208,7 @@ public class CustomerDashboardViewCart extends JPanel {
         String status = "PENDING";
         String restaurantName = currentlySelectedRestaurant.getText();
 
-        return new Order(orderId, customerId, restaurantName, itemsList, status);
+        return new Order(orderId, customerId, customerName, customerPhone, deliveryAddress, restaurantName, itemsList, status);
     }
 
     public void animateOpen() {
