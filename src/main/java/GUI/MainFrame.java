@@ -88,7 +88,11 @@ public class MainFrame extends JFrame implements ActionListener {
 
         showCard("START");
     }
-
+    
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(() -> new MainFrame().setVisible(true));
+    }
+    
     private void registerActionListeners() {
         // Start Panel
         panelStart.btnStart.addActionListener(this);
