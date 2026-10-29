@@ -96,7 +96,7 @@ public class MainFrame extends JFrame implements ActionListener {
     private void registerActionListeners() {
         // Start Panel
         panelStart.btnStart.addActionListener(this);
-
+        
         // Auth Panel
         panelAuth.btnNavLogin.addActionListener(this);
         panelAuth.btnNavRegister.addActionListener(this);

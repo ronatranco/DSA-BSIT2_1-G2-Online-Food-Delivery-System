@@ -45,7 +45,7 @@ public class RestaurantDashboard extends JPanel {
       refresh();
    }
 
-   public JButton getBtnLogout() {
+   public JButton getBtnLogout() { 
       return logoutBtn;
    }
 
