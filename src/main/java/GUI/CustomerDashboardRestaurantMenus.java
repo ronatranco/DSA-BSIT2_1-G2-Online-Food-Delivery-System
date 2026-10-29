@@ -137,7 +137,7 @@ public class CustomerDashboardRestaurantMenus extends JPanel {
             fireIcon1.setBounds(37, 131, 30, 42);
             add(fireIcon1);
             // LABEL 2 SUBTITLE
-            JLabel lblPSub1 = new JLabel("Most ordered right neow.");
+            JLabel lblPSub1 = new JLabel("Most ordered right now.");
             lblPSub1.setFont(new Font("Segoe UI", Font.PLAIN, 19));
             lblPSub1.setForeground(COLOR_MUTED);
             lblPSub1.setBounds(40, 160, 300, 30);
@@ -183,7 +183,7 @@ public class CustomerDashboardRestaurantMenus extends JPanel {
             fireIcon2.setBounds(37, 131, 30, 42);
             add(fireIcon2);
             // LABEL 2 SUBTITLE
-            JLabel lblPSub2 = new JLabel("Most ordered right neow.");
+            JLabel lblPSub2 = new JLabel("Most ordered right now.");
             lblPSub2.setFont(new Font("Segoe UI", Font.PLAIN, 19));
             lblPSub2.setForeground(COLOR_MUTED);
             lblPSub2.setBounds(40, 160, 300, 30);
@@ -229,7 +229,7 @@ public class CustomerDashboardRestaurantMenus extends JPanel {
             fireIcon3.setBounds(37, 131, 30, 42);
             add(fireIcon3);
             // LABEL 2 SUBTITLE
-            JLabel lblPSub3 = new JLabel("Most ordered right neow.");
+            JLabel lblPSub3 = new JLabel("Most ordered right now.");
             lblPSub3.setFont(new Font("Segoe UI", Font.PLAIN, 19));
             lblPSub3.setForeground(COLOR_MUTED);
             lblPSub3.setBounds(40, 160, 300, 30);

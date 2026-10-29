@@ -41,9 +41,9 @@ public class CustomerDashboardRestaurant extends JPanel {
         topBannerQuote.setBorder(BorderFactory.createLineBorder(YELLOW_ACCENT, 2));
         add(topBannerQuote);
         java.awt.Image bannerImg = new ImageIcon("src/main/java/gui/images/cdrestaurantbanner.png").getImage()
-                                                 .getScaledInstance(480, 76, java.awt.Image.SCALE_SMOOTH);
+                                                 .getScaledInstance(510, 85, java.awt.Image.SCALE_SMOOTH);
         JLabel lblBannerImage = new JLabel(new ImageIcon(bannerImg));
-        lblBannerImage.setBounds(350, 27, 480, 76);
+        lblBannerImage.setBounds(345, 12, 490, 100);
         topBannerQuote.add(lblBannerImage);
         JLabel lblText = new JLabel("<html><div style='text-align: left;'>YOUR HOT DELIVERY ON<br>HIGH-SPEED PRIORITY!</div></html>");
         lblText.setBounds(40, 15, 360, 70); 
@@ -303,11 +303,17 @@ public class CustomerDashboardRestaurant extends JPanel {
             @Override
             public void mouseEntered(MouseEvent e) {
                 label.setForeground(PURPLE_LIGHT_HOVER);
+                if (scrollContentPanel != null) {
+                scrollContentPanel.repaint();
             }
+        }
 
             @Override
             public void mouseExited(MouseEvent e) {
                 label.setForeground(PURPLE_DARK);
+                if (scrollContentPanel != null) {
+                scrollContentPanel.repaint();
+                }
             }
         });
     }

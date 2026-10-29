@@ -72,7 +72,7 @@ public class CustomerDashboardCheckout extends JPanel {
     }
     
     public CustomerDashboardCheckout() {
-        this(new Order("ORD-DEFAULT", "CUST-001", "Default Restaurant", new ArrayList<>(), "PENDING"));
+        this(new Order("ORD-DEFAULT", "CUST-001", "Default User", "09123456789", "City, Province", "Default Restaurant", new ArrayList<>(), "PENDING"));
     }
 
     private static class CustomAddressData {
@@ -277,12 +277,14 @@ public class CustomerDashboardCheckout extends JPanel {
         contactBox.setOpaque(false);
         contactBox.setBounds(8, baseY, 224, 44);
 
-        lblName = new JLabel("Ed Dela Cruz");
+        String displayName = (currentOrder != null && currentOrder.getCustomerName() != null) ? currentOrder.getCustomerName() : "User";
+        lblName = new JLabel(displayName);
         lblName.setFont(new Font("Segoe UI", Font.BOLD, 11));
         lblName.setForeground(TEXT_DARK);
         lblName.setBounds(10, 4, 200, 16);
 
-        lblPhone = new JLabel("📞 09123456789");
+        String displayPhone = (currentOrder != null && currentOrder.getCustomerPhone() != null) ? currentOrder.getCustomerPhone() : "09123456789";
+        lblPhone = new JLabel("📞 " + displayPhone);
         lblPhone.setFont(new Font("Segoe UI Emoji", Font.PLAIN, 10));
         lblPhone.setForeground(SUBTITLE_COLOR);
         lblPhone.setBounds(10, 22, 200, 14);

@@ -16,13 +16,20 @@ public class Order {
     
     private String orderId;
     private String customerId;
+    private String customerName; 
+    private String customerPhone;
+    private String deliveryAddress; 
     private String restaurantId;
     private List<OrderItem> orderItems;
     private String status;
 
-    public Order(String orderId, String customerId, String restaurantId, List<OrderItem> orderItems, String status) {
+    public Order(String orderId, String customerId, String customerName, String customerPhone, 
+             String deliveryAddress, String restaurantId, List<OrderItem> orderItems, String status) {
         this.orderId = orderId;
         this.customerId = customerId;
+        this.customerName = customerName;
+        this.customerPhone = customerPhone;
+        this.deliveryAddress = deliveryAddress;
         this.restaurantId = restaurantId;
         this.orderItems = orderItems != null ? orderItems : new ArrayList<>();
         this.status = status != null ? status : "PENDING";
@@ -34,7 +41,13 @@ public class Order {
 
     public String getCustomerId() { return customerId; }
     public void setCustomerId(String customerId) { this.customerId = customerId; }
-
+    
+    public String getCustomerName() { return customerName; }
+    public String getDeliveryAddress() { return deliveryAddress; }  
+    
+    public String getCustomerPhone() { return customerPhone; } // Added missing getter
+    public void setCustomerPhone(String customerPhone) { this.customerPhone = customerPhone; }
+    
     public String getRestaurantId() { return restaurantId; }
     public void setRestaurantId(String restaurantId) { this.restaurantId = restaurantId; }
 

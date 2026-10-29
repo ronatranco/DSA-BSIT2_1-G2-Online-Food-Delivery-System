@@ -255,7 +255,12 @@ public class MainFrame extends JFrame implements ActionListener {
                 panelCustomerLogin.txtLoginPassword.setText("");
                 if (panelCustomerLogin.chkLoginSavePassword != null) {
                     panelCustomerLogin.chkLoginSavePassword.setSelected(false);
-                }
+            }   mainContainer.remove(panelCustomerDashboard);
+                panelCustomerDashboard = new CustomerDashboard(this);
+                Model.Customer freshController = new Model.Customer(panelCustomerDashboard);
+                mainContainer.add(panelCustomerDashboard, "CUSTOMER_DASHBOARD");
+                mainContainer.revalidate();
+                mainContainer.repaint();
                 showCard("CUSTOMER_DASHBOARD");
             }
         }
