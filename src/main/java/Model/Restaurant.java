@@ -152,7 +152,7 @@ public final class Restaurant {
       }
    }
 
-   public final Restaurantt restaurant = new Restaurantt("REST-001", "Juan's Grill", "San Pedro, Laguna");
+   public final Restaurantt restaurant = new Restaurantt("REST-001", "McDollibee", "San Pedro, Laguna");
    public final List<String> categories = new ArrayList<>(Arrays.asList("Rice Meals", "Burgers", "Sides"));
    public final List<ModifierGroup> modifierGroups = new ArrayList<>();
    public final List<Order> orders = new ArrayList<>();

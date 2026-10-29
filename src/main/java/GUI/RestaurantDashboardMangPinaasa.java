@@ -50,7 +50,7 @@ public class RestaurantDashboardMangPinaasa extends JPanel {
    }
 
    private void refresh() {
-      welcome.setText("Welcome back, " + data.restaurant.name + "!");
+      welcome.setText("Welcome back, MangPinaasa!");
       Restaurant.StoreStatus status = data.getStoreStatus();
       statusChip.set("\u25CF  " + status.getLabel(), UIStyle.storeColor(status));
       mainPanel.remove(content);
