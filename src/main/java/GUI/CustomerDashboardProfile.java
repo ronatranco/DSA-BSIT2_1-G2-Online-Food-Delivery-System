@@ -24,7 +24,8 @@ public class CustomerDashboardProfile extends JPanel {
 
     private JTextField txtName1, txtName2, txtFullAdd, txtNumber, txtEmail, txtCPw, txtNPw;
     private JComboBox<String> cmbCountryCode;
-    private JButton btnCodeSelector, btnSaveInfo, btnSaveEmail, btnSavePassword, btnDelAcc;
+    private JButton btnCodeSelector;
+    private JButton btnSaveInfo, btnSaveEmail, btnSavePassword, btnDelAcc;
     private JScrollPane scrollPane;
     
     public CustomerDashboardProfile() {
@@ -81,7 +82,7 @@ public class CustomerDashboardProfile extends JPanel {
         String[] countryCodes = {"+63", "+1", "+44", "+81"};
         
         // == THE DROPDOWN BUTTON (Acts exactly like a borderless combobox) ==
-        JButton btnCodeSelector = new JButton("+63 ▼");
+        btnCodeSelector = new JButton("+63 ▼");
         btnCodeSelector.setFont(REGULAR_FONT);
         btnCodeSelector.setForeground(TEXT_DARK);
         btnCodeSelector.setBackground(COLOR_WHITE);
