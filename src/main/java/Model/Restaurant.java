@@ -201,28 +201,39 @@ public final class Restaurant {
       }
    }
 
-   private void addDish(String name, String category, double price, int sold, String imageFile) {
+    private void addDish(String name, String category, double price, int sold, String imageFile) {
       Dish dish = new Dish(name, category, price, true, sold);
-      dish.imagePath = "C:\\Users\\krist\\OneDrive\\Documents\\Images\\" + imageFile;
+      dish.imagePath = imageFile;
       restaurant.menuItems.add(dish);
    }
 
    private void seedMenu(Brand brand) {
       switch (brand) {
          case BRAIN_CELLS_MILK_TEA:
-            addDish("Matcha", "Milk Tea", 135.0, 42, "Matcha.jpg");
-            addDish("Dark Choco", "Milk Tea", 120.0, 35, "choco.jpg");
-            addDish("Watermelon", "Milk Tea", 65.0, 51, "Wintermelon.jpg");
+            addDish("Matcha", "Milk Tea", 135.0, 42, "src/main/java/gui/images/cdrestaurantmenumatcha.png");
+            addDish("Dark Choco", "Milk Tea", 120.0, 35, "src/main/java/gui/images/cdrestaurantmenudarkchoco.png");
+            addDish("Watermelon Milk Tea", "Milk Tea", 65.0, 51, "src/main/java/gui/images/cdrestaurantmenumilktea.png");
+            restaurant.menuItems.get(0).description = "Smooth, earthy green tea blended into a rich and creamy treat.";
+            restaurant.menuItems.get(1).description = "Deeply decadent and velvety chocolate crafted for the ultimate sweet tooth.";
+            restaurant.menuItems.get(2).description = "A refreshing blend of creamy milk tea and sweet, juicy watermelon flavor.";
             break;
+            
          case MANG_PINAASA:
-            addDish("Paa Malaki", "Rice Meals", 135.0, 42, "Paa.jpg");
-            addDish("Pork BBQ", "Rice Meals", 120.0, 35, "bbq.jpg");
-            addDish("Pork Liempo", "Rice Meals", 65.0, 51, "liempo.jpg");
+            addDish("Paa Malaki", "Rice Meals", 135.0, 42, "src/main/java/gui/images/cdrestaurantmenupaa.png");
+            addDish("Pork BBQ", "Rice Meals", 120.0, 35, "src/main/java/gui/images/cdrestaurantmenubbq.png");
+            addDish("Pork Liempo", "Rice Meals", 65.0, 51, "src/main/java/gui/images/cdrestaurantmenupliempo.png");
+            restaurant.menuItems.get(0).description = "Soft, tender bites simmered in a savory, finger-licking-good savory glaze.";
+            restaurant.menuItems.get(1).description = "Smoky, skewered grilled pork brushed in a sweet and savory marinade.";
+            restaurant.menuItems.get(2).description = "Juicy grilled pork belly with ultra-crispy skin, served with a tangy vinegar dip.";
             break;
+            
          default:
-            addDish("Chicken Rice", "Rice Meals", 135.0, 42, "Fried&rice.jpg");
-            addDish("Peach Apple Pie", "Sides", 120.0, 35, "peachapplepie.jpg");
-            addDish("Big Mac", "Burgers", 65.0, 51, "bigmac.jpg");
+            addDish("McChicken Joy w/Rice", "Rice Meals", 135.0, 42, "src/main/java/gui/images/cdrestaurantmenuchicken.png");
+            addDish("Peach Apple Pie", "Sides", 120.0, 35, "src/main/java/gui/images/cdrestaurantmenupapie.png");
+            addDish("Yum Big Mac Burger", "Burgers", 65.0, 51, "src/main/java/gui/images/cdrestaurantmenuburger.png");
+            restaurant.menuItems.get(0).description = "Crispy on the outside, juicy on the inside, and served with fluffy rice and savory gravy.";
+            restaurant.menuItems.get(1).description = "A warm, crispy crust filled with sweet, gooey peach and apple goodness.";
+            restaurant.menuItems.get(2).description = "Two juicy beef patties, legendary special sauce, crisp lettuce, cheese, pickles, and onions on a toasted sesame bun.";
             break;
       }
    }

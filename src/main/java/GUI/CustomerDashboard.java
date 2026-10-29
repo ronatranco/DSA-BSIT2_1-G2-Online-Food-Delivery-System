@@ -42,6 +42,7 @@ public class CustomerDashboard extends JPanel {
     private CustomerDashboardHistory pnlRightHistory;
     private CustomerDashboardProfile pnlRightProfile;
     private CustomerDashboardViewCart pnlRightCart;
+    private static boolean isFirstShow = true;
     
     private String savedFirstName = "";
     private String savedLastName = "";
@@ -521,15 +522,15 @@ public class CustomerDashboard extends JPanel {
             }
         });
         // == LAYER ORDER == 
-        pnlMainBg.setComponentZOrder(leftBannerNav, 0);       // Left Nav Panel
-        pnlMainBg.setComponentZOrder(pnlRightCart, 1);         // Order Summary Panel 
+        pnlMainBg.setComponentZOrder(leftBannerNav, 0);         // Left Nav Panel
+        pnlMainBg.setComponentZOrder(pnlRightCart, 1);          // Order Summary Panel 
         pnlMainBg.setComponentZOrder(pnlMenuMcDollibee, 2);     // Restaurant 1
         pnlMainBg.setComponentZOrder(pnlMenuBrainCells, 3);     // Restaurant 2
         pnlMainBg.setComponentZOrder(pnlMenuMangPinaasa, 4);    // Restaurant 3
-        pnlMainBg.setComponentZOrder(pnlRightProfile, 5);      // Profile Screen Panel
-        pnlMainBg.setComponentZOrder(pnlRightTrackOrder, 6);   // Track Order Screen
-        pnlMainBg.setComponentZOrder(pnlRightHistory, 7);      // History Panel
-        pnlMainBg.setComponentZOrder(pnlsearchBar, 8);         // Search Input Box Container
+        pnlMainBg.setComponentZOrder(pnlRightProfile, 5);       // Profile Screen Panel
+        pnlMainBg.setComponentZOrder(pnlRightTrackOrder, 6);    // Track Order Screen
+        pnlMainBg.setComponentZOrder(pnlRightHistory, 7);       // History Panel
+        pnlMainBg.setComponentZOrder(pnlsearchBar, 8);          // Search Input Box Container
         pnlMainBg.setComponentZOrder(pnlExpandedLocation, 9);   // Location Expander
         pnlMainBg.setComponentZOrder(pnlLocationBanner, 10);    // Location Banner
         pnlMainBg.setComponentZOrder(lblDateRn, 11);            // Live Date Header Label
@@ -540,11 +541,13 @@ public class CustomerDashboard extends JPanel {
         this.addComponentListener(new java.awt.event.ComponentAdapter() {
             @Override
             public void componentShown(java.awt.event.ComponentEvent e) {
-                String currentProfileName = pnlRightProfile.getName();
-                String currentProfileAddress = pnlRightProfile.getAddress();
-                if (currentProfileName == null || currentProfileName.trim().isEmpty() || 
-                    currentProfileAddress == null || currentProfileAddress.trim().isEmpty()) {
-                    showProfileWarningDialog("Profile Incomplete", "Please update your profile information first.");
+                if (isFirstShow) {
+                    String currentProfileName = pnlRightProfile.getName();
+                    String currentProfileAddress = pnlRightProfile.getAddress();
+                    if (currentProfileName == null || currentProfileName.trim().isEmpty() || 
+                        currentProfileAddress == null || currentProfileAddress.trim().isEmpty()) {
+                        showProfileWarningDialog("Profile Information", "Update your personal details freely.");
+                    }   isFirstShow = false;
                 }
             }
         });
@@ -618,12 +621,12 @@ public class CustomerDashboard extends JPanel {
     }   public MainFrame getMainFrame() {
             return mainFrame;
     }
-    public String getSavedFirstName() { return savedFirstName; }
-    public void setSavedFirstName(String val) { this.savedFirstName = val; }
-    public String getSavedLastName() { return savedLastName; }
-    public void setSavedLastName(String val) { this.savedLastName = val; }
-    public String getSavedMobileNumber() { return savedMobileNumber; }
-    public void setSavedMobileNumber(String val) { this.savedMobileNumber = val; }
-    public String getSavedFullAddress() { return savedFullAddress; }
-    public void setSavedFullAddress(String val) { this.savedFullAddress = val; }
+        public String getSavedFirstName() { return savedFirstName; }
+        public void setSavedFirstName(String val) { this.savedFirstName = val; }
+        public String getSavedLastName() { return savedLastName; }
+        public void setSavedLastName(String val) { this.savedLastName = val; }
+        public String getSavedMobileNumber() { return savedMobileNumber; }
+        public void setSavedMobileNumber(String val) { this.savedMobileNumber = val; }
+        public String getSavedFullAddress() { return savedFullAddress; }
+        public void setSavedFullAddress(String val) { this.savedFullAddress = val; }
 }
