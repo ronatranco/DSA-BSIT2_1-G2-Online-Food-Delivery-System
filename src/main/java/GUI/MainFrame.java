@@ -121,11 +121,14 @@ public class MainFrame extends JFrame implements ActionListener {
         panelRestaurantLogin.btnRestaurantLogin.addActionListener(this);
         panelRestaurantLogin.btnRestaurantForgotPassword.addActionListener(this);
         panelRestaurantLogin.btnRestaurantLoginBack.addActionListener(this);
+        panelRestaurantLogin.btnDontHaveAccount.addActionListener(this);
 
         // Admin Login Panel & GUI
         panelAdminLogin.btnAdminLogin.addActionListener(this);
         panelAdminLogin.btnAdminForgotPassword.addActionListener(this);
         panelAdminLogin.btnAdminLoginBack.addActionListener(this);
+        panelAdminLogin.btnDontHaveAccount.addActionListener(this);
+
         if (panelAdminGUI.getBtnLogout() != null) {
             panelAdminGUI.getBtnLogout().addActionListener(this);
         }
@@ -184,6 +187,12 @@ public class MainFrame extends JFrame implements ActionListener {
             showCard("ROLE_SELECTION");
         }
         else if (source == panelCustomerLogin.btnDontHaveAccount) {
+            showCard("SIGNUP");
+        }
+        else if (source == panelRestaurantLogin.btnDontHaveAccount){
+            showCard("SIGNUP");
+        }
+        else if (source == panelAdminLogin.btnDontHaveAccount){
             showCard("SIGNUP");
         }
 
@@ -303,7 +312,7 @@ public class MainFrame extends JFrame implements ActionListener {
         }
     }
 
-    /** Checks the database. Shows an error dialog and returns false on failure. */
+    /** checks database. Shows an error dialog and returns false on failure. */
     private boolean authenticate(String login, String password, String role) {
         if (login.isEmpty() || password.isEmpty()) {
             JOptionPane.showMessageDialog(this, "Invalid Username or Password! \nIf you don't have an account, please create one.",
@@ -322,7 +331,7 @@ public class MainFrame extends JFrame implements ActionListener {
         return false;
     }
 
-    /** Validates the signup form and inserts the new user into the database. */
+    /** checks the signup form and inserts the new user into the database. */
     private void registerUser() {
         String name     = panelSignup.txtName.getText().trim();
         String username = panelSignup.txtUsername.getText().trim();
