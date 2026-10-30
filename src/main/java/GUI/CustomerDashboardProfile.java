@@ -28,6 +28,12 @@ public class CustomerDashboardProfile extends JPanel {
     private JButton btnSaveInfo, btnSaveEmail, btnSavePassword, btnDelAcc;
     private JScrollPane scrollPane;
     
+    private static String savedHomeAddress = "";
+    public static String getSavedHomeAddress() { return savedHomeAddress; }
+    public static void setSavedHomeAddress(String address) {
+        savedHomeAddress = (address == null) ? "" : address.trim();
+    }
+    
     public CustomerDashboardProfile() {
         setLayout(null);
         setBackground(COLOR_WHITE);
@@ -231,10 +237,11 @@ public class CustomerDashboardProfile extends JPanel {
             return "User"; 
         }   return (first + " " + last).trim(); 
     }
-         public String getMobileNumber() {
-
+             public String getMobileNumber() {
+        String local = txtNumber.getText().trim();
+        if (local.isEmpty()) return "";
         String selectedCode = btnCodeSelector.getText().replace(" ▼", "").trim();
-        return selectedCode + " " + txtNumber.getText().trim(); 
+        return selectedCode + " " + local;
     }   
 
     public void loadPhoneNumber(String fullPhoneNumber) {

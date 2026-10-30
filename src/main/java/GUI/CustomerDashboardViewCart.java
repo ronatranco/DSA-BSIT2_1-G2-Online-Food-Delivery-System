@@ -1,4 +1,3 @@
-
 /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
@@ -46,19 +45,21 @@ public class CustomerDashboardViewCart extends JPanel {
     // Declarations
     private JLabel lblCartTitle, lblCartSubtitle, lblSubtotal, lblSubtotalCount, lblSubtotalBill, lblFooterQuote;
     private JButton btnExitCart, btnCheckout;
-    private JPanel ContainerPanel;
-    private JPanel subtotalCard;
+    private JPanel ContainerPanel, subtotalCard;
+    private JScrollPane scrollPane;        
+    private JSeparator btmseparator;
     private JCheckBox currentlySelectedRestaurant = null;    
 
     public CustomerDashboardViewCart(){
 
-       //1. Main Panel
+       // 1. Main Panel 
        setLayout(null);
        setBackground(COLOR_WHITE);
        setBorder(BorderFactory.createMatteBorder(0, 2, 0, 0, PURPLE_LIGHT)); 
-       setBounds(1024, 0, 300, 720);
+       setBounds(1024, 0, 340, 720);
 
-       //2. Header
+       // 2. Header
+       // 2.1 Cart Icon
        JPanel cartIconPanel = new JPanel(){
            @Override
            protected void paintComponent(Graphics g){
@@ -103,19 +104,21 @@ public class CustomerDashboardViewCart extends JPanel {
         cartIconPanel.setBounds(12, 12, 68, 52);
         add(cartIconPanel);
 
+        // 2.2 Title
         lblCartTitle = new JLabel("Your Cart");
         lblCartTitle.setFont(new Font("Segoe UI", Font.BOLD, 15));
         lblCartTitle.setForeground(PURPLE_DARK);
         lblCartTitle.setBounds(85, 16, 140, 20);
         add(lblCartTitle);
 
+        // 2.3 Subtitle 
         lblCartSubtitle = new JLabel("0 restaurants • 0 items");
         lblCartSubtitle.setFont(new Font("Segoe UI", Font.PLAIN, 11));
         lblCartSubtitle.setForeground(SUBTITLE_COLOR);
         lblCartSubtitle.setBounds(85, 36, 140, 16);
         add(lblCartSubtitle);   
 
-        //3. Exit Cart Button
+        // 3. Exit Cart Button
         btnExitCart = new JButton() {
             @Override
             protected void paintComponent(Graphics g) {
@@ -146,7 +149,7 @@ public class CustomerDashboardViewCart extends JPanel {
         btnExitCart.setFocusPainted(false);
         btnExitCart.setBackground(EXIT_BTN_BG); 
         btnExitCart.setForeground(EXIT_BTN_FG);   
-        btnExitCart.setBounds(224, 18, 50, 40);
+        btnExitCart.setBounds(268, 18, 50, 40);
         btnExitCart.setCursor(new Cursor(Cursor.HAND_CURSOR)); 
 
         btnExitCart.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -161,41 +164,50 @@ public class CustomerDashboardViewCart extends JPanel {
         });
         add(btnExitCart); 
 
-        //4. Separators
+        // 4. Separators
+        // 4.1 Top Separator
         JSeparator topSeparator = new JSeparator();
-        topSeparator.setBounds(12, 65, 263, 2);
+        topSeparator.setBounds(12, 65, 316, 2);
         topSeparator.setForeground(PURPLE_DARK);
         add(topSeparator);
 
+        // 4.2 Bottom Separator
         JSeparator btmseparator = new JSeparator();
-        btmseparator.setBounds(12, 485, 263, 2);
+        btmseparator.setBounds(12, 555, 316, 2);
         btmseparator.setForeground(PURPLE_DARK);
         add(btmseparator);
 
-        //5. Container Panel 
+        // 5. Container Panel
         ContainerPanel = new JPanel();
         ContainerPanel.setLayout(new BoxLayout(ContainerPanel, BoxLayout.Y_AXIS));
-        ContainerPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
+        ContainerPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        ContainerPanel.setAlignmentY(Component.TOP_ALIGNMENT);
         ContainerPanel.setBackground(COLOR_WHITE);
         ContainerPanel.setOpaque(false);
         ContainerPanel.setBorder(BorderFactory.createEmptyBorder(14, 0, 8, 0)); 
 
-        //6. Scroll Pane
-        JScrollPane scrollPane = new JScrollPane(ContainerPanel);
-        scrollPane.setBounds(10, 76, 280, 403);
+        // 5.1 Wrapper 
+        JPanel viewportWrapper = new JPanel(new BorderLayout());
+        viewportWrapper.setBackground(COLOR_WHITE);
+        viewportWrapper.setOpaque(false);
+        viewportWrapper.add(ContainerPanel, BorderLayout.NORTH);
+
+        // 6. Scroll Pane
+        JScrollPane scrollPane = new JScrollPane(viewportWrapper);
+        scrollPane.setBounds(10, 68, 320, 485);
         scrollPane.setBorder(BorderFactory.createEmptyBorder());
         scrollPane.getViewport().setBackground(COLOR_WHITE);
         scrollPane.setBackground(COLOR_WHITE); 
 
         scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
-        scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 
         JScrollBar verticalbar = scrollPane.getVerticalScrollBar();
         verticalbar.setUnitIncrement(4);
         verticalbar.setPreferredSize(new Dimension(1, 0)); 
         add(scrollPane); 
 
-        //7. Subtotal Card
+        // 7. Subtotal Card 
         subtotalCard = new JPanel(null) {
             @Override
             protected void paintComponent(Graphics g) {
@@ -210,34 +222,39 @@ public class CustomerDashboardViewCart extends JPanel {
         };
 
         subtotalCard.setOpaque(false);
-        subtotalCard.setBounds(14, 495, 260, 52);
+        subtotalCard.setBounds(14, 562, 312, 52);
 
+        // 7.1 Receipt Icon
         JLabel lblReceiptIcon = new JLabel("🧾", SwingConstants.CENTER);
         lblReceiptIcon.setFont(new Font("Segoe UI Emoji", Font.PLAIN, 22));
         lblReceiptIcon.setBounds(14, 8, 36, 36);
         subtotalCard.add(lblReceiptIcon);
 
+        // 7.2 Subtotal Label
         lblSubtotal = new JLabel("Subtotal");
         lblSubtotal.setFont(new Font("Segoe UI", Font.BOLD, 13));
         lblSubtotal.setForeground(TEXT_DARK);
         lblSubtotal.setBounds(52, 8, 90, 18);
         subtotalCard.add(lblSubtotal);
 
+        // 7.3 Item Count
         lblSubtotalCount = new JLabel("0 items");
         lblSubtotalCount.setFont(new Font("Segoe UI", Font.PLAIN, 11));
         lblSubtotalCount.setForeground(Color.GRAY);
         lblSubtotalCount.setBounds(52, 26, 90, 16);
         subtotalCard.add(lblSubtotalCount);
 
+        // 7.4 Subtotal Amount
         lblSubtotalBill = new JLabel("₱0.00", SwingConstants.RIGHT);
         lblSubtotalBill.setFont(new Font("Segoe UI", Font.BOLD, 15));
         lblSubtotalBill.setForeground(PURPLE_DARK);
-        lblSubtotalBill.setBounds(135, 14, 115, 24);
+        lblSubtotalBill.setBounds(176, 14, 120, 24);
         subtotalCard.add(lblSubtotalBill);
 
         add(subtotalCard);
 
-        //8. Checkout Button & Footer
+        // 8. Checkout Button & Footer
+        // 8.1 Checkout Button
         btnCheckout = new JButton("🛍️  CHECKOUT") {
             @Override
             protected void paintComponent(Graphics g) {
@@ -257,147 +274,151 @@ public class CustomerDashboardViewCart extends JPanel {
         btnCheckout.setBorderPainted(false);
         btnCheckout.setFocusPainted(false);
         btnCheckout.setCursor(new Cursor(Cursor.HAND_CURSOR));
-        btnCheckout.setBounds(14, 558, 260, 44);
+        btnCheckout.setBounds(14, 618, 312, 40);
         add(btnCheckout); 
 
-                btnCheckout.addActionListener(e -> {
-            if (currentlySelectedRestaurant == null){
-                showCustomWarningDialog("No Selection", "Please select a restaurant to checkout.");
-                return;
+     // 8.2 Checkout Action
+     btnCheckout.addActionListener(e -> {
+    if (currentlySelectedRestaurant == null){
+        showCustomWarningDialog("No Selection", "Please select a restaurant to checkout.");
+        return;
+    }
+
+    boolean proceed = showCustomConfirmDialog("Confirm Checkout", "Do you want to proceed to checkout?");
+    if (proceed) {
+        Container root = this.getParent();
+        while (root != null && !(root instanceof CustomerDashboard)) {
+            root = root.getParent();
+        }
+
+        String liveName = "";
+        String livePhone = "";
+        String liveAddress = "";
+
+        if (root instanceof CustomerDashboard) {
+            CustomerDashboard dashboard = (CustomerDashboard) root;
+            
+            String first = dashboard.getSavedFirstName();
+            String last = dashboard.getSavedLastName();
+            String phone = dashboard.getSavedMobileNumber();
+            String address = dashboard.getSavedFullAddress();
+
+            if ((first != null && !first.isEmpty()) || (last != null && !last.isEmpty())) {
+                liveName = ((first != null ? first : "") + " " + (last != null ? last : "")).trim();
             }
+            if (phone != null && !phone.isEmpty()) {
+                livePhone = phone;
+            }
+            if (address != null && !address.isEmpty()) {
+                liveAddress = address;
+            }
+        }
 
-            boolean proceed = showCustomConfirmDialog("Confirm Checkout", "Do you want to proceed to checkout?");
-            if (proceed) {
-                // 1. Traverse up the tree to find the CustomerDashboard master panel
-                Container root = this.getParent();
-                while (root != null && !(root instanceof CustomerDashboard)) {
-                    root = root.getParent();
+        Order newOrder = generateOrderFromSelection("CUST-001", liveName, livePhone, liveAddress);
+
+        if (newOrder != null) {
+            Container parent = this.getParent();
+
+            if (parent != null) {
+                CustomerDashboardCheckout pnlRightCheckout = new CustomerDashboardCheckout(newOrder);
+                pnlRightCheckout.setBounds(668, 0, 340, 720); 
+
+                parent.add(pnlRightCheckout);
+                parent.remove(this);
+
+                if (parent instanceof JPanel) {
+                    ((JPanel) parent).setComponentZOrder(pnlRightCheckout, 0);
                 }
 
-                // Default fallbacks if profile fields are blank or dashboard isn't found
-                String liveName = "User";
-                String livePhone = "09123456789";
-                String liveAddress = "City, Province"; 
+                pnlRightCheckout.setVisible(true);
+                
+                pnlRightCheckout.setOnBackToCartCallback(() -> {
+                    parent.remove(pnlRightCheckout);
+                    parent.add(this);
+                    setVisible(true);
+                    animateOpen();
+                    parent.revalidate();
+                    parent.repaint();
+                });
+                
 
-                // 2. Safely extract the live text data directly from your profile components
-                if (root instanceof CustomerDashboard) {
-                    CustomerDashboard dashboard = (CustomerDashboard) root;
-                    
-                    String first = dashboard.getSavedFirstName();
-                    String last = dashboard.getSavedLastName();
-                    String phone = dashboard.getSavedMobileNumber();
-                    String address = dashboard.getSavedFullAddress();
+                pnlRightCheckout.setOnOrderPlacedCallback(placedOrder -> {
+                    pnlRightCheckout.setVisible(false);
+                    parent.remove(pnlRightCheckout);
 
-                    if ((first != null && !first.isEmpty()) || (last != null && !last.isEmpty())) {
-                        liveName = ((first != null ? first : "") + " " + (last != null ? last : "")).trim();
+                    ContainerPanel.removeAll();
+                    currentlySelectedRestaurant = null;
+                    updateCartTotals();
+
+                    setVisible(false);
+                    setBounds(1024, 0, 340, 720);
+                    parent.add(this); 
+
+                    Container dashboardRoot = parent;
+                    while (dashboardRoot != null && !(dashboardRoot instanceof CustomerDashboard)) {
+                        dashboardRoot = dashboardRoot.getParent();
                     }
-                    if (phone != null && !phone.isEmpty()) {
-                        livePhone = phone;
-                    }
-                    if (address != null && !address.isEmpty()) {
-                        liveAddress = address;
-                    }
-                }
+                    if (dashboardRoot instanceof CustomerDashboard) {
+                        CustomerDashboard dashboard = (CustomerDashboard) dashboardRoot;
+                        dashboard.getLblDateRn().setVisible(true);
+                        
+                        java.time.format.DateTimeFormatter dtf = java.time.format.DateTimeFormatter.ofPattern("MMM d, yyyy · h:mm a");
+                        String orderDateStr = java.time.LocalDateTime.now().format(dtf);
+                        String deliveryDateStr = java.time.LocalDateTime.now().plusMinutes(30).format(dtf);
+                        double finalTotal = placedOrder.calculateFinalTotal(40.0, 0.0);
+                        
+                        dashboard.getPnlRightHistory().registerOrder(
+                            placedOrder.getRestaurantId(),
+                            placedOrder.getDeliveryAddress(),
+                            placedOrder.getOrderId(),
+                            orderDateStr,
+                            deliveryDateStr,
+                            "Cash on Delivery",
+                            "Pending",
+                            String.format("₱%.2f", finalTotal),
+                            placedOrder.getOrderItems()
+                        );
 
-                // Generate order object with all live profile data parameters
-                Order newOrder = generateOrderFromSelection("CUST-001", liveName, livePhone, liveAddress);
-
-                if (newOrder != null) {
-                    Container parent = this.getParent();
-
-                    if (parent != null) {
-                        CustomerDashboardCheckout pnlRightCheckout = new CustomerDashboardCheckout(newOrder);
-                        pnlRightCheckout.setBounds(724, 0, 300, 720); 
-
-                        parent.add(pnlRightCheckout);
-                        parent.remove(this);
-
-                        if (parent instanceof JPanel) {
-                            ((JPanel) parent).setComponentZOrder(pnlRightCheckout, 0);
+                        for (Component comp : parent.getComponents()) {
+                            if (comp instanceof CustomerDashboardRestaurant) {
+                                comp.setBounds(0, 0, 1024, 720);
+                            }
+                            if (comp instanceof CustomerDashboardRestaurantMenus) {
+                                comp.setBounds(80, 0, 944, 720);
+                            }
                         }
-
-                        pnlRightCheckout.setVisible(true);
-
-                        // --- CLEAN ORDER PLACED CALLBACK ---
-                        pnlRightCheckout.setOnOrderPlacedCallback(placedOrder -> {
-                            pnlRightCheckout.setVisible(false);
-                            parent.remove(pnlRightCheckout);
-
-                            // 1. Clear cart items and totals
-                            ContainerPanel.removeAll();
-                            updateCartTotals();
-
-                            // 2. Hide cart panel and reset its position off-screen
-                            setVisible(false);
-                            setBounds(1024, 0, 300, 720);
-                            parent.add(this); 
-
-                            // 3. Bring back date label and restore full-screen widths
-                            Container dashboardRoot = parent;
-                            while (dashboardRoot != null && !(dashboardRoot instanceof CustomerDashboard)) {
-                                dashboardRoot = dashboardRoot.getParent();
-                            }
-                            if (dashboardRoot instanceof CustomerDashboard) {
-                                CustomerDashboard dashboard = (CustomerDashboard) dashboardRoot;
-                                dashboard.getLblDateRn().setVisible(true);
-                                
-                                // --- AUTOMATICALLY REGISTER THE ORDER IN HISTORY ---
-                                java.time.format.DateTimeFormatter dtf = java.time.format.DateTimeFormatter.ofPattern("MMM d, yyyy · h:mm a");
-                                String orderDateStr = java.time.LocalDateTime.now().format(dtf);
-                                String deliveryDateStr = java.time.LocalDateTime.now().plusMinutes(30).format(dtf);
-                                double finalTotal = placedOrder.calculateFinalTotal(40.0, 0.0);
-                                
-                                // Dynamic delivery address fed straight from the order object data
-                                dashboard.getPnlRightHistory().registerOrder(
-                                    placedOrder.getRestaurantId(),
-                                    placedOrder.getDeliveryAddress(),
-                                    placedOrder.getOrderId(),
-                                    orderDateStr,
-                                    deliveryDateStr,
-                                    "Cash on Delivery",
-                                    "Pending",
-                                    String.format("₱%.2f", finalTotal),
-                                    placedOrder.getOrderItems()
-                                );
-                                // --------------------------------------------------
-
-                                for (Component comp : parent.getComponents()) {
-                                    if (comp instanceof CustomerDashboardRestaurant) {
-                                        comp.setBounds(0, 0, 1024, 720);
-                                    }
-                                    if (comp instanceof CustomerDashboardRestaurantMenus) {
-                                        comp.setBounds(80, 0, 944, 720);
-                                    }
-                                }
-                            }
-
-                            parent.revalidate();
-                            parent.repaint();
-                        });
-
-                        parent.revalidate();
-                        parent.repaint();
                     }
-                }
+
+                    parent.revalidate();
+                    parent.repaint();
+                });
+
+                parent.revalidate();
+                parent.repaint();
             }
-        });
-
-
+        }
+    }
+});
+     
+        // 8.3 Footer Quote
         lblFooterQuote = new JLabel("Total price may vary at checkout", SwingConstants.CENTER);
         lblFooterQuote.setFont(new Font("Segoe UI", Font.ITALIC, 11));
         lblFooterQuote.setForeground(PURPLE_LIGHT);
-        lblFooterQuote.setBounds(14, 610, 260, 20);
+        lblFooterQuote.setBounds(14, 662, 312, 20);
         add(lblFooterQuote); 
     }
+    
+    
 
     // 9. Cart & Restaurant Display Logic
+    // 9.1 Update Subtotal Display
     public void CartDisplay(double subtotal) {
         lblSubtotalBill.setText(String.format("₱%.2f", subtotal));
         ContainerPanel.revalidate();
         ContainerPanel.repaint();
     }  
 
-    
+    // 9.2 Add Restaurant Cards
     public void addRestaurantCards(String RestaurantName, String[][] items) {
 
         JPanel existingRestaurantCard = null;
@@ -406,15 +427,15 @@ public class CustomerDashboardViewCart extends JPanel {
         for (Component comp : ContainerPanel.getComponents()) {
             if (comp instanceof JPanel) {
                 JPanel card = (JPanel) comp;
-                for (Component headerComp : card.getComponents()) {
-                    if (headerComp instanceof JPanel) {
-                        for (Component subHeader : ((JPanel) headerComp).getComponents()) {
-                            if (subHeader instanceof JCheckBox) {
-                                JCheckBox cb = (JCheckBox) subHeader;
-                                if (cb.getText().equalsIgnoreCase(RestaurantName)) {
-                                    existingRestaurantCard = card;
-                                    existingCheckbox = cb;
-                                    break;
+        for (Component headerComp : card.getComponents()) {
+            if (headerComp instanceof JPanel) {
+        for (Component subHeader : ((JPanel) headerComp).getComponents()) {
+            if (subHeader instanceof JCheckBox) {
+                JCheckBox cb = (JCheckBox) subHeader;
+            if (cb.getText().equalsIgnoreCase(RestaurantName)) {
+                existingRestaurantCard = card;
+                existingCheckbox = cb;
+        break;
                                 }
                             }
                         }
@@ -435,57 +456,57 @@ public class CustomerDashboardViewCart extends JPanel {
                 for (Component c : existingRestaurantCard.getComponents()) {
                     if (c instanceof JPanel) {
                         JPanel row = (JPanel) c;
-                        if (row.getComponentCount() > 0 && row.getComponent(0) instanceof JPanel) {
+                    if (row.getComponentCount() > 0 && row.getComponent(0) instanceof JPanel) {
                             JPanel topSubRow = (JPanel) row.getComponent(0);
-                            for (Component sub : topSubRow.getComponents()) {
-                                if (sub instanceof JLabel) {
-                                    JLabel lblName = (JLabel) sub;
-                                    if (lblName.getText().equalsIgnoreCase(newItemName)) {
-                                        itemFound = true;
+                for (Component sub : topSubRow.getComponents()) {
+                    if (sub instanceof JLabel) {
+                        JLabel lblName = (JLabel) sub;
+                    if (lblName.getText().equalsIgnoreCase(newItemName)) {
+                        itemFound = true;
 
-                                        for (Component rightComp : topSubRow.getComponents()) {
-                                            if (rightComp instanceof JPanel) {
-                                                JPanel rightContainer = (JPanel) rightComp;
-                                                for (Component rc : rightContainer.getComponents()) {
-                                                    if (rc instanceof JPanel) {
-                                                        JPanel qtyBox = (JPanel) rc;
-                                                        for (Component q : qtyBox.getComponents()) {
-                                                            if (q instanceof JLabel) {
-                                                                JLabel lblQty = (JLabel) q;
-                                                                int currentQty = Integer.parseInt(lblQty.getText());
-                                                                int updatedQty = currentQty + newQty;
-                                                                lblQty.setText(String.valueOf(updatedQty));
+                for (Component rightComp : topSubRow.getComponents()) {
+                    if (rightComp instanceof JPanel) {
+                        JPanel rightContainer = (JPanel) rightComp;
+                for (Component rc : rightContainer.getComponents()) {
+                        if (rc instanceof JPanel) {
+                        JPanel qtyBox = (JPanel) rc;
+                for (Component q : qtyBox.getComponents()) {
+                        if (q instanceof JLabel) {
+                        JLabel lblQty = (JLabel) q;
+                            int currentQty = Integer.parseInt(lblQty.getText());
+                            int updatedQty = currentQty + newQty;
+                            if (updatedQty > MAX_ITEM_QTY) {
+                                updatedQty = MAX_ITEM_QTY;
+                                showCustomWarningDialog("Limit Reached", "You can only order up to " + MAX_ITEM_QTY + " of each item.");
+                            }
+                            lblQty.setText(String.valueOf(updatedQty));
 
-                                                                for (Component priceComp : rightContainer.getComponents()) {
-                                                                    if (priceComp instanceof JLabel && priceComp != lblName) {
-                                                                        ((JLabel) priceComp).setText(String.format("₱%.2f", newUnitPrice * updatedQty));
-                                                                    }
-                                                                }
-                                                            }
-                                                        }
-                                                    }
-                                                }
-                                            }
-                                        }
-                                        break;
+                for (Component priceComp : rightContainer.getComponents()) {
+                        if (priceComp instanceof JLabel && priceComp != lblName) {
+                            ((JLabel) priceComp).setText(String.format("₱%.2f", newUnitPrice * updatedQty));
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                 break;
                                     }
                                 }
                             }
                         }
-                        if (itemFound) break;
+                if (itemFound) break;
                     }
                 }
 
                 if (!itemFound) {
-                    JPanel newItemRow = createItemRow(existingRestaurantCard, newItemName, newQty, newUnitPrice, "");
+                    JPanel newItemRow = createItemRow(existingRestaurantCard, newItemName, Math.min(newQty, MAX_ITEM_QTY), newUnitPrice, "");
                     existingRestaurantCard.add(Box.createRigidArea(new Dimension(0, 6)));
                     existingRestaurantCard.add(newItemRow);
-
-                    Dimension currentDim = existingRestaurantCard.getPreferredSize();
-                    int addedHeight = 58 + 6;
-                    existingRestaurantCard.setPreferredSize(new Dimension(currentDim.width, currentDim.height + addedHeight));
-                    existingRestaurantCard.setMaximumSize(new Dimension(currentDim.width, currentDim.height + addedHeight));
-                    existingRestaurantCard.setMinimumSize(new Dimension(currentDim.width, currentDim.height + addedHeight));
+                    
+                    updateRestaurantCardHeight(existingRestaurantCard);
                 }
             }
 
@@ -494,7 +515,6 @@ public class CustomerDashboardViewCart extends JPanel {
             ContainerPanel.repaint();
             return;
         }
-
 
         RoundCheckBox ChkBxStore = new RoundCheckBox(RestaurantName);
 
@@ -528,17 +548,14 @@ public class CustomerDashboardViewCart extends JPanel {
 
         RestaurantCard.setLayout(new BoxLayout(RestaurantCard, BoxLayout.Y_AXIS));
         RestaurantCard.setOpaque(false);
-        RestaurantCard.setBorder(BorderFactory.createEmptyBorder(8, 8, 12, 8));
-        RestaurantCard.setAlignmentX(Component.LEFT_ALIGNMENT);
-        int calculatedHeight = 45 + (items.length * 64);
-        RestaurantCard.setPreferredSize(new Dimension(274, calculatedHeight));
-        RestaurantCard.setMaximumSize(new Dimension(274, calculatedHeight));
-        RestaurantCard.setMinimumSize(new Dimension(274, calculatedHeight));
+        RestaurantCard.setBorder(BorderFactory.createEmptyBorder(8, 12, 12, 8));
+        RestaurantCard.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         JPanel headerRow = new JPanel(new BorderLayout());
         headerRow.setOpaque(false);
-        headerRow.setMaximumSize(new Dimension(260, 28)); 
-        headerRow.setPreferredSize(new Dimension(260, 28));
+        headerRow.setMaximumSize(new Dimension(296, 28)); 
+        headerRow.setPreferredSize(new Dimension(296, 28));
+        headerRow.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         ChkBxStore.addActionListener(e -> handleRestaurantSelection(ChkBxStore));
         if (currentlySelectedRestaurant == null) {
@@ -572,12 +589,15 @@ public class CustomerDashboardViewCart extends JPanel {
         btnRemoveStore.setCursor(new Cursor(Cursor.HAND_CURSOR));
 
         btnRemoveStore.addActionListener(e -> {
+            boolean confirmDelete = showCustomConfirmDialog( "Remove Restaurant", "All items from " + ChkBxStore.getText() + " will be removed. \nDelete all items?");
+            if (!confirmDelete) {
+                return;
+            }
             if (currentlySelectedRestaurant == ChkBxStore) {
                 currentlySelectedRestaurant = null;
             }
-            ContainerPanel.remove(RestaurantCard);
-            ContainerPanel.revalidate();
-            ContainerPanel.repaint();
+
+            removeRestaurantCard(RestaurantCard);
             updateCartTotals();
         });
 
@@ -585,7 +605,8 @@ public class CustomerDashboardViewCart extends JPanel {
         RestaurantCard.add(headerRow);
 
         JSeparator RestaurantSeparator = new JSeparator();
-        RestaurantSeparator.setMaximumSize(new Dimension(Integer.MAX_VALUE, 1));
+        RestaurantSeparator.setMaximumSize(new Dimension(296, 1));
+        RestaurantSeparator.setPreferredSize(new Dimension(296, 1));
         RestaurantSeparator.setAlignmentX(Component.CENTER_ALIGNMENT);
         RestaurantSeparator.setForeground(BORDER_COLOR);
 
@@ -599,7 +620,7 @@ public class CustomerDashboardViewCart extends JPanel {
             int qty = Integer.parseInt(item[1]);
             double unitPrice = Double.parseDouble(item[2]);
 
-            JPanel itemRow = createItemRow(RestaurantCard, itemName, qty, unitPrice, "");
+            JPanel itemRow = createItemRow(RestaurantCard, itemName, Math.min(qty, MAX_ITEM_QTY), unitPrice, "");
             RestaurantCard.add(itemRow);
 
             if (i < items.length - 1) {
@@ -609,26 +630,68 @@ public class CustomerDashboardViewCart extends JPanel {
 
         ContainerPanel.add(RestaurantCard);
         Component spacer = Box.createRigidArea(new Dimension(0, 12));
-        ((JComponent) spacer).setAlignmentX(Component.LEFT_ALIGNMENT);
+        ((JComponent) spacer).setAlignmentX(Component.CENTER_ALIGNMENT);
         ContainerPanel.add(spacer);
 
         ContainerPanel.revalidate();
         ContainerPanel.repaint();
+        
+        updateRestaurantCardHeight(RestaurantCard);    
+    }
+    
+    // 9.3 Remove Restaurant Card
+    private void removeRestaurantCard(JPanel card) {
+        Component[] comps = ContainerPanel.getComponents();
+        for (int i = 0; i < comps.length; i++) {
+            if (comps[i] == card) {
+                if (i + 1 < comps.length && comps[i + 1] instanceof Box.Filler) {
+                    ContainerPanel.remove(comps[i + 1]);
+                }
+                ContainerPanel.remove(card);
+                break;
+            }
+        }
+        ContainerPanel.revalidate();
+        ContainerPanel.repaint();
     }
 
-    //10. Quantity Controls    
+    // 9.4 Update Card Height
+    private void updateRestaurantCardHeight(JPanel restaurantCard) {
+        restaurantCard.setAlignmentY(Component.TOP_ALIGNMENT);
+        restaurantCard.setAlignmentX(Component.CENTER_ALIGNMENT);
+        int totalHeight = 16; 
+        for (Component comp : restaurantCard.getComponents()) {
+            totalHeight += comp.getPreferredSize().height;
+        }
+        
+        restaurantCard.setPreferredSize(new Dimension(312, totalHeight));
+        restaurantCard.setMaximumSize(new Dimension(312, totalHeight));
+        restaurantCard.setMinimumSize(new Dimension(312, totalHeight));
+        
+        ContainerPanel.revalidate();
+        ContainerPanel.repaint();
+    }
+    
+
+    // 10. Quantity Controls (Scaled to width 330)
+    // 10.1 Max 
+    private static final int MAX_ITEM_QTY = 25;            
+    private static final int MAX_INSTRUCTION_CHARS = 100;  
+
+    // 10.2 Item Row 
     private JPanel createItemRow(JPanel parentCard, String Name, int InitialQuantity, double UnitPrice, String initialInstructions) {
         JPanel Row = new JPanel();
         Row.setLayout(new BoxLayout(Row, BoxLayout.Y_AXIS));
         Row.setOpaque(false);
         Row.setAlignmentX(Component.CENTER_ALIGNMENT);
-        Row.setMaximumSize(new Dimension(260, 58));
-        Row.setPreferredSize(new Dimension(260, 58));
+        Row.setMaximumSize(new Dimension(296, 58)); 
+        Row.setPreferredSize(new Dimension(296, 58));
 
         JPanel topSubRow = new JPanel(new BorderLayout(5, 0));
         topSubRow.setOpaque(false);
-        topSubRow.setMaximumSize(new Dimension(260, 28));
-        topSubRow.setPreferredSize(new Dimension(260, 28));
+        topSubRow.setMaximumSize(new Dimension(296, 28)); 
+        topSubRow.setPreferredSize(new Dimension(296, 28));
+        topSubRow.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         JLabel lblName = new JLabel(Name);
         lblName.setFont(new Font("Segoe UI", Font.BOLD, 12));
@@ -713,33 +776,84 @@ public class CustomerDashboardViewCart extends JPanel {
         btnMinus.addActionListener(e -> {
             int current = Integer.parseInt(lblQuantity.getText());
             current--;
+
             if (current <= 0) {
-                boolean confirmDelete = showCustomConfirmDialog("Confirm Deletion", "Are you sure you want to delete this item?");
+                int remainingItems = 0;
+                for (Component comp : parentCard.getComponents()) {
+                    if (comp instanceof JPanel && comp != parentCard.getComponent(0)) {
+                        remainingItems++;
+                    }
+                }
+
+                String deleteMessage;
+                if (remainingItems <= 1) {
+                    deleteMessage = "Deleting this item will remove the restaurant \nfrom your cart. \nContinue?";
+                } else {
+                    deleteMessage = "Are you sure you want to delete this item?";
+                }
+
+                boolean confirmDelete = showCustomConfirmDialog("Confirm Deletion", deleteMessage);
+
                 if (confirmDelete) {
-                    parentCard.remove(Row);
-                    parentCard.revalidate();
-                    parentCard.repaint();
+                    if (remainingItems <= 1) {
+                        JCheckBox cardCheckbox = null;
+                        for (Component headerComp : parentCard.getComponents()) {
+                            if (headerComp instanceof JPanel) {
+                                for (Component subHeader : ((JPanel) headerComp).getComponents()) {
+                                    if (subHeader instanceof JCheckBox) {
+                                        cardCheckbox = (JCheckBox) subHeader;
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+
+                        if (cardCheckbox == currentlySelectedRestaurant) {
+                            currentlySelectedRestaurant = null;
+                        }
+                        removeRestaurantCard(parentCard);
+                    } else {
+                        Component[] comps = parentCard.getComponents();
+                        for (int i = 0; i < comps.length; i++) {
+                            if (comps[i] == Row) {
+                                if (i + 1 < comps.length && comps[i + 1] instanceof Box.Filler) {
+                                    parentCard.remove(comps[i + 1]);
+                                } else if (i - 1 >= 0 && comps[i - 1] instanceof Box.Filler) {
+                                    parentCard.remove(comps[i - 1]);
+                                }
+                                break;
+                            }
+                        }
+                        parentCard.remove(Row);
+                        parentCard.revalidate();
+                        updateRestaurantCardHeight(parentCard);
+                    }
                 } else {
                     lblQuantity.setText("1");
-                    lblPrice.setText(String.format("₱%.2f", UnitPrice * 1));
+                    lblPrice.setText(String.format("₱%.2f", UnitPrice));
                 }
             } else {
                 lblQuantity.setText(String.valueOf(current));
                 lblPrice.setText(String.format("₱%.2f", UnitPrice * current));
             }
-            updateCartTotals();
-        });    
 
+            updateCartTotals();
+            ContainerPanel.revalidate();
+            ContainerPanel.repaint();
+        });
+        
         btnPlus.addActionListener(e -> {
             int current = Integer.parseInt(lblQuantity.getText());
-            if (current >= 25) {
-                showCustomWarningDialog("Order Limit Reached", "Maximum order limit is 25 items per product.");
+            if (current >= MAX_ITEM_QTY) {
+                showCustomWarningDialog("Limit Reached", "You can only order up to " + MAX_ITEM_QTY + " of each item.");
                 return;
             }
             current++;
             lblQuantity.setText(String.valueOf(current));
             lblPrice.setText(String.format("₱%.2f", UnitPrice * current));
             updateCartTotals();
+            ContainerPanel.revalidate();
+            ContainerPanel.repaint();
         });
 
         rightContainer.add(btnMinus);
@@ -772,8 +886,9 @@ public class CustomerDashboardViewCart extends JPanel {
         txtInstructions.setFont(new Font("Segoe UI", Font.PLAIN, 10));
         txtInstructions.setOpaque(false);
         txtInstructions.setBorder(BorderFactory.createEmptyBorder(2, 6, 2, 6));
-        txtInstructions.setMaximumSize(new Dimension(260, 24));
-        txtInstructions.setPreferredSize(new Dimension(260, 24));
+        txtInstructions.setMaximumSize(new Dimension(296, 24)); 
+        txtInstructions.setPreferredSize(new Dimension(296, 24));
+        txtInstructions.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         if (initialInstructions != null && !initialInstructions.isEmpty()) {
             txtInstructions.setText(initialInstructions);
@@ -800,6 +915,31 @@ public class CustomerDashboardViewCart extends JPanel {
             }
         });
 
+        // 10.3 Special Instructions Character Limit
+        txtInstructions.setToolTipText("Maximum of " + MAX_INSTRUCTION_CHARS + " characters");
+        ((javax.swing.text.AbstractDocument) txtInstructions.getDocument()).setDocumentFilter(new javax.swing.text.DocumentFilter() {
+            @Override
+            public void insertString(FilterBypass fb, int offset, String str, javax.swing.text.AttributeSet attr)
+                    throws javax.swing.text.BadLocationException {
+                replace(fb, offset, 0, str, attr);
+            }
+
+            @Override
+            public void replace(FilterBypass fb, int offset, int length, String str, javax.swing.text.AttributeSet attr)
+                    throws javax.swing.text.BadLocationException {
+                if (str == null) str = "";
+                int roomLeft = MAX_INSTRUCTION_CHARS - (fb.getDocument().getLength() - length);
+                if (str.length() <= roomLeft) {
+                    super.replace(fb, offset, length, str, attr);
+                } else if (roomLeft > 0) {
+                    super.replace(fb, offset, length, str.substring(0, roomLeft), attr);
+                    Toolkit.getDefaultToolkit().beep();
+                } else {
+                    Toolkit.getDefaultToolkit().beep();
+                }
+            }
+        });
+
         Row.add(txtInstructions);
         return Row;
     }   
@@ -819,9 +959,9 @@ public class CustomerDashboardViewCart extends JPanel {
                 JCheckBox cardCheckbox = null;
                 for (Component headerComp : restaurantCard.getComponents()) {
                     if (headerComp instanceof JPanel) {
-                        for (Component subHeader : ((JPanel) headerComp).getComponents()) {
-                            if (subHeader instanceof JCheckBox) {
-                                cardCheckbox = (JCheckBox) subHeader;
+                for (Component subHeader : ((JPanel) headerComp).getComponents()) {
+                    if (subHeader instanceof JCheckBox) {
+                        cardCheckbox = (JCheckBox) subHeader;
                                 break;
                             }
                         }
@@ -842,11 +982,11 @@ public class CustomerDashboardViewCart extends JPanel {
                             for (Component sub : topSubRow.getComponents()) {
                                 if (sub instanceof JPanel) {
                                     JPanel rightContainer = (JPanel) sub;
-                                    for (Component rc : rightContainer.getComponents()) {
-                                        if (rc instanceof JPanel) {
-                                            JPanel qtyBox = (JPanel) rc;
-                                            for (Component q : qtyBox.getComponents()) {
-                                                if (q instanceof JLabel) {
+                            for (Component rc : rightContainer.getComponents()) {
+                                if (rc instanceof JPanel) {
+                                    JPanel qtyBox = (JPanel) rc;
+                            for (Component q : qtyBox.getComponents()) {
+                                if (q instanceof JLabel) {
                                                     try {
                                                         rowQty = Integer.parseInt(((JLabel) q).getText());
                                                     } catch (NumberFormatException ignored) {}
@@ -886,10 +1026,10 @@ public class CustomerDashboardViewCart extends JPanel {
         }
     }   
 
-    //12. CheckBox Selection Handling
+    // 12. CheckBox Selection Handling
     private void handleRestaurantSelection(JCheckBox selectedCheckBox) {
         if (selectedCheckBox.isSelected()) {
-            if (currentlySelectedRestaurant != null && currentlySelectedRestaurant != selectedCheckBox) {
+            if (currentlySelectedRestaurant != null && currentlySelectedRestaurant != selectedCheckBox && currentlySelectedRestaurant.isShowing()) {
                 showCustomWarningDialog("Single Restaurant Selection", "You can only checkout one restaurant at a time");
                 selectedCheckBox.setSelected(false);
                 return;
@@ -904,11 +1044,11 @@ public class CustomerDashboardViewCart extends JPanel {
         ContainerPanel.repaint(); 
     }
     
-    //13. Custom Warning Dialog        
+    // 13. Custom Warning Dialog 
     private void showCustomWarningDialog(String title, String message) {
         JDialog dialog = new JDialog((Frame) SwingUtilities.getWindowAncestor(this), title, true);
         dialog.setUndecorated(true);
-        dialog.setSize(300, 150);
+        dialog.setSize(280, 140); 
         dialog.setLocationRelativeTo(this);                        
 
         JPanel panel = new JPanel() {
@@ -933,17 +1073,47 @@ public class CustomerDashboardViewCart extends JPanel {
         panel.setLayout(null);
         panel.setOpaque(false);
 
-        JLabel lblTitle = new JLabel(title);
+        JLabel lblTitle = new JLabel(title, SwingConstants.CENTER);
         lblTitle.setFont(new Font("Segoe UI", Font.BOLD, 13));
         lblTitle.setForeground(PURPLE_DARK);
-        lblTitle.setBounds(25, 16, 250, 20);
+        lblTitle.setBounds(15, 12, 250, 20);
         panel.add(lblTitle);
 
-        JLabel lblMsg = new JLabel(message);
-        lblMsg.setFont(new Font("Segoe UI", Font.PLAIN, 12));
-        lblMsg.setForeground(TEXT_DARK);
-        lblMsg.setBounds(25, 42, 250, 30);
-        panel.add(lblMsg);
+        JPanel msgPanel = new JPanel();
+        msgPanel.setLayout(new BoxLayout(msgPanel, BoxLayout.Y_AXIS));
+        msgPanel.setOpaque(false);
+        msgPanel.setBounds(15, 36, 250, 56);
+
+        Font msgFont = new Font("Segoe UI", Font.PLAIN, 12);
+        FontMetrics fm = msgPanel.getFontMetrics(msgFont);
+        int maxWidth = 240;
+
+        msgPanel.add(Box.createVerticalGlue());  
+        panel.add(msgPanel);    
+
+        for (String line : message.split("\n")) {
+            StringBuilder current = new StringBuilder();
+            for (String word : line.trim().split(" ")) {
+                String test = current.length() == 0 ? word : current + " " + word;
+                if (fm.stringWidth(test) > maxWidth && current.length() > 0) {
+                    JLabel lbl = new JLabel(current.toString(), SwingConstants.CENTER);
+                    lbl.setFont(msgFont);
+                    lbl.setForeground(TEXT_DARK);
+                    lbl.setAlignmentX(Component.CENTER_ALIGNMENT);
+                    msgPanel.add(lbl);
+                    current = new StringBuilder(word);
+                } else {
+                    current = new StringBuilder(test);
+                }
+            }
+            JLabel lbl = new JLabel(current.toString(), SwingConstants.CENTER);
+            lbl.setFont(msgFont);
+            lbl.setForeground(TEXT_DARK);
+            lbl.setAlignmentX(Component.CENTER_ALIGNMENT);
+            msgPanel.add(lbl);
+        }
+
+        msgPanel.add(Box.createVerticalGlue());   
 
         JButton btnOk = new JButton("OK") {
             @Override
@@ -964,21 +1134,26 @@ public class CustomerDashboardViewCart extends JPanel {
         btnOk.setBorderPainted(false);
         btnOk.setFocusPainted(false);
         btnOk.setCursor(new Cursor(Cursor.HAND_CURSOR));
-        btnOk.setBounds(190, 95, 75, 30);
+        btnOk.setBounds(100, 100, 80, 28);
         btnOk.addActionListener(e -> dialog.dispose());
         panel.add(btnOk);
 
         dialog.setContentPane(panel);
+        dialog.getRootPane().registerKeyboardAction(
+            e -> dialog.dispose(),
+            KeyStroke.getKeyStroke("ESCAPE"),
+            JComponent.WHEN_IN_FOCUSED_WINDOW
+        );
         dialog.setVisible(true);
-    }                   
+    }    
         
-    //14. Custom Confirm Dialog        
+    // 14. Custom Confirm Dialog (Centered Message)
     private boolean showCustomConfirmDialog(String title, String message) {
         final boolean[] confirmed = {false};
 
         JDialog dialog = new JDialog((Frame) SwingUtilities.getWindowAncestor(this), title, true);
         dialog.setUndecorated(true);
-        dialog.setSize(300, 150);
+        dialog.setSize(280, 140); 
         dialog.setLocationRelativeTo(this);
 
         JPanel panel = new JPanel() {
@@ -1003,17 +1178,47 @@ public class CustomerDashboardViewCart extends JPanel {
         panel.setLayout(null);
         panel.setOpaque(false);
 
-        JLabel lblTitle = new JLabel(title);
+        JLabel lblTitle = new JLabel(title, SwingConstants.CENTER);
         lblTitle.setFont(new Font("Segoe UI", Font.BOLD, 13));
         lblTitle.setForeground(PURPLE_DARK);
-        lblTitle.setBounds(25, 16, 250, 20);
+        lblTitle.setBounds(15, 12, 250, 20);
         panel.add(lblTitle);
 
-        JLabel lblMsg = new JLabel(message);
-        lblMsg.setFont(new Font("Segoe UI", Font.PLAIN, 12));
-        lblMsg.setForeground(TEXT_DARK);
-        lblMsg.setBounds(25, 42, 250, 30);
-        panel.add(lblMsg);
+        JPanel msgPanel = new JPanel();
+        msgPanel.setLayout(new BoxLayout(msgPanel, BoxLayout.Y_AXIS));
+        msgPanel.setOpaque(false);
+        msgPanel.setBounds(15, 36, 250, 56);
+
+        Font msgFont = new Font("Segoe UI", Font.PLAIN, 12);
+        FontMetrics fm = msgPanel.getFontMetrics(msgFont);
+        int maxWidth = 240;
+
+        msgPanel.add(Box.createVerticalGlue());  
+        panel.add(msgPanel);    
+
+        for (String line : message.split("\n")) {
+            StringBuilder current = new StringBuilder();
+            for (String word : line.trim().split(" ")) {
+                String test = current.length() == 0 ? word : current + " " + word;
+                if (fm.stringWidth(test) > maxWidth && current.length() > 0) {
+                    JLabel lbl = new JLabel(current.toString(), SwingConstants.CENTER);
+                    lbl.setFont(msgFont);
+                    lbl.setForeground(TEXT_DARK);
+                    lbl.setAlignmentX(Component.CENTER_ALIGNMENT);
+                    msgPanel.add(lbl);
+                    current = new StringBuilder(word);
+                } else {
+                    current = new StringBuilder(test);
+                }
+            }
+            JLabel lbl = new JLabel(current.toString(), SwingConstants.CENTER);
+            lbl.setFont(msgFont);
+            lbl.setForeground(TEXT_DARK);
+            lbl.setAlignmentX(Component.CENTER_ALIGNMENT);
+            msgPanel.add(lbl);
+        }
+
+        msgPanel.add(Box.createVerticalGlue());   
 
         JButton btnYes = new JButton("Yes") {
             @Override
@@ -1034,7 +1239,7 @@ public class CustomerDashboardViewCart extends JPanel {
         btnYes.setBorderPainted(false);
         btnYes.setFocusPainted(false);
         btnYes.setCursor(new Cursor(Cursor.HAND_CURSOR));
-        btnYes.setBounds(110, 95, 70, 30);
+        btnYes.setBounds(40, 100, 90, 28);
         btnYes.addActionListener(e -> {
             confirmed[0] = true;
             dialog.dispose();
@@ -1060,7 +1265,7 @@ public class CustomerDashboardViewCart extends JPanel {
         btnNo.setBorderPainted(false);
         btnNo.setFocusPainted(false);
         btnNo.setCursor(new Cursor(Cursor.HAND_CURSOR));
-        btnNo.setBounds(190, 95, 70, 30);
+        btnNo.setBounds(145, 100, 90, 28);
         btnNo.addActionListener(e -> {
             confirmed[0] = false;
             dialog.dispose();
@@ -1068,11 +1273,17 @@ public class CustomerDashboardViewCart extends JPanel {
         panel.add(btnNo);
 
         dialog.setContentPane(panel);
+        dialog.getRootPane().registerKeyboardAction(
+            e -> dialog.dispose(),
+            KeyStroke.getKeyStroke("ESCAPE"),
+            JComponent.WHEN_IN_FOCUSED_WINDOW
+        );
+
         dialog.setVisible(true);
         return confirmed[0];
     }
-
-    //15. Round CheckBox Component        
+    
+    // 15. Round CheckBox Component
     private class RoundCheckBox extends JCheckBox {
         public RoundCheckBox(String text) {
             super(text);
@@ -1120,7 +1331,7 @@ public class CustomerDashboardViewCart extends JPanel {
         }
     }
 
-    //16. Generate Order From Selected Restaurant
+    // 16. Generate Order From Selected Restaurant
     public Order generateOrderFromSelection(String customerId, String customerName, String customerPhone, String deliveryAddress) {
         if (currentlySelectedRestaurant == null) {
             return null;
@@ -1131,12 +1342,12 @@ public class CustomerDashboardViewCart extends JPanel {
         for (Component comp : ContainerPanel.getComponents()) {
             if (comp instanceof JPanel) {
                 JPanel card = (JPanel) comp;
-                for (Component headerComp : card.getComponents()) {
-                    if (headerComp instanceof JPanel) {
-                        for (Component subHeader : ((JPanel) headerComp).getComponents()) {
-                            if (subHeader == currentlySelectedRestaurant) {
-                                targetRestaurantCard = card;
-                                break;
+        for (Component headerComp : card.getComponents()) {
+            if (headerComp instanceof JPanel) {
+        for (Component subHeader : ((JPanel) headerComp).getComponents()) {
+            if (subHeader == currentlySelectedRestaurant) {
+                targetRestaurantCard = card;
+        break;
                             }
                         }
                     }
@@ -1169,10 +1380,10 @@ public class CustomerDashboardViewCart extends JPanel {
                             for (Component rc : rightContainer.getComponents()) {
                                 if (rc instanceof JPanel) {
                                     JPanel qtyBox = (JPanel) rc;
-                                    for (Component q : qtyBox.getComponents()) {
-                                        if (q instanceof JLabel) {
-                                            try {
-                                                rowQty = Integer.parseInt(((JLabel) q).getText());
+                            for (Component q : qtyBox.getComponents()) {
+                                if (q instanceof JLabel) {
+                                        try {
+                                            rowQty = Integer.parseInt(((JLabel) q).getText());
                                             } catch (NumberFormatException ignored) {}
                                         }
                                     }
@@ -1204,22 +1415,27 @@ public class CustomerDashboardViewCart extends JPanel {
             }
         }
             
-        String orderId = "ORD-" + System.currentTimeMillis();
+        String idCustomer = (customerId == null) ? "GUEST" : customerId.replace("-", "");
+        String idStamp = java.time.LocalDateTime.now().format(java.time.format.DateTimeFormatter.ofPattern("yyyy-MMdd-HHmmss-SSS"));
+        String orderId = "ORD-" + idCustomer + "-" + idStamp;
         String status = "PENDING";
         String restaurantName = currentlySelectedRestaurant.getText();
 
         return new Order(orderId, customerId, customerName, customerPhone, deliveryAddress, restaurantName, itemsList, status);
     }
 
+    // 17. Panel Actions 
     public void animateOpen() {
-        setBounds(724, 0, 300, 720);
+        setVisible(true);                              
+        setBounds(668, 0, 340, 720);
         if (getParent() != null) {
+            getParent().setComponentZOrder(this, 0);   
             for (Component comp : getParent().getComponents()) {
                 if (comp instanceof CustomerDashboardRestaurant) {
-                    comp.setBounds(0, 0, 724, 720);
+                    comp.setBounds(0, 0, 668, 720);
                 }
                 if (comp instanceof CustomerDashboardRestaurantMenus) {
-                    comp.setBounds(80, 0, 644, 720);
+                    comp.setBounds(80, 0, 588, 720);
                 }
             }
             
@@ -1237,7 +1453,7 @@ public class CustomerDashboardViewCart extends JPanel {
     }
 
     public void animateClose() {
-        setBounds(1024, 0, 300, 720);
+        setBounds(1024, 0, 340, 720);
         if (getParent() != null) {
             for (Component comp : getParent().getComponents()) {
                 if (comp instanceof CustomerDashboardRestaurant) {
@@ -1260,7 +1476,7 @@ public class CustomerDashboardViewCart extends JPanel {
             getParent().repaint();
         }
     }
-
+    
     public void addCartActions(ActionListener listener) {
         btnExitCart.addActionListener(listener);
         btnCheckout.addActionListener(listener);
