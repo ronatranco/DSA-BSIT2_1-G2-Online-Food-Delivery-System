@@ -6,6 +6,7 @@ package GUI;
 
 import Model.Customer;
 import Model.Order;
+
 import java.awt.*;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -42,12 +43,15 @@ public class CustomerDashboard extends JPanel {
     private CustomerDashboardHistory pnlRightHistory;
     private CustomerDashboardProfile pnlRightProfile;
     private CustomerDashboardViewCart pnlRightCart;
+    private Runnable onBackToCartCallback;
+    private CustomerDashboardCheckout pnlCheckout; 
     private static boolean isFirstShow = true;
     
     private String savedFirstName = "";
     private String savedLastName = "";
     private String savedMobileNumber = "";
     private String savedFullAddress = "";
+    
     
     // Complete Profile Pop-up
     private void showProfileWarningDialog(String title, String message) {
@@ -123,7 +127,13 @@ public class CustomerDashboard extends JPanel {
         setLayout(null); 
         setBounds(0, 0, 1024, 720);
 
-        pnlMainBg = new JPanel();
+        pnlMainBg = new JPanel() {
+            @Override
+            public boolean isOptimizedDrawingEnabled() {
+                return false;
+            }
+        };
+        
         pnlMainBg.setLayout(null);
         pnlMainBg.setBackground(BG_LIGHT);
         pnlMainBg.setBounds(0, 0, 1024, 720);
@@ -629,4 +639,44 @@ public class CustomerDashboard extends JPanel {
         public void setSavedMobileNumber(String val) { this.savedMobileNumber = val; }
         public String getSavedFullAddress() { return savedFullAddress; }
         public void setSavedFullAddress(String val) { this.savedFullAddress = val; }
+        
+        
+        
+            public void closeCheckoutPanels() {
+        for (Component c : pnlMainBg.getComponents()) {
+            if (c instanceof CustomerDashboardCheckout) {
+                c.setVisible(false);
+                pnlMainBg.remove(c);
+            }
+        }
+        if (pnlRightCart.getParent() == null) {
+            pnlMainBg.add(pnlRightCart);
+        }
+        pnlMainBg.revalidate();
+        pnlMainBg.repaint();
+    }
+            
+        public void showCheckoutScreen(Order order) {
+            if (pnlCheckout != null) {
+                pnlMainBg.remove(pnlCheckout);
+            }
+
+            pnlCheckout = new CustomerDashboardCheckout(order);
+
+            // Put the callback snippet right here:
+            pnlCheckout.setOnBackToCartCallback(() -> {
+                pnlMainBg.remove(pnlCheckout);
+                pnlRightCart.setVisible(true);
+                pnlMainBg.revalidate();
+                pnlMainBg.repaint();
+            });
+
+            pnlMainBg.setComponentZOrder(pnlCheckout, 0);
+            pnlRightCart.setVisible(false);
+            pnlMainBg.revalidate();
+            pnlMainBg.repaint();
 }
+   
+    }
+
+
