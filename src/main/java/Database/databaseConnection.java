@@ -8,8 +8,10 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Properties;
 
-public class databaseConnection {
 
+
+public class databaseConnection {
+    
     private static final Properties props = new Properties();
     private static boolean initialized = false;
 
