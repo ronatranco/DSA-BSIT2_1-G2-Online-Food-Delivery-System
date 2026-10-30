@@ -7,24 +7,28 @@ package Model;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.stream.Collectors;
 
 /**
  * @author RJD 
  * 
  */
 public class Order {
-    
+
     private String orderId;
     private String customerId;
-    private String customerName; 
+    private String customerName;
     private String customerPhone;
-    private String deliveryAddress; 
+    private String deliveryAddress;
     private String restaurantId;
     private List<OrderItem> orderItems;
     private String status;
 
-    public Order(String orderId, String customerId, String customerName, String customerPhone, 
-             String deliveryAddress, String restaurantId, List<OrderItem> orderItems, String status) {
+    public Order(String orderId, String customerId, String customerName, String customerPhone,
+                 String deliveryAddress, String restaurantId, List<OrderItem> orderItems, String status) {
         this.orderId = orderId;
         this.customerId = customerId;
         this.customerName = customerName;
@@ -41,13 +45,7 @@ public class Order {
 
     public String getCustomerId() { return customerId; }
     public void setCustomerId(String customerId) { this.customerId = customerId; }
-    
-    public String getCustomerName() { return customerName; }
-    public String getDeliveryAddress() { return deliveryAddress; }  
-    
-    public String getCustomerPhone() { return customerPhone; } // Added missing getter
-    public void setCustomerPhone(String customerPhone) { this.customerPhone = customerPhone; }
-    
+
     public String getRestaurantId() { return restaurantId; }
     public void setRestaurantId(String restaurantId) { this.restaurantId = restaurantId; }
 
@@ -56,11 +54,21 @@ public class Order {
 
     public String getStatus() { return status; }
     public void setStatus(String status) { this.status = status; }
+    
+    public String getCustomerName() { return customerName; }
+    public void setCustomerName(String customerName) { this.customerName = customerName; }
+
+    public String getCustomerPhone() { return customerPhone; }
+    public void setCustomerPhone(String customerPhone) { this.customerPhone = customerPhone; }
+
+    public String getDeliveryAddress() { return deliveryAddress; }
+    public void setDeliveryAddress(String deliveryAddress) { this.deliveryAddress = deliveryAddress; }
+    
+    
 
     // 2. Business Logic & Calculations
     public void addOrderItem(OrderItem item) {
         if (item != null) {
-            // Check if item already exists, increment quantity if so
             for (OrderItem existing : orderItems) {
                 if (existing.getItemName().equalsIgnoreCase(item.getItemName())) {
                     existing.setQuantity(existing.getQuantity() + item.getQuantity());
@@ -70,12 +78,16 @@ public class Order {
             this.orderItems.add(item);
         }
     }
-
+    
     public void removeOrderItem(OrderItem item) {
         this.orderItems.remove(item);
     }
+    
+    public Order(String orderId, String customerId, String restaurantId, List<OrderItem> items, String status) {
+    this(orderId, customerId, "User", "", "", restaurantId, items, status);
+    }
 
-    // 2. Calculations
+    // 3. Calculations
     public double calculateSubtotal() {
         double subtotal = 0.0;
         for (OrderItem item : orderItems) {
@@ -84,7 +96,7 @@ public class Order {
         return subtotal;
     }
 
-    // 2.1 Calculate Items
+    // 3.1 Calculate Items
     public int getTotalItemCount() {
         int count = 0;
         for (OrderItem item : orderItems) {
@@ -93,20 +105,20 @@ public class Order {
         return count;
     }
 
-    // 2.2 Calculate Total, Delivery Fee, and Vouchers 
+    // 3.2 Calculate Total, Delivery Fee, and Vouchers 
     public double calculateFinalTotal(double deliveryFee, double voucherDiscount) {
         double subtotal = calculateSubtotal();
         double total = subtotal + deliveryFee - voucherDiscount;
         return Math.max(0.0, total);
     }
 
-    // 2.3 Order Validation 
+    // 3.3 Order Validation 
     public boolean isValidOrder() {
         return restaurantId != null && !restaurantId.trim().isEmpty() && 
                orderItems != null && !orderItems.isEmpty();
     }
     
-    // 3. OrderItem 
+    // 4. OrderItem 
     public static class OrderItem {
         private String itemName;
         private int quantity;
@@ -125,7 +137,7 @@ public class Order {
         }
         
 
-        //4. OrderItem Getters & Setters
+        //5. OrderItem Getters & Setters
         public String getItemName() { return itemName; }
         public void setItemName(String itemName) { this.itemName = itemName; }
 
@@ -143,7 +155,7 @@ public class Order {
         }
     }
     
-    // 5. Order History
+    // 6. Order History
     public static class OrderData {
         private String storeName;
         private String location;
@@ -168,7 +180,7 @@ public class Order {
             this.items = items != null ? items : new ArrayList<>();
         }
 
-    // 5. Order History Getter & Setter
+    // 7. Order History Getter & Setter
         public String getStoreName() { return storeName; }
         public String getLocation() { return location; }
         public String getOrderId() { return orderId; }
@@ -178,5 +190,93 @@ public class Order {
         public String getStatus() { return status; }
         public String getTotalPaid() { return totalPaid; }
         public List<OrderItem> getItems() { return items; }
+       
+
+        public void setStatus(String status) { this.status = status; }
+        public void setDeliveryDate(String deliveryDate) { this.deliveryDate = deliveryDate; }
+        
     }
+
+    // 8. Order Store 
+    public static class OrderStore {
+
+        private static final OrderStore INSTANCE = new OrderStore();
+        public static OrderStore get() { return INSTANCE; }
+
+        private static final DateTimeFormatter FMT = DateTimeFormatter.ofPattern("MMM d, yyyy · h:mm a");
+
+        private final List<OrderData> orders = new ArrayList<>();
+        private final List<Runnable> listeners = new ArrayList<>();
+        private int nextId = 1;
+
+        private OrderStore() {}
+
+        //8.1 Place ORder
+        public OrderData place(Order order, String storeName, String location,
+                               String paymentMop, double finalTotal) {
+            for (OrderData existing : orders) {
+                if (existing.getOrderId().equals(order.getOrderId())) return existing;
+            }
+
+            //8.2 Order ID
+            String id = order.getOrderId();
+            if (id == null || id.trim().isEmpty()) {
+                id = String.format("#ORD-%d-%04d", LocalDate.now().getYear(), nextId++);
+                order.setOrderId(id);
+            }
+
+            OrderData data = new OrderData(
+                    storeName, location, id,
+                    LocalDateTime.now().format(FMT),   
+                    "—",                               
+                    paymentMop,
+                    "Pending",                      
+                    String.format("₱%.2f", finalTotal),
+                    order.getOrderItems());
+
+            orders.add(data);
+            fireChanged();
+            return data;
+        }
+
+        //8.3 Status
+        public void updateStatus(String orderId, String newStatus) {
+            for (OrderData o : orders) {
+                if (o.getOrderId().equals(orderId)) {
+                    o.setStatus(newStatus);
+                    if (newStatus.equalsIgnoreCase("Delivered")) {
+                        o.setDeliveryDate(LocalDateTime.now().format(FMT));
+                    }
+                }
+            }
+            fireChanged();
+        }
+
+        //8.4 Track Order
+        public List<OrderData> getActive() {
+            return orders.stream()
+                    .filter(o -> !o.getStatus().equalsIgnoreCase("Delivered")
+                              && !o.getStatus().equalsIgnoreCase("Cancelled"))
+                    .collect(Collectors.toList());
+        }
+
+        //8.5 Order History
+        public List<OrderData> getHistory() {
+            return orders.stream()
+                    .filter(o -> o.getStatus().equalsIgnoreCase("Delivered")
+                              || o.getStatus().equalsIgnoreCase("Cancelled"))
+                    .collect(Collectors.toList());
+        }
+
+        // 8.6 Order Delivered
+        public List<OrderData> getDelivered() {
+            return orders.stream()
+                    .filter(o -> o.getStatus().equalsIgnoreCase("Delivered"))
+                    .collect(Collectors.toList());
+        }
+
+        public void addListener(Runnable r) { listeners.add(r); }
+
+        private void fireChanged() { listeners.forEach(Runnable::run); }
     }
+}
