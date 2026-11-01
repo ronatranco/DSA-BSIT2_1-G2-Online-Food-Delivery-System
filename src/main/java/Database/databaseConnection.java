@@ -1,74 +1,58 @@
 package Database;
 
-import java.io.FileInputStream;
-import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Properties;
-
-
 
 public class databaseConnection {
-    
-    private static final Properties props = new Properties();
-    private static boolean initialized = false;
 
-    // check if theres db.properties
-    static {
-        try (FileInputStream in = new FileInputStream("db.properties")) {
-            props.load(in);
-        } catch (IOException e) {
-            System.out.println("No db.properties found, using defaults.");
-        }
-    }
 
-    private static String host() { return props.getProperty("db.host", "localhost"); }
-    private static String port() { return props.getProperty("db.port", "3306"); }
-    private static String name() { return props.getProperty("db.name", "grabpanda"); }
-    private static String user() { return props.getProperty("db.user", "root"); }
-    private static String pass() { return props.getProperty("db.password", ""); }
+    private static final String HOST = "localhost";
+    private static final String PORT = "3306";
+    private static final String NAME = "grabpanda";
+    private static final String USER = "root";
+    private static final String PASS = "";
 
     private static final String OPTIONS = "?useSSL=false&allowPublicKeyRetrieval=true";
+    private static final String SERVER_URL = "jdbc:mysql://" + HOST + ":" + PORT + "/" + OPTIONS;
+    private static final String DB_URL = "jdbc:mysql://" + HOST + ":" + PORT + "/" + NAME + OPTIONS;
 
-    /** Creates the database and tables if  does not exist. */
+    private static boolean initialized = false;
+
     private static synchronized void initialize() throws SQLException {
         if (initialized) return;
 
-
-        String serverUrl = "jdbc:mysql://" + host() + ":" + port() + "/" + OPTIONS;
-        try (Connection con = DriverManager.getConnection(serverUrl, user(), pass());
+        try (Connection con = DriverManager.getConnection(SERVER_URL, USER, PASS);
              Statement st = con.createStatement()) {
-            st.executeUpdate("CREATE DATABASE IF NOT EXISTS `" + name() + "`");
+            st.executeUpdate("CREATE DATABASE IF NOT EXISTS `" + NAME + "`");
         }
 
-        // creating the tables
-        try (Connection con = DriverManager.getConnection(dbUrl(), user(), pass());
+        try (Connection con = DriverManager.getConnection(DB_URL, USER, PASS);
              Statement st = con.createStatement()) {
-            st.executeUpdate(
-                "CREATE TABLE IF NOT EXISTS users ("
-              + " id INT AUTO_INCREMENT PRIMARY KEY,"
-              + " full_name VARCHAR(100) NOT NULL,"
-              + " username  VARCHAR(50)  NOT NULL UNIQUE,"
-              + " email     VARCHAR(100) NOT NULL UNIQUE,"
-              + " phone     VARCHAR(11)  NOT NULL,"
-              + " address   VARCHAR(255) NOT NULL,"
-              + " password  VARCHAR(255) NOT NULL,"
-              + " role      VARCHAR(20)  NOT NULL)");
 
-            // Add more CREATE TABLE IF NOT EXISTS statements here
-            // (menu items, orders, etc.)
+            st.executeUpdate(
+                "CREATE TABLE IF NOT EXISTS accounts ("
+              + " id            INT AUTO_INCREMENT PRIMARY KEY,"
+              + " full_name     VARCHAR(100) NOT NULL,"
+              + " username      VARCHAR(50)  NOT NULL UNIQUE,"
+              + " email         VARCHAR(100) NOT NULL UNIQUE,"
+              + " phone         VARCHAR(11)  NULL,"
+              + " address       VARCHAR(255) NULL,"
+              + " password_hash CHAR(64)     NOT NULL,"
+              + " role          VARCHAR(20)  NOT NULL)");
+
+            st.executeUpdate(
+                "INSERT IGNORE INTO accounts "
+              + "(full_name, username, email, password_hash, address, role) VALUES ("
+              + "'System Administrator', 'admin', 'admin@grabPanda.local', "
+              + "SHA2('Admin@123', 256), 'PUP Binan, Laguna,', 'ADMIN')" );
         }
         initialized = true;
     }
 
-    private static String dbUrl() {
-        return "jdbc:mysql://" + host() + ":" + port() + "/" + name() + OPTIONS;
-    }
-
     public static Connection getConnection() throws SQLException {
         initialize();
-        return DriverManager.getConnection(dbUrl(), user(), pass());
+        return DriverManager.getConnection(DB_URL, USER, PASS);
     }
 }

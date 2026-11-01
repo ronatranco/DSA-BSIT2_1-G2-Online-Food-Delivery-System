@@ -8,6 +8,8 @@ import java.awt.*;
 import java.awt.event.ActionListener;
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
+import Database.AccountDAO;
+import java.sql.SQLException;
 
 /**
  *
@@ -211,6 +213,7 @@ public class CustomerDashboardProfile extends JPanel {
         scrollPane.getVerticalScrollBar().setUnitIncrement(16); 
         scrollPane.setBounds(0, 0, 824, 800);
         add(scrollPane, BorderLayout.CENTER);
+        loadFromDatabase();
     }
 
     // HELPER METHOD FOR SAVE BUTTONS
@@ -222,6 +225,44 @@ public class CustomerDashboardProfile extends JPanel {
         btn.setFocusPainted(false);
         btn.setBorder(BorderFactory.createEmptyBorder(5, 15, 5, 15)); 
         return btn;
+    }
+        // for displaying data logged in
+    public void loadFromDatabase() {
+        String login = AccountDAO.getLogin();
+        if (login == null) return; 
+
+        try {
+            AccountDAO.Account acc = AccountDAO.findByLogin(login);
+            if (acc == null) return;
+
+
+            String name = (acc.fullName == null) ? "" : acc.fullName.trim();
+            int space = name.indexOf(' ');
+            txtName1.setText(space == -1 ? name : name.substring(0, space));
+            txtName2.setText(space == -1 ? "" : name.substring(space + 1).trim());
+
+            txtEmail.setText(acc.email == null ? "" : acc.email);
+
+            String address = (acc.address == null) ? "" : acc.address;
+            txtFullAdd.setText(address);
+            setSavedHomeAddress(address);
+
+            loadPhoneNumber(toInternationalPhone(acc.phone));
+
+
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(this, "Could not load profile: " + ex.getMessage());
+        }
+    }
+
+
+    private String toInternationalPhone(String phone) {
+        if (phone == null) return "";
+        phone = phone.trim();
+        if (phone.matches("0\\d{10}")) {
+            return "+63 " + phone.substring(1);
+        }
+        return phone;
     }
         public void animateOpen() {
             setBounds(200, 0, 824, 720); 

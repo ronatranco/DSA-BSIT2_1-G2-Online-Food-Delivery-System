@@ -7,6 +7,7 @@ package GUI;
 
 import Database.databaseConnection;
 import Database.UserAuthentication;
+import Database.AccountDAO;
 import Model.Admin;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -260,6 +261,7 @@ public class MainFrame extends JFrame implements ActionListener {
             String password = new String(panelCustomerLogin.txtLoginPassword.getPassword());
 
             if (authenticate(identifier, password, "customer")) {
+                AccountDAO.setLogin(identifier); 
                 panelCustomerLogin.txtLoginEmailOrUser.setText("");
                 panelCustomerLogin.txtLoginPassword.setText("");
                 if (panelCustomerLogin.chkLoginSavePassword != null) {
@@ -338,7 +340,7 @@ public class MainFrame extends JFrame implements ActionListener {
         String email    = panelSignup.txtEmail.getText().trim();
         String phone    = panelSignup.txtPhone.getText().trim();
         String address  = panelSignup.txtAddress.getText().trim();
-        String role     = panelSignup.cmbRole.getSelectedItem().toString().toLowerCase();
+        String role     = panelSignup.cmbRole.getSelectedItem().toString().toUpperCase();
         String password = new String(panelSignup.txtPassword.getPassword());
         String confirm  = new String(panelSignup.txtConfirmPassword.getPassword());
 
@@ -360,8 +362,8 @@ public class MainFrame extends JFrame implements ActionListener {
             return;
         }
 
-        String sql = "INSERT INTO users (full_name, username, email, phone, address, password, role) "
-                   + "VALUES (?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO accounts (full_name, username, email, phone, address, password_hash, role) "
+           + "VALUES (?, ?, ?, ?, ?, SHA2(?, 256), ?)";
 
         try (Connection con = databaseConnection.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
