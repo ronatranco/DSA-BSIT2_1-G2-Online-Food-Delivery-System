@@ -84,9 +84,14 @@ public class CustomerDashboard extends JPanel {
         lblTitle.setBounds(25, 21, 250, 20);
         panel.add(lblTitle);
 
-        JLabel lblMsg = new JLabel("<html>" + message.replace("\n", "<br>") + "</html>");
+        JTextArea lblMsg = new JTextArea(message);
         lblMsg.setFont(new Font("Segoe UI", Font.PLAIN, 13));
         lblMsg.setForeground(TEXT_DARK);
+        lblMsg.setEditable(false);
+        lblMsg.setFocusable(false);
+        lblMsg.setOpaque(false);
+        lblMsg.setLineWrap(true);
+        lblMsg.setWrapStyleWord(true);
         lblMsg.setBounds(25, 42, 250, 45); 
         panel.add(lblMsg);
 
