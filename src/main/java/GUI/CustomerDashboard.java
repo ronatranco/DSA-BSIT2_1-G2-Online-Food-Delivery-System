@@ -645,42 +645,34 @@ public class CustomerDashboard extends JPanel {
         public String getSavedFullAddress() { return savedFullAddress; }
         public void setSavedFullAddress(String val) { this.savedFullAddress = val; }
         
-        
-        
-            public void closeCheckoutPanels() {
+      
+        // For check out | Chloe
+        public void closeCheckoutPanels() {
         for (Component c : pnlMainBg.getComponents()) {
             if (c instanceof CustomerDashboardCheckout) {
                 c.setVisible(false);
                 pnlMainBg.remove(c);
             }
-        }
-        if (pnlRightCart.getParent() == null) {
-            pnlMainBg.add(pnlRightCart);
-        }
-        pnlMainBg.revalidate();
-        pnlMainBg.repaint();
-    }
-            
+        }   if (pnlRightCart.getParent() == null) {
+                pnlMainBg.add(pnlRightCart);
+        }       pnlMainBg.revalidate();
+                pnlMainBg.repaint();
+    }   
         public void showCheckoutScreen(Order order) {
             if (pnlCheckout != null) {
                 pnlMainBg.remove(pnlCheckout);
-            }
-
+        }
             pnlCheckout = new CustomerDashboardCheckout(order);
-
-            // Put the callback snippet right here:
             pnlCheckout.setOnBackToCartCallback(() -> {
                 pnlMainBg.remove(pnlCheckout);
                 pnlRightCart.setVisible(true);
                 pnlMainBg.revalidate();
                 pnlMainBg.repaint();
-            });
-
-            pnlMainBg.setComponentZOrder(pnlCheckout, 0);
-            pnlRightCart.setVisible(false);
-            pnlMainBg.revalidate();
-            pnlMainBg.repaint();
-}
+            }); pnlMainBg.setComponentZOrder(pnlCheckout, 0);
+                pnlRightCart.setVisible(false);
+                pnlMainBg.revalidate();
+                pnlMainBg.repaint();
+        }
    
     }
 
