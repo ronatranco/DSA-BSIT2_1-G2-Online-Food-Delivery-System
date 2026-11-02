@@ -47,6 +47,21 @@ public class databaseConnection {
               + "(full_name, username, email, password_hash, address, role) VALUES ("
               + "'System Administrator', 'admin', 'admin@grabPanda.local', "
               + "SHA2('Admin@123', 256), 'PUP Binan, Laguna,', 'ADMIN')" );
+            st.executeUpdate(
+                "INSERT IGNORE INTO accounts "
+              + "(full_name, username, email, password_hash, address, role) VALUES ("
+              + "'McDollibee', 'mcdollibee', 'mcdollibee@grabPanda.local', "
+              + "SHA2('mcdollibee123', 256), 'PUP Binan, Laguna,', 'RESTAURANT')" );
+            st.executeUpdate(
+                "INSERT IGNORE INTO accounts "
+              + "(full_name, username, email, password_hash, address, role) VALUES ("
+              + "'Brain cells Milk Tea', 'braincellmilktea', 'braincellmilktea@grabPanda.local', "
+              + "SHA2('braincellmilktea123', 256), 'PUP Binan, Laguna,', 'RESTAURANT')" );
+            st.executeUpdate(
+                "INSERT IGNORE INTO accounts "
+              + "(full_name, username, email, password_hash, address, role) VALUES ("
+              + "'Mang Pinaasa', 'mangpinaasa', 'mangpinaasa@grabPanda.local', "
+              + "SHA2('mangpinaasa123', 256), 'PUP Binan, Laguna,', 'RESTAURANT')" );
         }
         initialized = true;
     }

@@ -22,6 +22,8 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Random;
 import javax.swing.Timer;
+import Database.AccountDAO;
+import java.sql.SQLException;
 
 public final class Restaurant {
    private static DateTimeFormatter TIME_FORMAT = DateTimeFormatter.ofPattern("h:mm a", Locale.ENGLISH);
@@ -398,6 +400,21 @@ public final class Restaurant {
          } catch (NumberFormatException e) {
             return null;
          }
+      }
+
+   }
+   public void loadFromAccount(String login) {
+      if (login == null) return;
+      try {
+         AccountDAO.Account acc = AccountDAO.findByLogin(login);
+         if (acc == null) return;
+
+         if (acc.fullName != null && !acc.fullName.isEmpty()) restaurant.name     = acc.fullName;
+         if (acc.address  != null && !acc.address.isEmpty())  restaurant.location = acc.address;
+         if (acc.phone    != null && !acc.phone.isEmpty())    restaurant.contact  = acc.phone;
+         notifyChanged();   // refreshes any open dashboard
+      } catch (SQLException ex) {
+         System.out.println("Could not load restaurant profile: " + ex.getMessage());
       }
    }
 }
