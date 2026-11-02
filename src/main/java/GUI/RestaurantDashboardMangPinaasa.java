@@ -302,13 +302,14 @@ public class RestaurantDashboardMangPinaasa extends JPanel {
          }
       }
 
+      // Status Colors
       static Color statusColor(String value) {
          switch (value.toLowerCase()) {
             case "available":
             case "active":
             case "paid":
-            case "ready":
-            case "completed":
+            case "out for delivery":
+            case "delivered":
                return GREEN;
             case "unavailable":
             case "inactive":
@@ -975,7 +976,7 @@ public class RestaurantDashboardMangPinaasa extends JPanel {
       private final DefaultTableModel model = (DefaultTableModel)table.getModel();
       private final List<Restaurant.Order> shown = new ArrayList<>();
       private final JTextField search = UIStyle.styledField("");
-      private final JComboBox<String> filter = new JComboBox<>(new String[]{"All", "Pending", "Preparing", "Ready", "Completed", "Cancelled", "Failed"});
+      private final JComboBox<String> filter = new JComboBox<>(new String[]{"All", "Pending", "Preparing", "Out for Delivery", "Delivered", "Cancelled", "Failed"});
 
       public OrderStatus() {
          super("Order Status", 1020, 640);
@@ -988,11 +989,12 @@ public class RestaurantDashboardMangPinaasa extends JPanel {
          filterBar.add(search);
          filterBar.add(UIStyle.fieldLabel("Status:"));
          filterBar.add(filter);
+         // Status Buttons
          JButton preparing = UIStyle.button("Mark Preparing", UIStyle.ORANGE);
          preparing.addActionListener((e) -> changeStatus(Restaurant.Order.PREPARING));
-         JButton ready = UIStyle.button("Mark Ready", UIStyle.PURPLE_DARK);
+         JButton ready = UIStyle.button("Mark Out for Delivery", UIStyle.PURPLE_DARK);
          ready.addActionListener((e) -> changeStatus(Restaurant.Order.READY));
-         JButton completed = UIStyle.button("Mark Completed", UIStyle.GREEN);
+         JButton completed = UIStyle.button("Mark Delivered", UIStyle.GREEN);
          completed.addActionListener((e) -> changeStatus(Restaurant.Order.COMPLETED));
          JButton cancel = UIStyle.button("Cancel Order", UIStyle.RED);
          cancel.addActionListener((e) -> changeStatus(Restaurant.Order.CANCELLED));
