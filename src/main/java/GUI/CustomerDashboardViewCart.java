@@ -362,22 +362,8 @@ public class CustomerDashboardViewCart extends JPanel {
                         CustomerDashboard dashboard = (CustomerDashboard) dashboardRoot;
                         dashboard.getLblDateRn().setVisible(true);
                         
-                        java.time.format.DateTimeFormatter dtf = java.time.format.DateTimeFormatter.ofPattern("MMM d, yyyy · h:mm a");
-                        String orderDateStr = java.time.LocalDateTime.now().format(dtf);
-                        String deliveryDateStr = java.time.LocalDateTime.now().plusMinutes(30).format(dtf);
-                        double finalTotal = placedOrder.calculateFinalTotal(40.0, 0.0);
-                        
-                        dashboard.getPnlRightHistory().registerOrder(
-                            placedOrder.getRestaurantId(),
-                            placedOrder.getDeliveryAddress(),
-                            placedOrder.getOrderId(),
-                            orderDateStr,
-                            deliveryDateStr,
-                            "Cash on Delivery",
-                            "Pending",
-                            String.format("₱%.2f", finalTotal),
-                            placedOrder.getOrderItems()
-                        );
+                        // The order now lives in OrderStore: it shows in Track Order as Pending
+                        // and only reaches Order History once the customer confirms Received.
 
                         for (Component comp : parent.getComponents()) {
                             if (comp instanceof CustomerDashboardRestaurant) {
