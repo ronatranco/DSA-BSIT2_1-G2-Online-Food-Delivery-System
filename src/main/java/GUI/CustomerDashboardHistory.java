@@ -206,7 +206,7 @@ public class CustomerDashboardHistory extends JPanel {
         add(scrollPane);
 
         // 4.3 Auto-Refresh When an Order Changes
-        OrderStore.get().addListener(this::refreshOrders);
+        OrderStore.get().addListener(() -> SwingUtilities.invokeLater(this::refreshOrders));
        
         filterOrders("All Orders");
     }
@@ -296,7 +296,7 @@ public class CustomerDashboardHistory extends JPanel {
             OrderData order = allOrders.get(i);
 
             boolean matchesCategory = category.equals("All Orders")
-                    || (category.equals("Completed") && order.getStatus().equalsIgnoreCase("Delivered"))
+                    || (category.equals("Completed") && order.getStatus().equalsIgnoreCase("Received"))
                     || (category.equals("Cancelled") && order.getStatus().equalsIgnoreCase("Cancelled"));
 
             if (matchesCategory && matchesSearch(order, query)) {
@@ -420,7 +420,7 @@ public class CustomerDashboardHistory extends JPanel {
         }
 
         // 8.1.3 Total Paid 
-        JLabel totalTitleLbl = new JLabel("TOTAL PAID");
+        JLabel totalTitleLbl = new JLabel(order.getStatus().equalsIgnoreCase("Cancelled") ? "TOTAL AMOUNT" : "TOTAL PAID");
         totalTitleLbl.setFont(new Font("Segoe UI", Font.BOLD, 9));
         totalTitleLbl.setForeground(TEXT_DARK);
         totalTitleLbl.setBounds(0, 114, 120, 12);
@@ -461,7 +461,7 @@ public class CustomerDashboardHistory extends JPanel {
         rightPnl.setBounds(490, 16, 194, 153);
 
         // 8.3.1 Status Badge
-        boolean isDelivered = order.getStatus().equalsIgnoreCase("Delivered");
+        boolean isDelivered = order.getStatus().equalsIgnoreCase("Received");
 
         JPanel badgePnl = new JPanel(null) {
             @Override
@@ -556,7 +556,7 @@ public class CustomerDashboardHistory extends JPanel {
         panel.add(lblValue);
     }
 
-    // 9.1 Re-Order -> Checkout (with a brand new Order ID)
+    // 9.1 Re-Order (with new Order ID)
     private void reOrderToCheckout(OrderData past) {
         Container parent = this.getParent();
         if (parent == null || past.getItems() == null || past.getItems().isEmpty()) return;
@@ -595,7 +595,7 @@ public class CustomerDashboardHistory extends JPanel {
 
         CustomerDashboardCheckout checkout = new CustomerDashboardCheckout(newOrder, past.getLocation(), past.getPaymentMop());
         checkout.setBounds(468, 0, 340, 720);
-        checkout.setReturnToCartOnBack(false);   // Back should return to History, not the cart
+        checkout.setReturnToCartOnBack(false);   
 
         final java.awt.event.AWTEventListener[] watcher = new java.awt.event.AWTEventListener[1];
         final java.awt.event.HierarchyListener[] hierarchy = new java.awt.event.HierarchyListener[1];

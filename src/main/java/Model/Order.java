@@ -1,4 +1,3 @@
-
 /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
@@ -197,28 +196,51 @@ public class Order {
         
     }
 
-    // 8. Order Store 
+    // 8. Order Store
     public static class OrderStore {
+
+        // 8.1 Status Constants
+        public static final String PENDING = "Pending";
+        public static final String PREPARING = "Preparing";
+        public static final String OUT_FOR_DELIVERY = "Out for Delivery";
+        public static final String DELIVERED = "Delivered";
+        public static final String RECEIVED = "Received";
+        public static final String CANCELLED = "Cancelled";
 
         private static final OrderStore INSTANCE = new OrderStore();
         public static OrderStore get() { return INSTANCE; }
 
         private static final DateTimeFormatter FMT = DateTimeFormatter.ofPattern("MMM d, yyyy · h:mm a");
 
+        // 8.1.1 Link
+        private static class Link {
+            final OrderData customerOrder;
+            final Restaurant restaurant;
+            final Restaurant.Order restaurantOrder;
+            Link(OrderData customerOrder, Restaurant restaurant, Restaurant.Order restaurantOrder) {
+                this.customerOrder = customerOrder;
+                this.restaurant = restaurant;
+                this.restaurantOrder = restaurantOrder;
+            }
+        }
+
+        // 8.1.2 Store Data
         private final List<OrderData> orders = new ArrayList<>();
         private final List<Runnable> listeners = new ArrayList<>();
+        private final List<Link> links = new ArrayList<>();
+        private final List<Restaurant> hooked = new ArrayList<>();
         private int nextId = 1;
 
         private OrderStore() {}
 
-        //8.1 Place ORder
+        // 8.2 Place Order
         public OrderData place(Order order, String storeName, String location,
                                String paymentMop, double finalTotal) {
             for (OrderData existing : orders) {
                 if (existing.getOrderId().equals(order.getOrderId())) return existing;
             }
 
-            //8.2 Order ID
+            // 8.3 Order ID
             String id = order.getOrderId();
             if (id == null || id.trim().isEmpty()) {
                 id = String.format("#ORD-%d-%04d", LocalDate.now().getYear(), nextId++);
@@ -227,56 +249,150 @@ public class Order {
 
             OrderData data = new OrderData(
                     storeName, location, id,
-                    LocalDateTime.now().format(FMT),   
-                    "—",                               
+                    LocalDateTime.now().format(FMT),
+                    "—",
                     paymentMop,
-                    "Pending",                      
+                    PENDING,
                     String.format("₱%.2f", finalTotal),
                     order.getOrderItems());
 
             orders.add(data);
+            sendToRestaurant(order, data, finalTotal, paymentMop);
             fireChanged();
             return data;
         }
 
-        //8.3 Status
+        // 8.4 Status
         public void updateStatus(String orderId, String newStatus) {
             for (OrderData o : orders) {
                 if (o.getOrderId().equals(orderId)) {
-                    o.setStatus(newStatus);
-                    if (newStatus.equalsIgnoreCase("Delivered")) {
-                        o.setDeliveryDate(LocalDateTime.now().format(FMT));
+                    applyStatus(o, newStatus);
+                    if (CANCELLED.equalsIgnoreCase(newStatus)) {
+                        Link link = findLink(o);
+                        if (link != null && !link.restaurantOrder.isFinal()) {
+                            link.restaurant.setOrderStatus(link.restaurantOrder, Restaurant.Order.CANCELLED);
+                        }
                     }
                 }
             }
             fireChanged();
         }
 
-        //8.4 Track Order
+        // 8.5 Order Received
+        public boolean markReceived(String orderId) {
+            for (OrderData o : orders) {
+                if (o.getOrderId().equals(orderId) && DELIVERED.equalsIgnoreCase(o.getStatus())) {
+                    applyStatus(o, RECEIVED);
+                    fireChanged();
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        // 8.6 Track Order
         public List<OrderData> getActive() {
             return orders.stream()
-                    .filter(o -> !o.getStatus().equalsIgnoreCase("Delivered")
-                              && !o.getStatus().equalsIgnoreCase("Cancelled"))
+                    .filter(o -> !o.getStatus().equalsIgnoreCase(RECEIVED)
+                              && !o.getStatus().equalsIgnoreCase(CANCELLED))
                     .collect(Collectors.toList());
         }
 
-        //8.5 Order History
+        // 8.7 Order History
         public List<OrderData> getHistory() {
             return orders.stream()
-                    .filter(o -> o.getStatus().equalsIgnoreCase("Delivered")
-                              || o.getStatus().equalsIgnoreCase("Cancelled"))
+                    .filter(o -> o.getStatus().equalsIgnoreCase(RECEIVED)
+                              || o.getStatus().equalsIgnoreCase(CANCELLED))
                     .collect(Collectors.toList());
         }
 
-        // 8.6 Order Delivered
+        // 8.8 Order Delivered
         public List<OrderData> getDelivered() {
             return orders.stream()
-                    .filter(o -> o.getStatus().equalsIgnoreCase("Delivered"))
+                    .filter(o -> o.getStatus().equalsIgnoreCase(RECEIVED))
                     .collect(Collectors.toList());
         }
 
+        // 8.9 Listeners
         public void addListener(Runnable r) { listeners.add(r); }
 
-        private void fireChanged() { listeners.forEach(Runnable::run); }
+        private void fireChanged() { new ArrayList<>(listeners).forEach(Runnable::run); }
+
+        // 8.10 Connect Customer <-> Restaurant 
+        // 8.10.1 Apply Status
+        private void applyStatus(OrderData o, String status) {
+            o.setStatus(status);
+            if (DELIVERED.equalsIgnoreCase(status)) {
+                o.setDeliveryDate(LocalDateTime.now().format(FMT));
+            }
+        }
+
+        // 8.10.2 Find Link
+        private Link findLink(OrderData o) {
+            for (Link link : links) {
+                if (link.customerOrder == o) return link;
+            }
+            return null;
+        }
+
+        // 8.10.3 Restaurant Brand
+        private Restaurant.Brand brandFor(String storeName) {
+            if (storeName == null) return null;
+            if (storeName.equalsIgnoreCase("McDollibee")) return Restaurant.Brand.MCDOLLIBEE;
+            if (storeName.equalsIgnoreCase("Brain Cells Milk Tea")) return Restaurant.Brand.BRAIN_CELLS_MILK_TEA;
+            if (storeName.equalsIgnoreCase("Mang Pinaasa")) return Restaurant.Brand.MANG_PINAASA;
+            return null;
+        }
+
+        // 8.10.4 Send Order to Restaurant
+        private void sendToRestaurant(Order order, OrderData data, double total, String payment) {
+            Restaurant.Brand brand = brandFor(data.getStoreName());
+            if (brand == null) return;
+
+            Restaurant resto = Restaurant.get(brand);
+            if (!hooked.contains(resto)) {
+                hooked.add(resto);
+                resto.addListener(this::syncFromRestaurants);
+            }
+
+            StringBuilder items = new StringBuilder();
+            for (OrderItem it : order.getOrderItems()) {
+                if (items.length() > 0) items.append(", ");
+                items.append(it.getItemName());
+                if (it.getQuantity() > 1) items.append(" x").append(it.getQuantity());
+            }
+            String customer = order.getCustomerName();
+            if (customer == null || customer.trim().isEmpty()) customer = "Customer";
+
+            Restaurant.Order ro = resto.addOrder(customer, items.toString(), total, payment);
+            links.add(new Link(data, resto, ro));
+        }
+
+        // 8.10.5 Sync Status
+        private void syncFromRestaurants() {
+            boolean changed = false;
+            for (Link link : links) {
+                OrderData o = link.customerOrder;
+                String current = o.getStatus();
+                if (RECEIVED.equalsIgnoreCase(current) || CANCELLED.equalsIgnoreCase(current)) continue;
+
+                String target = toCustomerStatus(link.restaurantOrder.status);
+                if (!current.equalsIgnoreCase(target)) {
+                    applyStatus(o, target);
+                    changed = true;
+                }
+            }
+            if (changed) fireChanged();
+        }
+
+        // 8.10.6 Convert Status
+        private String toCustomerStatus(String restaurantStatus) {
+            if (Restaurant.Order.PREPARING.equals(restaurantStatus)) return PREPARING;
+            if (Restaurant.Order.READY.equals(restaurantStatus)) return OUT_FOR_DELIVERY;
+            if (Restaurant.Order.COMPLETED.equals(restaurantStatus)) return DELIVERED;
+            if (Restaurant.Order.CANCELLED.equals(restaurantStatus)
+                    || Restaurant.Order.FAILED.equals(restaurantStatus)) return CANCELLED;
+            return PENDING;
+        }
     }
 }
