@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.swing.*;
 import javax.swing.border.LineBorder;
+import javax.swing.text.*;
 
 /**
  *
@@ -366,11 +367,18 @@ public class CustomerDashboardRestaurantMenus extends JPanel {
         lblFoodName.setBounds(160, 15, 225, 30);
         foodCard.add(lblFoodName);
         // FOOD DESCRIPTION
-        JLabel lblDesc = new JLabel("<html><p style='text-align: justify;'>" + description + "</p></html>");
-        lblDesc.setFont(new Font("Segoe UI", Font.PLAIN, 13));
-        lblDesc.setForeground(COLOR_MUTED);
-        lblDesc.setBounds(160, 48, 225, 60);
-        lblDesc.setVerticalAlignment(SwingConstants.TOP);
+        JTextPane lblDesc = new JTextPane();
+        lblDesc.setText(description);
+        lblDesc.setBounds(158, 45, 225, 60);
+        lblDesc.setEditable(false);
+        lblDesc.setFocusable(false);
+        lblDesc.setOpaque(false);
+        SimpleAttributeSet attribs = new SimpleAttributeSet();
+        StyleConstants.setAlignment(attribs, StyleConstants.ALIGN_JUSTIFIED);
+        StyleConstants.setFontFamily(attribs, "Segoe UI");
+        StyleConstants.setFontSize(attribs, 13);
+        StyleConstants.setForeground(attribs, COLOR_MUTED);
+        lblDesc.setParagraphAttributes(attribs, true);
         foodCard.add(lblDesc);
         // PRICE CONTAINER
         JPanel pnlPrice = new JPanel(new BorderLayout());

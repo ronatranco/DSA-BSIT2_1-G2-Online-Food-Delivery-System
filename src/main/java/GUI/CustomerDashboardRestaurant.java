@@ -45,10 +45,15 @@ public class CustomerDashboardRestaurant extends JPanel {
         JLabel lblBannerImage = new JLabel(new ImageIcon(bannerImg));
         lblBannerImage.setBounds(345, 12, 490, 100);
         topBannerQuote.add(lblBannerImage);
-        JLabel lblText = new JLabel("<html><div style='text-align: left;'>YOUR HOT DELIVERY ON<br>HIGH-SPEED PRIORITY!</div></html>");
-        lblText.setBounds(40, 15, 360, 70); 
+        JTextArea lblText = new JTextArea("YOUR HOT DELIVERY ON HIGH-SPEED PRIORITY!");
+        lblText.setBounds(40, 25, 360, 70); 
         lblText.setForeground(YELLOW_ACCENT);
         lblText.setFont(new Font("Arial", Font.BOLD, 23)); 
+        lblText.setEditable(false);
+        lblText.setFocusable(false);
+        lblText.setOpaque(false);
+        lblText.setLineWrap(true);
+        lblText.setWrapStyleWord(true);
         topBannerQuote.add(lblText);
         topBannerQuote.setComponentZOrder(lblText, 0); 
         topBannerQuote.setComponentZOrder(lblBannerImage, 1);
