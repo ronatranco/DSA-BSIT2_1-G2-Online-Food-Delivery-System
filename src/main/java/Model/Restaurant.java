@@ -105,10 +105,11 @@ public final class Restaurant {
    }
 
    public static class Order {
+      // Order Status Labels
       public static final String PENDING = "Pending";
       public static final String PREPARING = "Preparing";
-      public static final String READY = "Ready";
-      public static final String COMPLETED = "Completed";
+      public static final String READY = "Out for Delivery";
+      public static final String COMPLETED = "Delivered";
       public static final String CANCELLED = "Cancelled";
       public static final String FAILED = "Failed";
       public final String id;
@@ -160,7 +161,7 @@ public final class Restaurant {
    private StoreStatus storeStatus = StoreStatus.OPEN;
    private boolean autoSchedule = true;
    private Boolean lastShouldBeOpen = null;
-   private int orderCounter = 7;
+   private int orderCounter = 0;
    private Timer scheduler;
    private final List<Runnable> listeners = new ArrayList<>();
    private final Random random = new Random();
@@ -188,13 +189,6 @@ public final class Restaurant {
       modifierGroups.add(size);
       modifierGroups.add(adjustments);
 
-      orders.add(new Order("ORD-007", "Anna Lim", "Iced Tea", 60.0, "Paid", "9:55 AM", "Cancelled"));
-      orders.add(new Order("ORD-006", "John Cruz", "French Fries x3", 240.0, "Failed", "9:30 AM", "Failed"));
-      orders.add(new Order("ORD-005", "Mark Lee", "Beef Burger, Iced Tea", 210.0, "Paid", "10:47 AM", "Pending"));
-      orders.add(new Order("ORD-004", "Ana Garcia", "Chicken Rice, Beef Burger, Halo-Halo", 365.0, "Paid", "9:48 AM", "Completed"));
-      orders.add(new Order("ORD-003", "Pedro Reyes", "Halo-Halo x2", 190.0, "Cash on Delivery", "10:41 AM", "Pending"));
-      orders.add(new Order("ORD-002", "Maria Santos", "Beef Burger x2, French Fries x2", 460.0, "Paid", "10:25 AM", "Ready"));
-      orders.add(new Order("ORD-001", "Juan Dela Cruz", "Chicken Rice x2, Iced Tea", 300.0, "Paid", "10:12 AM", "Preparing"));
 
       for (DayOfWeek day : DayOfWeek.values()) {
          schedule.add(new DaySchedule(day, true, LocalTime.of(8, 0), LocalTime.of(21, 0)));
