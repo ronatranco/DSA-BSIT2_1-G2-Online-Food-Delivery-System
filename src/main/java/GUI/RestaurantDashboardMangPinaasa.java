@@ -16,6 +16,7 @@ import java.time.*;
 import java.time.format.TextStyle;
 import java.util.*;
 import java.util.List;
+import java.util.function.Consumer;
 import javax.swing.*;
 import javax.swing.border.*;
 import javax.swing.event.*;
@@ -26,95 +27,257 @@ import Model.Restaurant.MoneyFormat;
 
 public class RestaurantDashboardMangPinaasa extends JPanel {
    static Restaurant DATA = Restaurant.get(Restaurant.Brand.MANG_PINAASA);
-   private Restaurant data = DATA;
-   private JLabel welcome = new JLabel();
-   private UIStyle.Chip statusChip = new UIStyle.Chip();
-   private JPanel mainPanel = new JPanel(new BorderLayout());
+   private final Restaurant data = DATA;
+
+   private static final int NAV_COLLAPSED = 80;
+   private static final int NAV_EXPANDED = 240;
+   private static final int PAGE_X = 90;
+   private static final int PAGE_W = 934;
+
+   private final JPanel pnlMainBg;
+   private final JPanel leftBannerNav = new JPanel();
+   private final JPanel homePanel = new JPanel(new BorderLayout());
+   private final JLabel welcome = new JLabel();
+   private final UIStyle.Chip statusChip = new UIStyle.Chip();
+   private final UIStyle.Notice homeNotice = new UIStyle.Notice();
    private JPanel content = new JPanel();
-   private JButton logoutBtn;
+   private JLabel lblLogoPanda;
+   private JLabel lblRestaurant;
+   private NavButton btnNavExit;
+   private final Map<String, JComponent> pages = new LinkedHashMap<>();
+   private final Map<String, NavButton> navButtons = new LinkedHashMap<>();
+   private final List<NavButton> allNav = new ArrayList<>();
 
    public RestaurantDashboardMangPinaasa(MainFrame frame) {
-      setLayout(new BorderLayout());
-      mainPanel.setBackground(UIStyle.BG_LIGHT);
-      mainPanel.add(buildHeader(), BorderLayout.NORTH);
-      mainPanel.add(content, BorderLayout.CENTER);
-      add(buildSidebar(), BorderLayout.WEST);
-      add(mainPanel, BorderLayout.CENTER);
+      setLayout(null);
+      setBounds(0, 0, 1024, 720);
+
+      pnlMainBg = new JPanel() {
+         @Override
+         public boolean isOptimizedDrawingEnabled() {
+            return false;
+         }
+      };
+      pnlMainBg.setLayout(null);
+      pnlMainBg.setBackground(UIStyle.BG_LIGHT);
+      pnlMainBg.setBounds(0, 0, 1024, 720);
+
+      buildNav();
+      buildHome();
+
+      addPage("home", homePanel);
+      addPage("store", new StoreStatusPage());
+      addPage("hours", new HoursPage());
+      addPage("menu", new FoodItemsPage());
+      addPage("mods", new ModifierPage());
+      addPage("incoming", new IncomingOrdersPage());
+      addPage("orders", new OrderStatusPage());
+      addPage("profile", new ProfilePage());
+
+      pnlMainBg.add(leftBannerNav);
+      pnlMainBg.setComponentZOrder(leftBannerNav, 0);
+      add(pnlMainBg);
+
       data.addListener(this::refresh);
       data.startScheduler();
       refresh();
+      showPage("home");
    }
 
    public JButton getBtnLogout() {
-      return logoutBtn;
+      return btnNavExit;
+   }
+
+   private void addPage(String key, JComponent page) {
+      page.setBounds(PAGE_X, 0, PAGE_W, 720);
+      page.setVisible(false);
+      pnlMainBg.add(page);
+      pages.put(key, page);
+   }
+
+   private void showPage(String key) {
+      JComponent target = pages.get(key);
+      for (Map.Entry<String, JComponent> entry : pages.entrySet()) {
+         entry.getValue().setVisible(entry.getKey().equals(key));
+      }
+      for (Map.Entry<String, NavButton> entry : navButtons.entrySet()) {
+         entry.getValue().setActive(entry.getKey().equals(key));
+      }
+      if (target instanceof Page) {
+         ((Page)target).onShow();
+      } else if (target == homePanel) {
+         homeNotice.clear();
+         refresh();
+      }
+      pnlMainBg.revalidate();
+      pnlMainBg.repaint();
+   }
+
+   private void buildNav() {
+      leftBannerNav.setLayout(null);
+      leftBannerNav.setBackground(UIStyle.PURPLE_DARK);
+      leftBannerNav.setBounds(0, 0, NAV_COLLAPSED, 720);
+
+      JLabel panda = new JLabel("\uD83D\uDC3C", SwingConstants.CENTER);
+      panda.setFont(UIStyle.emojiFont(Font.PLAIN, 28));
+      panda.setForeground(UIStyle.YELLOW_ACCENT);
+      panda.setBounds(0, 24, NAV_COLLAPSED, 44);
+      leftBannerNav.add(panda);
+
+      lblLogoPanda = new JLabel("Mang Pinaasa");
+      lblLogoPanda.setFont(UIStyle.font(Font.BOLD, 16));
+      lblLogoPanda.setForeground(UIStyle.WHITE);
+      lblLogoPanda.setBounds(68, 24, NAV_EXPANDED - 76, 26);
+      lblLogoPanda.setVisible(false);
+      leftBannerNav.add(lblLogoPanda);
+
+      lblRestaurant = new JLabel("RESTAURANT");
+      lblRestaurant.setFont(UIStyle.font(Font.BOLD, 11));
+      lblRestaurant.setForeground(UIStyle.YELLOW_ACCENT);
+      lblRestaurant.setBounds(68, 48, 120, 18);
+      lblRestaurant.setVisible(false);
+      leftBannerNav.add(lblRestaurant);
+
+      String[][] items = {
+         {"home", "\uD83C\uDFE0", "Dashboard"},
+         {"store", "\uD83C\uDFEC", "Store Status"},
+         {"hours", "\uD83D\uDD52", "Operating Hours"},
+         {"menu", "\uD83C\uDF7D", "Menu Items"},
+         {"mods", "\uD83E\uDDE9", "Modifier Builder"},
+         {"incoming", "\uD83D\uDCE5", "Incoming Orders"},
+         {"orders", "\uD83D\uDCCB", "Order Status"},
+         {"profile", "\uD83C\uDFEA", "Restaurant Profile"}
+      };
+      int y = 105;
+      for (String[] item : items) {
+         String key = item[0];
+         NavButton button = new NavButton(item[1], item[2]);
+         button.setBounds(0, y, NAV_COLLAPSED, 45);
+         button.addActionListener((e) -> showPage(key));
+         leftBannerNav.add(button);
+         navButtons.put(key, button);
+         allNav.add(button);
+         y += 58;
+      }
+
+      btnNavExit = new NavButton("[\u2190", "Logout");
+      btnNavExit.setBounds(0, 620, NAV_COLLAPSED, 45);
+      leftBannerNav.add(btnNavExit);
+      allNav.add(btnNavExit);
+
+      MouseAdapter hover = new MouseAdapter() {
+         @Override
+         public void mouseEntered(MouseEvent e) {
+            setNavExpanded(true);
+         }
+
+         @Override
+         public void mouseExited(MouseEvent e) {
+            PointerInfo info = MouseInfo.getPointerInfo();
+            if (info == null) {
+               setNavExpanded(false);
+               return;
+            }
+            Point p = info.getLocation();
+            SwingUtilities.convertPointFromScreen(p, leftBannerNav);
+            if (!leftBannerNav.contains(p)) {
+               setNavExpanded(false);
+            }
+         }
+      };
+      leftBannerNav.addMouseListener(hover);
+      for (Component c : leftBannerNav.getComponents()) {
+         c.addMouseListener(hover);
+      }
+   }
+
+   private void setNavExpanded(boolean expanded) {
+      int width = expanded ? NAV_EXPANDED : NAV_COLLAPSED;
+      leftBannerNav.setBounds(0, 0, width, 720);
+      for (NavButton button : allNav) {
+         button.setBounds(0, button.getY(), width, 45);
+         button.setExpanded(expanded);
+      }
+      lblLogoPanda.setVisible(expanded);
+      lblRestaurant.setVisible(expanded);
+      leftBannerNav.revalidate();
+      pnlMainBg.repaint();
+   }
+
+   private static class NavButton extends JButton {
+      private final String icon;
+      private final String label;
+      private boolean active;
+
+      NavButton(String icon, String label) {
+         super(icon);
+         this.icon = icon;
+         this.label = label;
+         setContentAreaFilled(false);
+         setOpaque(false);
+         setFocusPainted(false);
+         setRolloverEnabled(true);
+         setForeground(UIStyle.WHITE);
+         setFont(UIStyle.emojiFont(Font.PLAIN, 18));
+         setCursor(new Cursor(Cursor.HAND_CURSOR));
+         setExpanded(false);
+      }
+
+      void setActive(boolean active) {
+         this.active = active;
+         repaint();
+      }
+
+      void setExpanded(boolean expanded) {
+         if (expanded) {
+            setText(icon + "   " + label);
+            setHorizontalAlignment(SwingConstants.LEFT);
+            setBorder(BorderFactory.createEmptyBorder(9, 26, 9, 10));
+         } else {
+            setText(icon);
+            setHorizontalAlignment(SwingConstants.CENTER);
+            setBorder(BorderFactory.createEmptyBorder(9, 0, 9, 0));
+         }
+      }
+
+      @Override
+      protected void paintComponent(Graphics g) {
+         boolean hot = getModel().isRollover() || getModel().isPressed();
+         if (active || hot) {
+            Graphics2D g2 = (Graphics2D)g.create();
+            g2.setColor(new Color(255, 255, 255, active ? 55 : 35));
+            g2.fillRect(0, 0, getWidth(), getHeight());
+            g2.setColor(UIStyle.YELLOW_ACCENT);
+            g2.fillRect(0, 0, 4, getHeight());
+            g2.dispose();
+         }
+         super.paintComponent(g);
+      }
+   }
+
+   private void buildHome() {
+      homePanel.setBackground(UIStyle.BG_LIGHT);
+      JPanel north = new JPanel(new BorderLayout());
+      north.setOpaque(false);
+      north.add(buildHeader(), BorderLayout.NORTH);
+      JPanel noticeWrap = new JPanel(new BorderLayout());
+      noticeWrap.setOpaque(false);
+      noticeWrap.setBorder(BorderFactory.createEmptyBorder(12, 24, 0, 24));
+      noticeWrap.add(homeNotice, BorderLayout.CENTER);
+      north.add(noticeWrap, BorderLayout.CENTER);
+      homePanel.add(north, BorderLayout.NORTH);
+      homePanel.add(content, BorderLayout.CENTER);
    }
 
    private void refresh() {
       welcome.setText("Welcome back, MangPinaasa!");
       Restaurant.StoreStatus status = data.getStoreStatus();
       statusChip.set("\u25CF  " + status.getLabel(), UIStyle.storeColor(status));
-      mainPanel.remove(content);
+      homePanel.remove(content);
       content = buildContent();
-      mainPanel.add(content, BorderLayout.CENTER);
-      mainPanel.revalidate();
-      mainPanel.repaint();
-   }
-
-   private JPanel buildSidebar() {
-      JPanel sidebar = new JPanel(new BorderLayout());
-      sidebar.setPreferredSize(new Dimension(220, 720));
-      sidebar.setBackground(UIStyle.PURPLE_DARK);
-      sidebar.setBorder(BorderFactory.createMatteBorder(0, 0, 0, 3, UIStyle.PURPLE_LIGHT));
-      JPanel logoPanel = new JPanel();
-      logoPanel.setBackground(UIStyle.PURPLE_DARK);
-      logoPanel.setLayout(new BoxLayout(logoPanel, BoxLayout.Y_AXIS));
-      logoPanel.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, UIStyle.PURPLE_LIGHT));
-      JLabel logo = new JLabel("\uD83D\uDC3C Mang Pinaasa");
-      logo.setForeground(UIStyle.WHITE);
-      logo.setFont(UIStyle.emojiFont(Font.BOLD, 20));
-      logo.setAlignmentX(0.5F);
-      JLabel restaurantLabel = new JLabel("RESTAURANT");
-      restaurantLabel.setForeground(UIStyle.YELLOW_ACCENT);
-      restaurantLabel.setFont(UIStyle.font(Font.BOLD, 13));
-      restaurantLabel.setAlignmentX(0.5F);
-      logoPanel.add(Box.createVerticalStrut(22));
-      logoPanel.add(logo);
-      logoPanel.add(Box.createVerticalStrut(5));
-      logoPanel.add(restaurantLabel);
-      logoPanel.add(Box.createVerticalStrut(20));
-      sidebar.add(logoPanel, BorderLayout.NORTH);
-
-      JPanel nav = new JPanel();
-      nav.setBackground(UIStyle.PURPLE_DARK);
-      nav.setLayout(new BoxLayout(nav, BoxLayout.Y_AXIS));
-      nav.add(createButton("\uD83C\uDFE0  Dashboard"));
-      nav.add(createSectionLabel("STORE"));
-      addNav(nav, "\uD83C\uDFEC  Store Status", StoreStatus::new);
-      addNav(nav, "\uD83D\uDD52  Operating Hours", Hoursscheduler::new);
-      nav.add(createSectionLabel("MENU"));
-      addNav(nav, "\uD83C\uDF7D  Menu Items", FoodItems::new);
-      addNav(nav, "\uD83E\uDDE9  Modifier Builder", ModifierBuilder::new);
-      nav.add(createSectionLabel("ORDERS"));
-      addNav(nav, "\uD83D\uDCE5  Incoming Orders", IncomingOrders::new);
-      addNav(nav, "\uD83D\uDCCB  Order Status", OrderStatus::new);
-      nav.add(createSectionLabel("PROFILE"));
-      addNav(nav, "\uD83C\uDFEA  Restaurant Profile", Restaurantprofile::new);
-      sidebar.add(nav, BorderLayout.CENTER);
-
-      // Logout button: MainFrame registers its own listener on this button
-      logoutBtn = createButton("Logout");
-      JPanel logoutPanel = new JPanel(new BorderLayout());
-      logoutPanel.setBackground(UIStyle.PURPLE_DARK);
-      logoutPanel.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createMatteBorder(1, 0, 0, 0, UIStyle.PURPLE_LIGHT), BorderFactory.createEmptyBorder(10, 10, 15, 10)));
-      logoutPanel.add(logoutBtn, BorderLayout.CENTER);
-      sidebar.add(logoutPanel, BorderLayout.SOUTH);
-      return sidebar;
-   }
-
-   private void addNav(JPanel nav, String text, Runnable open) {
-      JButton button = createButton(text);
-      button.addActionListener((e) -> open.run());
-      nav.add(button);
+      homePanel.add(content, BorderLayout.CENTER);
+      homePanel.revalidate();
+      homePanel.repaint();
    }
 
    private JPanel buildHeader() {
@@ -156,7 +319,7 @@ public class RestaurantDashboardMangPinaasa extends JPanel {
    private JPanel buildContent() {
       JPanel panel = new JPanel(new GridLayout(2, 1, 20, 20));
       panel.setBackground(UIStyle.BG_LIGHT);
-      panel.setBorder(BorderFactory.createEmptyBorder(25, 24, 25, 24));
+      panel.setBorder(BorderFactory.createEmptyBorder(20, 24, 25, 24));
       JPanel stats = new JPanel(new GridLayout(1, 4, 15, 0));
       stats.setBackground(UIStyle.BG_LIGHT);
       stats.add(UIStyle.statCard("MENU ITEMS", String.valueOf(data.restaurant.menuItems.size()), data.availableDishCount() + " available", UIStyle.PURPLE_LIGHT));
@@ -172,12 +335,12 @@ public class RestaurantDashboardMangPinaasa extends JPanel {
       quickTitle.setBorder(BorderFactory.createEmptyBorder(0, 0, 12, 0));
       JPanel quickButtons = new JPanel(new GridLayout(2, 3, 15, 15));
       quickButtons.setOpaque(false);
-      addQuick(quickButtons, "Manage Menu Items", FoodItems::new);
-      addQuick(quickButtons, "Incoming Orders", IncomingOrders::new);
-      addQuick(quickButtons, "Order Status", OrderStatus::new);
-      addQuick(quickButtons, "View Analytics", () -> { });
-      addQuick(quickButtons, "Operating Hours", Hoursscheduler::new);
-      addQuick(quickButtons, "Modifier Builder", ModifierBuilder::new);
+      addQuick(quickButtons, "Manage Menu Items", () -> showPage("menu"));
+      addQuick(quickButtons, "Incoming Orders", () -> showPage("incoming"));
+      addQuick(quickButtons, "Order Status", () -> showPage("orders"));
+      addQuick(quickButtons, "View Analytics", () -> homeNotice.info("Analytics is not available yet."));
+      addQuick(quickButtons, "Operating Hours", () -> showPage("hours"));
+      addQuick(quickButtons, "Modifier Builder", () -> showPage("mods"));
       quick.add(quickTitle, BorderLayout.NORTH);
       quick.add(quickButtons, BorderLayout.CENTER);
       panel.add(stats);
@@ -192,57 +355,17 @@ public class RestaurantDashboardMangPinaasa extends JPanel {
       panel.add(button);
    }
 
-   private JButton createButton(String text) {
-      JButton button = new SidebarButton(text, UIStyle.YELLOW_ACCENT);
-      button.setFont(UIStyle.emojiFont(Font.PLAIN, 14));
-      button.setForeground(UIStyle.WHITE);
-      button.setHorizontalAlignment(SwingConstants.LEFT);
-      button.setBorder(BorderFactory.createEmptyBorder(9, 20, 9, 10));
-      button.setFocusPainted(false);
-      button.setCursor(new Cursor(Cursor.HAND_CURSOR));
-      button.setMaximumSize(new Dimension(Integer.MAX_VALUE, 38));
-      return button;
-   }
+   static abstract class Page extends JPanel {
+      final Restaurant data = DATA;
+      final UIStyle.Notice notice = new UIStyle.Notice();
 
-   private JLabel createSectionLabel(String text) {
-      JLabel label = new JLabel(text);
-      label.setFont(UIStyle.font(Font.BOLD, 11));
-      label.setForeground(UIStyle.YELLOW_ACCENT);
-      label.setBorder(BorderFactory.createEmptyBorder(12, 20, 4, 0));
-      label.setAlignmentX(0.0F);
-      return label;
-   }
-
-   private static class SidebarButton extends JButton {
-      private final Color accent;
-
-      SidebarButton(String text, Color accent) {
-         super(text);
-         this.accent = accent;
-         setContentAreaFilled(false);
+      Page() {
+         super(new BorderLayout());
          setOpaque(false);
       }
 
-      @Override
-      protected void paintComponent(Graphics g) {
-         if (getModel().isRollover() || getModel().isPressed()) {
-            Graphics2D g2 = (Graphics2D)g.create();
-            g2.setColor(new Color(255, 255, 255, 40));
-            g2.fillRect(0, 0, getWidth(), getHeight());
-            g2.setColor(accent);
-            g2.fillRect(0, 0, 4, getHeight());
-            g2.dispose();
-         }
-         super.paintComponent(g);
-      }
-   }
-
-   static abstract class AppWindow extends JFrame {
-      AppWindow(String title, int width, int height) {
-         super("GrabPanda - " + title);
-         setSize(width, height);
-         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-         setLocationRelativeTo(null);
+      void onShow() {
+         notice.clear();
       }
    }
 
@@ -286,7 +409,6 @@ public class RestaurantDashboardMangPinaasa extends JPanel {
          return "Dialog";
       }
 
-
       static Object[] orderRow(Restaurant.Order o) {
          return new Object[]{o.id, o.customer, o.items, MoneyFormat.peso(o.total), o.payment, o.time, o.status};
       }
@@ -307,8 +429,8 @@ public class RestaurantDashboardMangPinaasa extends JPanel {
             case "available":
             case "active":
             case "paid":
-            case "ready":
-            case "completed":
+            case "out for delivery":
+            case "delivered":
                return GREEN;
             case "unavailable":
             case "inactive":
@@ -323,32 +445,12 @@ public class RestaurantDashboardMangPinaasa extends JPanel {
          }
       }
 
-
-      public static void warn(Component parent, String message) {
-         JOptionPane.showMessageDialog(parent, message, "Please check", JOptionPane.WARNING_MESSAGE);
-      }
-
-      public static boolean confirm(Component parent, String message, String title) {
-         return JOptionPane.showConfirmDialog(parent, message, title, JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION;
-      }
-
-      public static int requireSelection(JTable table, Component parent, String what) {
+      public static int requireSelection(JTable table, Notice notice, String what) {
          int row = table.getSelectedRow();
          if (row < 0) {
-            JOptionPane.showMessageDialog(parent, "Please select " + what + " first.", "Nothing selected", JOptionPane.INFORMATION_MESSAGE);
+            notice.warn("Please select " + what + " first.");
          }
          return row;
-      }
-
-      public static void bind(JFrame frame, Runnable refresh) {
-         Restaurant data = DATA;
-         data.addListener(refresh);
-         frame.addWindowListener(new WindowAdapter() {
-            @Override
-            public void windowClosed(WindowEvent e) {
-               data.removeListener(refresh);
-            }
-         });
       }
 
       public static void onTextChange(JTextField field, Runnable action) {
@@ -385,14 +487,28 @@ public class RestaurantDashboardMangPinaasa extends JPanel {
          return new ImageIcon(icon.getImage().getScaledInstance(w, h, Image.SCALE_SMOOTH));
       }
 
+      public static JTextArea wrapText(String text, int size, Color color, int width, int height) {
+         JTextArea area = new JTextArea(text);
+         area.setFont(font(Font.PLAIN, size));
+         area.setForeground(color);
+         area.setEditable(false);
+         area.setFocusable(false);
+         area.setOpaque(false);
+         area.setLineWrap(true);
+         area.setWrapStyleWord(true);
+         area.setBorder(null);
+         area.setCursor(Cursor.getDefaultCursor());
+         area.setPreferredSize(new Dimension(width, height));
+         return area;
+      }
 
-      public static JPanel page(String icon, String title, JComponent action, JComponent body) {
-         JPanel main = new JPanel(new BorderLayout(0, 20));
+      public static JPanel page(String icon, String title, JComponent action, Notice notice, JComponent body) {
+         JPanel main = new JPanel(new BorderLayout(0, 14));
          main.setBackground(BG_LIGHT);
-         main.setBorder(BorderFactory.createEmptyBorder(25, 25, 25, 25));
+         main.setBorder(BorderFactory.createEmptyBorder(20, 22, 20, 22));
          JPanel header = new JPanel(new BorderLayout());
          header.setBackground(WHITE);
-         header.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createMatteBorder(0, 0, 3, 0, YELLOW_ACCENT), BorderFactory.createEmptyBorder(18, 24, 15, 24)));
+         header.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createMatteBorder(0, 0, 3, 0, YELLOW_ACCENT), BorderFactory.createEmptyBorder(16, 24, 13, 24)));
          JLabel titleLabel = new JLabel(icon + "  " + title);
          titleLabel.setFont(emojiFont(Font.BOLD, 25));
          titleLabel.setForeground(TEXT_DARK);
@@ -403,9 +519,31 @@ public class RestaurantDashboardMangPinaasa extends JPanel {
             actionWrap.add(action);
             header.add(actionWrap, BorderLayout.EAST);
          }
-         main.add(header, BorderLayout.NORTH);
+         JPanel top = new JPanel(new BorderLayout(0, 10));
+         top.setOpaque(false);
+         top.add(header, BorderLayout.NORTH);
+         if (notice != null) {
+            top.add(notice, BorderLayout.CENTER);
+         }
+         main.add(top, BorderLayout.NORTH);
          main.add(body, BorderLayout.CENTER);
          return main;
+      }
+
+      public static JPanel formView(JLabel title, JComponent body, JComponent buttons, Color accent) {
+         RoundedPanel card = card(accent);
+         card.setPadding(22, 28, 22, 24);
+         title.setFont(font(Font.BOLD, 18));
+         title.setForeground(TEXT_DARK);
+         title.setBorder(BorderFactory.createEmptyBorder(0, 0, 14, 0));
+         buttons.setBorder(BorderFactory.createEmptyBorder(16, 0, 0, 0));
+         card.add(title, BorderLayout.NORTH);
+         card.add(body, BorderLayout.CENTER);
+         card.add(buttons, BorderLayout.SOUTH);
+         JPanel wrap = new JPanel(new BorderLayout());
+         wrap.setOpaque(false);
+         wrap.add(card, BorderLayout.NORTH);
+         return wrap;
       }
 
       public static RoundedPanel card(Color accent) {
@@ -507,7 +645,6 @@ public class RestaurantDashboardMangPinaasa extends JPanel {
          return panel;
       }
 
-
       public static RoundedButton button(String text, Color color) {
          RoundedButton button = new RoundedButton(text, color, 14);
          button.setForeground(WHITE);
@@ -521,6 +658,11 @@ public class RestaurantDashboardMangPinaasa extends JPanel {
       public static RoundedButton primaryButton(String text) {
          RoundedButton button = button(text, PURPLE_LIGHT);
          button.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
+         return button;
+      }
+
+      public static RoundedButton compact(RoundedButton button) {
+         button.setBorder(BorderFactory.createEmptyBorder(9, 10, 9, 10));
          return button;
       }
 
@@ -553,6 +695,100 @@ public class RestaurantDashboardMangPinaasa extends JPanel {
          return BorderFactory.createCompoundBorder(new LineBorder(color, 1, true), BorderFactory.createEmptyBorder(8, 12, 8, 12));
       }
 
+      static class Notice extends JPanel {
+         private final JLabel label = new JLabel();
+         private final JPanel buttons = new JPanel(new FlowLayout(FlowLayout.RIGHT, 8, 0));
+         private final javax.swing.Timer timer;
+         private Color color = PURPLE_DARK;
+
+         Notice() {
+            super(new BorderLayout(12, 0));
+            setOpaque(false);
+            setBorder(BorderFactory.createEmptyBorder(9, 18, 9, 12));
+            label.setFont(font(Font.BOLD, 13));
+            label.setForeground(WHITE);
+            buttons.setOpaque(false);
+            add(label, BorderLayout.CENTER);
+            add(buttons, BorderLayout.EAST);
+            timer = new javax.swing.Timer(4500, (e) -> clear());
+            timer.setRepeats(false);
+            setVisible(false);
+         }
+
+         void info(String message) {
+            show(message, PURPLE_DARK);
+         }
+
+         void success(String message) {
+            show(message, GREEN);
+         }
+
+         void warn(String message) {
+            show(message, ORANGE);
+         }
+
+         void error(String message) {
+            show(message, RED);
+         }
+
+         private void show(String message, Color newColor) {
+            timer.stop();
+            buttons.removeAll();
+            color = newColor;
+            label.setText(message);
+            setVisible(true);
+            timer.restart();
+            relayout();
+         }
+
+         void confirm(String message, Runnable onYes) {
+            timer.stop();
+            buttons.removeAll();
+            color = PURPLE_DARK;
+            label.setText(message);
+            RoundedButton yes = button("Yes", YELLOW_ACCENT);
+            yes.setForeground(TEXT_DARK);
+            yes.setBorder(BorderFactory.createEmptyBorder(6, 18, 6, 18));
+            yes.addActionListener((e) -> {
+               clear();
+               onYes.run();
+            });
+            RoundedButton no = button("No", PURPLE_LIGHT);
+            no.setBorder(BorderFactory.createEmptyBorder(6, 18, 6, 18));
+            no.addActionListener((e) -> clear());
+            buttons.add(yes);
+            buttons.add(no);
+            setVisible(true);
+            relayout();
+         }
+
+         void clear() {
+            timer.stop();
+            buttons.removeAll();
+            setVisible(false);
+            relayout();
+         }
+
+         private void relayout() {
+            revalidate();
+            repaint();
+            Container parent = getParent();
+            if (parent != null) {
+               parent.revalidate();
+               parent.repaint();
+            }
+         }
+
+         @Override
+         protected void paintComponent(Graphics g) {
+            Graphics2D g2 = (Graphics2D)g.create();
+            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+            g2.setColor(color);
+            g2.fillRoundRect(0, 0, getWidth(), getHeight(), 14, 14);
+            g2.dispose();
+            super.paintComponent(g);
+         }
+      }
 
       static class RoundedPanel extends JPanel {
          private final int radius;
@@ -683,14 +919,12 @@ public class RestaurantDashboardMangPinaasa extends JPanel {
       }
    }
 
-   static class StoreStatus extends AppWindow {
-      private final Restaurant data = DATA;
+   static class StoreStatusPage extends Page {
       private final UIStyle.Chip chip = new UIStyle.Chip();
-      private final JLabel scheduleNote = new JLabel();
+      private final JTextArea scheduleNote = UIStyle.wrapText("", 12, UIStyle.MUTED, 780, 40);
       private final Map<Restaurant.StoreStatus, UIStyle.RoundedButton> buttons = new EnumMap<>(Restaurant.StoreStatus.class);
 
-      public StoreStatus() {
-         super("Store Status", 820, 480);
+      StoreStatusPage() {
          JPanel options = new JPanel(new GridLayout(1, 3, 20, 20));
          options.setOpaque(false);
          options.add(optionCard("\uD83D\uDFE2", Restaurant.StoreStatus.OPEN, "Customers can place new orders."));
@@ -701,21 +935,21 @@ public class RestaurantDashboardMangPinaasa extends JPanel {
          statusRow.setBorder(BorderFactory.createEmptyBorder(0, 0, 18, 0));
          statusRow.add(UIStyle.fieldLabel("Current status:"));
          statusRow.add(chip);
-         scheduleNote.setFont(UIStyle.font(Font.PLAIN, 12));
-         scheduleNote.setForeground(UIStyle.MUTED);
-         scheduleNote.setBorder(BorderFactory.createEmptyBorder(16, 0, 0, 0));
+         JPanel noteWrap = new JPanel(new BorderLayout());
+         noteWrap.setOpaque(false);
+         noteWrap.setBorder(BorderFactory.createEmptyBorder(16, 0, 0, 0));
+         noteWrap.add(scheduleNote, BorderLayout.CENTER);
          UIStyle.RoundedPanel card = UIStyle.card(UIStyle.PURPLE_LIGHT);
          card.setPadding(22, 30, 22, 24);
          card.add(statusRow, BorderLayout.NORTH);
          card.add(options, BorderLayout.CENTER);
-         card.add(scheduleNote, BorderLayout.SOUTH);
+         card.add(noteWrap, BorderLayout.SOUTH);
          JPanel body = new JPanel(new BorderLayout());
          body.setOpaque(false);
          body.add(card, BorderLayout.NORTH);
-         setContentPane(UIStyle.page("\uD83C\uDFEC", "Store Status", null, body));
-         UIStyle.bind(this, this::refresh);
+         add(UIStyle.page("\uD83C\uDFEC", "Store Status", null, notice, body), BorderLayout.CENTER);
+         data.addListener(this::refresh);
          refresh();
-         setVisible(true);
       }
 
       private JPanel optionCard(String icon, Restaurant.StoreStatus status, String description) {
@@ -726,9 +960,7 @@ public class RestaurantDashboardMangPinaasa extends JPanel {
          JLabel heading = new JLabel(icon + "  " + status.getLabel());
          heading.setFont(UIStyle.emojiFont(Font.BOLD, 18));
          heading.setForeground(UIStyle.TEXT_DARK);
-         JLabel text = new JLabel("<html><body style='width:150px'>" + description + "</body></html>");
-         text.setFont(UIStyle.font(Font.PLAIN, 13));
-         text.setForeground(UIStyle.MUTED);
+         JTextArea text = UIStyle.wrapText(description, 13, UIStyle.MUTED, 180, 84);
          UIStyle.RoundedButton button = UIStyle.button("", color);
          button.addActionListener((e) -> data.setStoreStatus(status));
          buttons.put(status, button);
@@ -760,34 +992,36 @@ public class RestaurantDashboardMangPinaasa extends JPanel {
             button.setBase(active ? UIStyle.storeColor(status).darker().darker() : UIStyle.storeColor(status));
          }
          scheduleNote.setText(data.isAutoSchedule()
-            ? "<html><body style='width:660px'>Auto schedule is ON: the status changes by itself at each day's opening and closing time. A change you make here stays until the next scheduled opening or closing.</body></html>"
-            : "<html><body style='width:660px'>Auto schedule is OFF: the status only changes when you change it here.</body></html>");
+            ? "Auto schedule is ON: the status changes by itself at each day's opening and closing time. A change you make here stays until the next scheduled opening or closing."
+            : "Auto schedule is OFF: the status only changes when you change it here.");
+      }
+
+      @Override
+      void onShow() {
+         super.onShow();
+         refresh();
       }
    }
 
-   static class Hoursscheduler extends AppWindow {
-      private final Restaurant data = DATA;
+   static class HoursPage extends Page {
       private final JCheckBox autoBox = new JCheckBox("Automatically open and close the store using this schedule");
       private final JCheckBox[] dayEnabled = new JCheckBox[7];
       private final JSpinner[] openTime = new JSpinner[7];
       private final JSpinner[] closeTime = new JSpinner[7];
       private final JLabel nowLabel = new JLabel();
 
-      public Hoursscheduler() {
-         super("Operating Hours", 800, 700);
+      HoursPage() {
          autoBox.setSelected(data.isAutoSchedule());
          autoBox.setFont(UIStyle.font(Font.PLAIN, 14));
          autoBox.setOpaque(false);
-         JLabel hint = new JLabel("<html>Set the opening and closing time for each day. If the closing time is earlier than the opening time, the store closes after midnight.</html>");
-         hint.setFont(UIStyle.font(Font.PLAIN, 12));
-         hint.setForeground(UIStyle.MUTED);
+         JTextArea hint = UIStyle.wrapText("Set the opening and closing time for each day. If the closing time is earlier than the opening time, the store closes after midnight.", 12, UIStyle.MUTED, 780, 34);
          JPanel top = new JPanel(new BorderLayout(0, 6));
          top.setOpaque(false);
-         top.setBorder(BorderFactory.createEmptyBorder(0, 0, 14, 0));
+         top.setBorder(BorderFactory.createEmptyBorder(0, 0, 12, 0));
          top.add(autoBox, BorderLayout.NORTH);
          top.add(hint, BorderLayout.CENTER);
 
-         JPanel grid = new JPanel(new GridLayout(0, 4, 15, 10));
+         JPanel grid = new JPanel(new GridLayout(0, 4, 15, 8));
          grid.setOpaque(false);
          grid.add(UIStyle.fieldLabel("Day"));
          grid.add(UIStyle.fieldLabel("Open this day"));
@@ -823,26 +1057,28 @@ public class RestaurantDashboardMangPinaasa extends JPanel {
          nowLabel.setFont(UIStyle.font(Font.PLAIN, 13));
          JPanel bottom = new JPanel(new BorderLayout(0, 10));
          bottom.setOpaque(false);
-         bottom.setBorder(BorderFactory.createEmptyBorder(16, 0, 0, 0));
+         bottom.setBorder(BorderFactory.createEmptyBorder(14, 0, 0, 0));
          bottom.add(UIStyle.buttonRow(save, copyMonday), BorderLayout.NORTH);
          bottom.add(nowLabel, BorderLayout.CENTER);
 
          UIStyle.RoundedPanel card = UIStyle.card(UIStyle.YELLOW_ACCENT);
-         card.setPadding(22, 30, 22, 24);
+         card.setPadding(18, 30, 18, 24);
          card.add(top, BorderLayout.NORTH);
          card.add(gridWrap, BorderLayout.CENTER);
          card.add(bottom, BorderLayout.SOUTH);
          JPanel body = new JPanel(new BorderLayout());
          body.setOpaque(false);
          body.add(card, BorderLayout.NORTH);
-         setContentPane(UIStyle.page("\uD83D\uDD52", "Operating Hours", null, body));
+         add(UIStyle.page("\uD83D\uDD52", "Operating Hours", null, notice, body), BorderLayout.CENTER);
          updateNowLabel();
-         setVisible(true);
+      }
+
+      private Date dateOf(LocalTime time) {
+         return Date.from(LocalDate.now().atTime(time).atZone(ZoneId.systemDefault()).toInstant());
       }
 
       private JSpinner timeSpinner(LocalTime time) {
-         Date date = Date.from(LocalDate.now().atTime(time).atZone(ZoneId.systemDefault()).toInstant());
-         JSpinner spinner = new JSpinner(new SpinnerDateModel(date, null, null, Calendar.MINUTE));
+         JSpinner spinner = new JSpinner(new SpinnerDateModel(dateOf(time), null, null, Calendar.MINUTE));
          spinner.setEditor(new JSpinner.DateEditor(spinner, "hh:mm a"));
          spinner.setFont(UIStyle.font(Font.PLAIN, 14));
          return spinner;
@@ -850,6 +1086,18 @@ public class RestaurantDashboardMangPinaasa extends JPanel {
 
       private LocalTime toTime(JSpinner spinner) {
          return ((Date)spinner.getValue()).toInstant().atZone(ZoneId.systemDefault()).toLocalTime().withSecond(0).withNano(0);
+      }
+
+      private void loadFromData() {
+         autoBox.setSelected(data.isAutoSchedule());
+         for (int i = 0; i < 7; ++i) {
+            Restaurant.DaySchedule day = data.schedule.get(i);
+            dayEnabled[i].setSelected(day.enabled);
+            openTime[i].setValue(dateOf(day.open));
+            closeTime[i].setValue(dateOf(day.close));
+            updateRow(i);
+         }
+         updateNowLabel();
       }
 
       private void updateRow(int index) {
@@ -865,13 +1113,14 @@ public class RestaurantDashboardMangPinaasa extends JPanel {
             closeTime[i].setValue(closeTime[0].getValue());
             updateRow(i);
          }
+         notice.info("Monday's hours were copied to all days. Click Save Schedule to keep them.");
       }
 
       private void saveSchedule() {
          for (int i = 0; i < 7; ++i) {
             if (dayEnabled[i].isSelected() && toTime(openTime[i]).equals(toTime(closeTime[i]))) {
                String dayName = data.schedule.get(i).day.getDisplayName(TextStyle.FULL, Locale.ENGLISH);
-               UIStyle.warn(this, dayName + ": the opening and closing time can't be the same.");
+               notice.warn(dayName + ": the opening and closing time can't be the same.");
                return;
             }
          }
@@ -883,7 +1132,7 @@ public class RestaurantDashboardMangPinaasa extends JPanel {
          }
          data.setAutoSchedule(autoBox.isSelected());
          updateNowLabel();
-         JOptionPane.showMessageDialog(this, "Schedule saved.", "Saved", JOptionPane.INFORMATION_MESSAGE);
+         notice.success("Schedule saved.");
       }
 
       private void updateNowLabel() {
@@ -896,17 +1145,21 @@ public class RestaurantDashboardMangPinaasa extends JPanel {
             nowLabel.setText("  By this schedule, the store should be " + (open ? "OPEN" : "CLOSED") + " right now.");
          }
       }
+
+      @Override
+      void onShow() {
+         super.onShow();
+         loadFromData();
+      }
    }
 
-   static class IncomingOrders extends AppWindow {
-      private final Restaurant data = DATA;
+   static class IncomingOrdersPage extends Page {
       private final JTable table = UIStyle.createTable(UIStyle.ORDER_COLUMNS);
       private final DefaultTableModel model = (DefaultTableModel)table.getModel();
       private final List<Restaurant.Order> shown = new ArrayList<>();
       private final JLabel storeNote = new JLabel();
 
-      public IncomingOrders() {
-         super("Incoming Orders", 1000, 620);
+      IncomingOrdersPage() {
          JButton simulate = UIStyle.primaryButton("+ Simulate New Order");
          simulate.addActionListener((e) -> simulateOrder());
          JButton accept = UIStyle.button("Accept Order", UIStyle.GREEN);
@@ -919,10 +1172,9 @@ public class RestaurantDashboardMangPinaasa extends JPanel {
          body.add(storeNote, BorderLayout.NORTH);
          body.add(UIStyle.tableCard(table), BorderLayout.CENTER);
          body.add(UIStyle.buttonRow(accept, reject), BorderLayout.SOUTH);
-         setContentPane(UIStyle.page("\uD83D\uDCE5", "Incoming Orders", simulate, body));
-         UIStyle.bind(this, this::refresh);
+         add(UIStyle.page("\uD83D\uDCE5", "Incoming Orders", simulate, notice, body), BorderLayout.CENTER);
+         data.addListener(this::refresh);
          refresh();
-         setVisible(true);
       }
 
       private void refresh() {
@@ -942,44 +1194,48 @@ public class RestaurantDashboardMangPinaasa extends JPanel {
       }
 
       private void acceptSelected() {
-         int row = UIStyle.requireSelection(table, this, "an order");
+         int row = UIStyle.requireSelection(table, notice, "an order");
          if (row >= 0) {
-            data.setOrderStatus(shown.get(row), Restaurant.Order.PREPARING);
+            Restaurant.Order order = shown.get(row);
+            data.setOrderStatus(order, Restaurant.Order.PREPARING);
+            notice.success("Order " + order.id + " accepted.");
          }
       }
 
       private void rejectSelected() {
-         int row = UIStyle.requireSelection(table, this, "an order");
+         int row = UIStyle.requireSelection(table, notice, "an order");
          if (row >= 0) {
             Restaurant.Order order = shown.get(row);
-            if (UIStyle.confirm(this, "Reject order " + order.id + " from " + order.customer + "?", "Reject Order")) {
-               data.setOrderStatus(order, Restaurant.Order.CANCELLED);
-            }
+            notice.confirm("Reject order " + order.id + " from " + order.customer + "?", () -> data.setOrderStatus(order, Restaurant.Order.CANCELLED));
          }
       }
 
       private void simulateOrder() {
          if (data.simulateIncomingOrder() == null) {
             if (data.getStoreStatus() == Restaurant.StoreStatus.OPEN) {
-               UIStyle.warn(this, "There are no available menu items to order.");
+               notice.warn("There are no available menu items to order.");
             } else {
-               UIStyle.warn(this, "The store status is \"" + data.getStoreStatus().getLabel() + "\", so new orders are not accepted.");
+               notice.warn("The store status is \"" + data.getStoreStatus().getLabel() + "\", so new orders are not accepted.");
             }
          }
       }
+
+      @Override
+      void onShow() {
+         super.onShow();
+         refresh();
+      }
    }
 
-   static class OrderStatus extends AppWindow {
-      private final Restaurant data = DATA;
+   static class OrderStatusPage extends Page {
       private final JTable table = UIStyle.createTable(UIStyle.ORDER_COLUMNS);
       private final DefaultTableModel model = (DefaultTableModel)table.getModel();
       private final List<Restaurant.Order> shown = new ArrayList<>();
       private final JTextField search = UIStyle.styledField("");
-      private final JComboBox<String> filter = new JComboBox<>(new String[]{"All", "Pending", "Preparing", "Ready", "Completed", "Cancelled", "Failed"});
+      private final JComboBox<String> filter = new JComboBox<>(new String[]{"All", "Pending", "Preparing", "Out for Delivery", "Delivered", "Cancelled", "Failed"});
 
-      public OrderStatus() {
-         super("Order Status", 1020, 640);
-         search.setColumns(16);
+      OrderStatusPage() {
+         search.setColumns(14);
          UIStyle.onTextChange(search, this::refresh);
          filter.addActionListener((e) -> refresh());
          JPanel filterBar = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 0));
@@ -988,11 +1244,12 @@ public class RestaurantDashboardMangPinaasa extends JPanel {
          filterBar.add(search);
          filterBar.add(UIStyle.fieldLabel("Status:"));
          filterBar.add(filter);
+
          JButton preparing = UIStyle.button("Mark Preparing", UIStyle.ORANGE);
          preparing.addActionListener((e) -> changeStatus(Restaurant.Order.PREPARING));
-         JButton ready = UIStyle.button("Mark Ready", UIStyle.PURPLE_DARK);
+         JButton ready = UIStyle.button("Mark Out for Delivery", UIStyle.PURPLE_DARK);
          ready.addActionListener((e) -> changeStatus(Restaurant.Order.READY));
-         JButton completed = UIStyle.button("Mark Completed", UIStyle.GREEN);
+         JButton completed = UIStyle.button("Mark Delivered", UIStyle.GREEN);
          completed.addActionListener((e) -> changeStatus(Restaurant.Order.COMPLETED));
          JButton cancel = UIStyle.button("Cancel Order", UIStyle.RED);
          cancel.addActionListener((e) -> changeStatus(Restaurant.Order.CANCELLED));
@@ -1001,10 +1258,9 @@ public class RestaurantDashboardMangPinaasa extends JPanel {
          body.add(filterBar, BorderLayout.NORTH);
          body.add(UIStyle.tableCard(table), BorderLayout.CENTER);
          body.add(UIStyle.buttonRow(preparing, ready, completed, cancel), BorderLayout.SOUTH);
-         setContentPane(UIStyle.page("\uD83D\uDCCB", "Order Status", null, body));
-         UIStyle.bind(this, this::refresh);
+         add(UIStyle.page("\uD83D\uDCCB", "Order Status", null, notice, body), BorderLayout.CENTER);
+         data.addListener(this::refresh);
          refresh();
-         setVisible(true);
       }
 
       private void refresh() {
@@ -1023,33 +1279,41 @@ public class RestaurantDashboardMangPinaasa extends JPanel {
       }
 
       private void changeStatus(String newStatus) {
-         int row = UIStyle.requireSelection(table, this, "an order");
+         int row = UIStyle.requireSelection(table, notice, "an order");
          if (row >= 0) {
             Restaurant.Order order = shown.get(row);
             if (order.isFinal()) {
-               UIStyle.warn(this, order.id + " is already " + order.status + " and can't be changed.");
+               notice.warn(order.id + " is already " + order.status + " and can't be changed.");
             } else {
                data.setOrderStatus(order, newStatus);
+               notice.success(order.id + " is now " + newStatus + ".");
             }
          }
       }
+
+      @Override
+      void onShow() {
+         super.onShow();
+         refresh();
+      }
    }
 
-   static class Restaurantprofile extends AppWindow {
-      private final Restaurant data = DATA;
+   static class ProfilePage extends Page {
       private final JTextField restaurantName = UIStyle.styledField("");
       private final JTextField location = UIStyle.styledField("");
       private final JTextField ownerName = UIStyle.styledField("");
       private final JTextField contact = UIStyle.styledField("");
       private final JTextField cuisine = UIStyle.styledField("");
 
-      public Restaurantprofile() {
-         super("Restaurant Profile", 700, 680);
+      ProfilePage() {
          loadFields();
          JButton save = UIStyle.primaryButton("Save Changes");
          save.addActionListener((e) -> saveProfile());
          JButton undo = UIStyle.button("Undo Changes", UIStyle.PURPLE_DARK);
-         undo.addActionListener((e) -> loadFields());
+         undo.addActionListener((e) -> {
+            loadFields();
+            notice.info("Changes were undone.");
+         });
          UIStyle.RoundedPanel card = UIStyle.card(UIStyle.PURPLE_LIGHT);
          card.setPadding(25, 32, 25, 28);
          JPanel form = new JPanel(new GridLayout(0, 2, 15, 18));
@@ -1070,8 +1334,7 @@ public class RestaurantDashboardMangPinaasa extends JPanel {
          JPanel body = new JPanel(new BorderLayout());
          body.setOpaque(false);
          body.add(card, BorderLayout.NORTH);
-         setContentPane(UIStyle.page("\uD83C\uDFEA", "Restaurant Profile", null, body));
-         setVisible(true);
+         add(UIStyle.page("\uD83C\uDFEA", "Restaurant Profile", null, notice, body), BorderLayout.CENTER);
       }
 
       private void loadFields() {
@@ -1085,7 +1348,7 @@ public class RestaurantDashboardMangPinaasa extends JPanel {
 
       private void saveProfile() {
          if (restaurantName.getText().trim().isEmpty() || location.getText().trim().isEmpty()) {
-            UIStyle.warn(this, "Restaurant name and location can't be empty.");
+            notice.warn("Restaurant name and location can't be empty.");
             return;
          }
          Restaurant.Restaurantt restaurant = data.restaurant;
@@ -1095,51 +1358,97 @@ public class RestaurantDashboardMangPinaasa extends JPanel {
          restaurant.contact = contact.getText().trim();
          restaurant.cuisine = cuisine.getText().trim();
          data.notifyChanged();
-         JOptionPane.showMessageDialog(this, "Restaurant profile updated successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);
+         notice.success("Restaurant profile updated successfully!");
+      }
+
+      @Override
+      void onShow() {
+         super.onShow();
+         loadFields();
       }
    }
 
-   static class FoodItems extends AppWindow {
-      private final Restaurant data = DATA;
+   static class FoodItemsPage extends Page {
       private final JTable table = UIStyle.createTable(new String[]{"Food Name", "Category", "Price", "Availability", "Sold"});
       private final DefaultTableModel model = (DefaultTableModel)table.getModel();
+      private final CardLayout cardLayout = new CardLayout();
+      private final JPanel cards = new JPanel(cardLayout);
+      private String currentCard = "list";
+
       private final JLabel detailImage = new JLabel("", SwingConstants.CENTER);
       private final JLabel detailName = new JLabel();
       private final JLabel detailMeta = new JLabel();
       private final JLabel detailStatus = new JLabel();
-      private final JLabel detailDescription = new JLabel();
+      private final JTextArea detailDescription = UIStyle.wrapText("", 13, UIStyle.TEXT_DARK, 240, 120);
 
-      public FoodItems() {
-         super("Menu Items", 1230, 680);
-         JButton add = UIStyle.primaryButton("+ Add Food Item");
-         add.addActionListener((e) -> showItemDialog(null));
-         JButton edit = UIStyle.button("Edit Selected", UIStyle.PURPLE_DARK);
+      private final JLabel formTitle = new JLabel();
+      private final JTextField nameField = UIStyle.styledField("");
+      private final JComboBox<String> categoryBox = new JComboBox<>();
+      private final JTextField priceField = UIStyle.styledField("");
+      private final JCheckBox availableBox = new JCheckBox("Available for ordering");
+      private final JTextArea descriptionArea = new JTextArea(4, 22);
+      private final JLabel preview = new JLabel("", SwingConstants.CENTER);
+      private final UIStyle.RoundedButton chooseButton = UIStyle.button("Choose Picture", UIStyle.PURPLE_LIGHT);
+      private final UIStyle.RoundedButton removeButton = UIStyle.button("Remove Picture", UIStyle.RED);
+      private String formImagePath;
+      private Restaurant.Dish editing;
+
+      private final JFileChooser chooser = new JFileChooser();
+      private Consumer<String> onPicked;
+      private String pickReturn = "list";
+
+      FoodItemsPage() {
+         JButton addBtn = UIStyle.primaryButton("+ Add Food Item");
+         addBtn.addActionListener((e) -> openForm(null));
+         UIStyle.RoundedButton edit = UIStyle.compact(UIStyle.button("Edit Selected", UIStyle.PURPLE_DARK));
          edit.addActionListener((e) -> editSelected());
-         JButton toggle = UIStyle.button("Toggle Availability", UIStyle.ORANGE);
+         UIStyle.RoundedButton toggle = UIStyle.compact(UIStyle.button("Toggle Availability", UIStyle.ORANGE));
          toggle.addActionListener((e) -> toggleSelected());
-         JButton changePicture = UIStyle.button("Change Picture", UIStyle.PURPLE_LIGHT);
+         UIStyle.RoundedButton changePicture = UIStyle.compact(UIStyle.button("Change Picture", UIStyle.PURPLE_LIGHT));
          changePicture.addActionListener((e) -> changePictureOfSelected());
-         JButton removePicture = UIStyle.button("Remove Picture", UIStyle.RED);
+         UIStyle.RoundedButton removePicture = UIStyle.compact(UIStyle.button("Remove Picture", UIStyle.RED));
          removePicture.addActionListener((e) -> removePictureOfSelected());
-         JButton delete = UIStyle.button("Delete Item", UIStyle.RED);
+         UIStyle.RoundedButton delete = UIStyle.compact(UIStyle.button("Delete Item", UIStyle.RED));
          delete.addActionListener((e) -> deleteSelected());
+         JPanel actions = new JPanel(new GridLayout(2, 3, 10, 10));
+         actions.setOpaque(false);
+         actions.add(edit);
+         actions.add(toggle);
+         actions.add(changePicture);
+         actions.add(removePicture);
+         actions.add(delete);
+
          JPanel left = new JPanel(new BorderLayout(0, 12));
          left.setOpaque(false);
          left.add(UIStyle.tableCard(table), BorderLayout.CENTER);
-         left.add(UIStyle.buttonRow(edit, toggle, changePicture, removePicture, delete), BorderLayout.SOUTH);
-         JPanel body = new JPanel(new BorderLayout(18, 0));
-         body.setOpaque(false);
-         body.add(left, BorderLayout.CENTER);
-         body.add(buildDetailsCard(), BorderLayout.EAST);
-         setContentPane(UIStyle.page("\uD83C\uDF7D", "Menu Items", add, body));
+         left.add(actions, BorderLayout.SOUTH);
+         JPanel listView = new JPanel(new BorderLayout(18, 0));
+         listView.setOpaque(false);
+         listView.add(left, BorderLayout.CENTER);
+         listView.add(buildDetailsCard(), BorderLayout.EAST);
+
+         cards.setOpaque(false);
+         cards.add(listView, "list");
+         cards.add(buildForm(), "form");
+         cards.add(buildPicker(), "image");
+
+         int[] widths = {200, 90, 70, 110, 50};
+         for (int i = 0; i < widths.length; ++i) {
+            table.getColumnModel().getColumn(i).setPreferredWidth(widths[i]);
+         }
          table.getSelectionModel().addListSelectionListener((e) -> {
             if (!e.getValueIsAdjusting()) {
                updateDetails();
             }
          });
-         UIStyle.bind(this, this::refresh);
+         add(UIStyle.page("\uD83C\uDF7D", "Menu Items", addBtn, notice, cards), BorderLayout.CENTER);
+         data.addListener(this::refresh);
          refresh();
-         setVisible(true);
+      }
+
+      private void showCard(String name) {
+         currentCard = name;
+         cardLayout.show(cards, name);
       }
 
       private JPanel buildDetailsCard() {
@@ -1154,29 +1463,182 @@ public class RestaurantDashboardMangPinaasa extends JPanel {
          detailMeta.setFont(UIStyle.font(Font.PLAIN, 14));
          detailMeta.setForeground(UIStyle.MUTED);
          detailStatus.setFont(UIStyle.font(Font.BOLD, 14));
-         detailDescription.setFont(UIStyle.font(Font.PLAIN, 13));
-         detailDescription.setForeground(UIStyle.TEXT_DARK);
-         detailDescription.setVerticalAlignment(SwingConstants.TOP);
-         JPanel text = new JPanel();
+         JPanel labels = new JPanel(new GridLayout(3, 1, 0, 6));
+         labels.setOpaque(false);
+         labels.add(detailName);
+         labels.add(detailMeta);
+         labels.add(detailStatus);
+         JPanel text = new JPanel(new BorderLayout(0, 10));
          text.setOpaque(false);
-         text.setLayout(new BoxLayout(text, BoxLayout.Y_AXIS));
          text.setBorder(BorderFactory.createEmptyBorder(14, 0, 0, 0));
-         for (JComponent label : new JComponent[]{detailName, detailMeta, detailStatus, detailDescription}) {
-            label.setAlignmentX(0.0F);
-         }
-         text.add(detailName);
-         text.add(Box.createVerticalStrut(6));
-         text.add(detailMeta);
-         text.add(Box.createVerticalStrut(6));
-         text.add(detailStatus);
-         text.add(Box.createVerticalStrut(10));
-         text.add(detailDescription);
+         text.add(labels, BorderLayout.NORTH);
+         text.add(detailDescription, BorderLayout.CENTER);
          UIStyle.RoundedPanel card = UIStyle.card(UIStyle.YELLOW_ACCENT);
-         card.setPadding(20, 26, 20, 20);
-         card.setPreferredSize(new Dimension(320, 100));
+         card.setPadding(20, 26, 20, 18);
+         card.setPreferredSize(new Dimension(300, 100));
          card.add(detailImage, BorderLayout.NORTH);
          card.add(text, BorderLayout.CENTER);
          return card;
+      }
+
+      private JPanel buildForm() {
+         descriptionArea.setFont(UIStyle.font(Font.PLAIN, 14));
+         descriptionArea.setLineWrap(true);
+         descriptionArea.setWrapStyleWord(true);
+         descriptionArea.setBorder(BorderFactory.createEmptyBorder(6, 8, 6, 8));
+         JScrollPane descriptionScroll = new JScrollPane(descriptionArea);
+         descriptionScroll.setBorder(BorderFactory.createLineBorder(UIStyle.BORDER_GRAY));
+         JPanel descriptionPanel = new JPanel(new BorderLayout(0, 6));
+         descriptionPanel.setOpaque(false);
+         descriptionPanel.add(UIStyle.fieldLabel("Description:"), BorderLayout.NORTH);
+         descriptionPanel.add(descriptionScroll, BorderLayout.CENTER);
+         availableBox.setOpaque(false);
+         availableBox.setFont(UIStyle.font(Font.PLAIN, 14));
+
+         preview.setPreferredSize(new Dimension(190, 190));
+         preview.setOpaque(true);
+         preview.setBackground(UIStyle.BG_LIGHT);
+         preview.setForeground(UIStyle.MUTED);
+         preview.setFont(UIStyle.font(Font.PLAIN, 13));
+         preview.setBorder(BorderFactory.createLineBorder(UIStyle.BORDER_GRAY));
+         chooseButton.addActionListener((e) -> pickImage((picked) -> {
+            formImagePath = picked;
+            updatePreview();
+         }, "form"));
+         removeButton.addActionListener((e) -> {
+            formImagePath = null;
+            updatePreview();
+         });
+         JPanel pictureButtons = new JPanel(new GridLayout(2, 1, 0, 8));
+         pictureButtons.setOpaque(false);
+         pictureButtons.add(chooseButton);
+         pictureButtons.add(removeButton);
+         JPanel picturePanel = new JPanel(new BorderLayout(0, 10));
+         picturePanel.setOpaque(false);
+         picturePanel.add(preview, BorderLayout.NORTH);
+         picturePanel.add(pictureButtons, BorderLayout.CENTER);
+
+         JPanel formPanel = UIStyle.form(new String[]{"Food Name:", "Category:", "Price (\u20B1):", "Availability:"}, new JComponent[]{nameField, categoryBox, priceField, availableBox});
+         JPanel right = new JPanel(new BorderLayout(0, 12));
+         right.setOpaque(false);
+         right.add(formPanel, BorderLayout.NORTH);
+         right.add(descriptionPanel, BorderLayout.CENTER);
+         JPanel body = new JPanel(new BorderLayout(20, 0));
+         body.setOpaque(false);
+         body.add(picturePanel, BorderLayout.WEST);
+         body.add(right, BorderLayout.CENTER);
+
+         JButton save = UIStyle.primaryButton("Save Item");
+         save.addActionListener((e) -> saveForm());
+         JButton cancel = UIStyle.button("Cancel", UIStyle.PURPLE_DARK);
+         cancel.addActionListener((e) -> {
+            notice.clear();
+            showCard("list");
+         });
+         return UIStyle.formView(formTitle, body, UIStyle.buttonRow(save, cancel), UIStyle.YELLOW_ACCENT);
+      }
+
+      private JPanel buildPicker() {
+         chooser.setFileFilter(new FileNameExtensionFilter("Pictures (png, jpg, jpeg, gif)", "png", "jpg", "jpeg", "gif"));
+         chooser.setApproveButtonText("Use Picture");
+         chooser.addActionListener((e) -> {
+            if (JFileChooser.APPROVE_SELECTION.equals(e.getActionCommand())) {
+               File file = chooser.getSelectedFile();
+               if (file == null) {
+                  notice.warn("Please choose a picture first.");
+                  return;
+               }
+               if (UIStyle.loadImage(file.getAbsolutePath(), 100, 100) == null) {
+                  notice.warn("That file couldn't be opened as a picture. Please choose a PNG, JPG or GIF image.");
+                  return;
+               }
+               Consumer<String> callback = onPicked;
+               onPicked = null;
+               notice.clear();
+               if (callback != null) {
+                  callback.accept(file.getAbsolutePath());
+               }
+               showCard(pickReturn);
+            } else {
+               onPicked = null;
+               notice.clear();
+               showCard(pickReturn);
+            }
+         });
+         JLabel title = new JLabel("Choose a food picture");
+         title.setFont(UIStyle.font(Font.BOLD, 18));
+         title.setForeground(UIStyle.TEXT_DARK);
+         title.setBorder(BorderFactory.createEmptyBorder(0, 0, 12, 0));
+         UIStyle.RoundedPanel card = UIStyle.card(UIStyle.PURPLE_LIGHT);
+         card.setPadding(20, 26, 20, 20);
+         card.add(title, BorderLayout.NORTH);
+         card.add(chooser, BorderLayout.CENTER);
+         return card;
+      }
+
+      private void pickImage(Consumer<String> callback, String backTo) {
+         onPicked = callback;
+         pickReturn = backTo;
+         chooser.setSelectedFile(null);
+         chooser.rescanCurrentDirectory();
+         notice.clear();
+         showCard("image");
+      }
+
+      private void updatePreview() {
+         ImageIcon icon = UIStyle.loadImage(formImagePath, 180, 180);
+         preview.setIcon(icon);
+         preview.setText(icon != null ? "" : (formImagePath == null ? "No picture" : "Picture not found"));
+         chooseButton.setText(formImagePath == null ? "Choose Picture" : "Change Picture");
+         removeButton.setVisible(formImagePath != null);
+      }
+
+      private void openForm(Restaurant.Dish dish) {
+         editing = dish;
+         notice.clear();
+         formTitle.setText(dish == null ? "Add Food Item" : "Edit Food Item");
+         nameField.setText(dish == null ? "" : dish.name);
+         categoryBox.setModel(new DefaultComboBoxModel<>(data.categories.toArray(new String[0])));
+         categoryBox.setEditable(true);
+         if (dish != null) {
+            categoryBox.setSelectedItem(dish.category);
+         }
+         priceField.setText(dish == null ? "" : MoneyFormat.amountText(dish.price));
+         availableBox.setSelected(dish == null || dish.available);
+         descriptionArea.setText(dish == null ? "" : dish.description);
+         formImagePath = dish == null ? null : dish.imagePath;
+         updatePreview();
+         showCard("form");
+      }
+
+      private void saveForm() {
+         String name = nameField.getText().trim();
+         String category = String.valueOf(categoryBox.getSelectedItem()).trim();
+         Double price = MoneyFormat.parseAmount(priceField.getText());
+         if (name.isEmpty() || category.isEmpty()) {
+            notice.warn("Food name and category are required.");
+            return;
+         }
+         if (price == null || price < 0.0) {
+            notice.warn("Please enter a valid price, for example 120 or 99.50.");
+            return;
+         }
+         data.addCategoryIfNew(category);
+         Restaurant.Dish target = editing == null ? new Restaurant.Dish(name, category, price, availableBox.isSelected(), 0) : editing;
+         target.name = name;
+         target.category = category;
+         target.price = price;
+         target.available = availableBox.isSelected();
+         target.description = descriptionArea.getText().trim();
+         target.imagePath = formImagePath;
+         if (editing == null) {
+            data.restaurant.menuItems.add(target);
+         }
+         boolean wasNew = editing == null;
+         editing = null;
+         showCard("list");
+         data.notifyChanged();
+         notice.success("\"" + name + "\" was " + (wasNew ? "added to" : "updated in") + " the menu.");
       }
 
       private void updateDetails() {
@@ -1198,11 +1660,7 @@ public class RestaurantDashboardMangPinaasa extends JPanel {
          detailMeta.setText(dish.category + "  \u2022  " + MoneyFormat.peso(dish.price));
          detailStatus.setText(dish.available ? "Available" : "Unavailable");
          detailStatus.setForeground(dish.available ? UIStyle.GREEN : UIStyle.RED);
-         detailDescription.setText(toHtml(dish.description.isEmpty() ? "No description yet. Click Edit Selected to add one." : dish.description));
-      }
-
-      private String toHtml(String text) {
-         return "<html><body style='width:230px'>" + text.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;").replace("\n", "<br>") + "</body></html>";
+         detailDescription.setText(dish.description.isEmpty() ? "No description yet. Click Edit Selected to add one." : dish.description);
       }
 
       private void refresh() {
@@ -1218,182 +1676,90 @@ public class RestaurantDashboardMangPinaasa extends JPanel {
       }
 
       private void editSelected() {
-         int row = UIStyle.requireSelection(table, this, "an item");
+         int row = UIStyle.requireSelection(table, notice, "an item");
          if (row >= 0) {
-            showItemDialog(data.restaurant.menuItems.get(row));
+            openForm(data.restaurant.menuItems.get(row));
          }
       }
 
       private void toggleSelected() {
-         int row = UIStyle.requireSelection(table, this, "an item");
+         int row = UIStyle.requireSelection(table, notice, "an item");
          if (row >= 0) {
             Restaurant.Dish dish = data.restaurant.menuItems.get(row);
             dish.available = !dish.available;
             data.notifyChanged();
+            notice.success("\"" + dish.name + "\" is now " + (dish.available ? "available" : "unavailable") + ".");
          }
       }
 
       private void changePictureOfSelected() {
-         int row = UIStyle.requireSelection(table, this, "an item");
+         int row = UIStyle.requireSelection(table, notice, "an item");
          if (row >= 0) {
-            String path = pickImage(this);
-            if (path != null) {
-               data.restaurant.menuItems.get(row).imagePath = path;
+            Restaurant.Dish dish = data.restaurant.menuItems.get(row);
+            pickImage((path) -> {
+               dish.imagePath = path;
                data.notifyChanged();
-            }
+               notice.success("Picture updated for \"" + dish.name + "\".");
+            }, "list");
          }
       }
 
       private void removePictureOfSelected() {
-         int row = UIStyle.requireSelection(table, this, "an item");
+         int row = UIStyle.requireSelection(table, notice, "an item");
          if (row >= 0) {
             Restaurant.Dish dish = data.restaurant.menuItems.get(row);
             if (dish.imagePath == null) {
-               JOptionPane.showMessageDialog(this, dish.name + " has no picture.", "No picture", JOptionPane.INFORMATION_MESSAGE);
-            } else if (UIStyle.confirm(this, "Remove the picture of \"" + dish.name + "\"?", "Remove Picture")) {
-               dish.imagePath = null;
-               data.notifyChanged();
+               notice.info(dish.name + " has no picture.");
+            } else {
+               notice.confirm("Remove the picture of \"" + dish.name + "\"?", () -> {
+                  dish.imagePath = null;
+                  data.notifyChanged();
+               });
             }
          }
       }
 
       private void deleteSelected() {
-         int row = UIStyle.requireSelection(table, this, "an item");
+         int row = UIStyle.requireSelection(table, notice, "an item");
          if (row >= 0) {
             Restaurant.Dish dish = data.restaurant.menuItems.get(row);
-            if (UIStyle.confirm(this, "Delete \"" + dish.name + "\" from the menu?", "Delete Item")) {
-               data.restaurant.menuItems.remove(row);
+            notice.confirm("Delete \"" + dish.name + "\" from the menu?", () -> {
+               data.restaurant.menuItems.remove(dish);
                data.notifyChanged();
-            }
+            });
          }
       }
 
-      private String pickImage(Component parent) {
-         JFileChooser chooser = new JFileChooser();
-         chooser.setDialogTitle("Choose a food picture");
-         chooser.setFileFilter(new FileNameExtensionFilter("Pictures (png, jpg, jpeg, gif)", "png", "jpg", "jpeg", "gif"));
-         if (chooser.showOpenDialog(parent) != JFileChooser.APPROVE_OPTION) {
-            return null;
-         }
-         File file = chooser.getSelectedFile();
-         if (UIStyle.loadImage(file.getAbsolutePath(), 100, 100) == null) {
-            UIStyle.warn(parent, "That file couldn't be opened as a picture. Please choose a PNG, JPG or GIF image.");
-            return null;
-         }
-         return file.getAbsolutePath();
-      }
-
-      private void showItemDialog(Restaurant.Dish dish) {
-         JTextField nameField = UIStyle.styledField(dish == null ? "" : dish.name);
-         JComboBox<String> categoryBox = new JComboBox<>(data.categories.toArray(new String[0]));
-         categoryBox.setEditable(true);
-         if (dish != null) {
-            categoryBox.setSelectedItem(dish.category);
-         }
-         JTextField priceField = UIStyle.styledField(dish == null ? "" : MoneyFormat.amountText(dish.price));
-         JCheckBox availableBox = new JCheckBox("Available for ordering", dish == null || dish.available);
-         availableBox.setOpaque(false);
-         JTextArea descriptionArea = new JTextArea(dish == null ? "" : dish.description, 4, 22);
-         descriptionArea.setFont(UIStyle.font(Font.PLAIN, 14));
-         descriptionArea.setLineWrap(true);
-         descriptionArea.setWrapStyleWord(true);
-         descriptionArea.setBorder(BorderFactory.createEmptyBorder(6, 8, 6, 8));
-         JScrollPane descriptionScroll = new JScrollPane(descriptionArea);
-         descriptionScroll.setBorder(BorderFactory.createLineBorder(UIStyle.BORDER_GRAY));
-         JPanel descriptionPanel = new JPanel(new BorderLayout(0, 6));
-         descriptionPanel.setOpaque(false);
-         descriptionPanel.add(UIStyle.fieldLabel("Description:"), BorderLayout.NORTH);
-         descriptionPanel.add(descriptionScroll, BorderLayout.CENTER);
-
-         String[] imagePath = {dish == null ? null : dish.imagePath};
-         JLabel preview = new JLabel("", SwingConstants.CENTER);
-         preview.setPreferredSize(new Dimension(190, 190));
-         preview.setOpaque(true);
-         preview.setBackground(UIStyle.BG_LIGHT);
-         preview.setForeground(UIStyle.MUTED);
-         preview.setFont(UIStyle.font(Font.PLAIN, 13));
-         preview.setBorder(BorderFactory.createLineBorder(UIStyle.BORDER_GRAY));
-         UIStyle.RoundedButton chooseButton = UIStyle.button("Choose Picture", UIStyle.PURPLE_LIGHT);
-         UIStyle.RoundedButton removeButton = UIStyle.button("Remove Picture", UIStyle.RED);
-         Runnable updatePreview = () -> {
-            ImageIcon icon = UIStyle.loadImage(imagePath[0], 180, 180);
-            preview.setIcon(icon);
-            preview.setText(icon != null ? "" : (imagePath[0] == null ? "No picture" : "Picture not found"));
-            chooseButton.setText(imagePath[0] == null ? "Choose Picture" : "Change Picture");
-            removeButton.setVisible(imagePath[0] != null);
-         };
-         chooseButton.addActionListener((e) -> {
-            String picked = pickImage(preview);
-            if (picked != null) {
-               imagePath[0] = picked;
-               updatePreview.run();
-            }
-         });
-         removeButton.addActionListener((e) -> {
-            imagePath[0] = null;
-            updatePreview.run();
-         });
-         updatePreview.run();
-         JPanel pictureButtons = new JPanel(new GridLayout(2, 1, 0, 8));
-         pictureButtons.setOpaque(false);
-         pictureButtons.add(chooseButton);
-         pictureButtons.add(removeButton);
-         JPanel picturePanel = new JPanel(new BorderLayout(0, 10));
-         picturePanel.setOpaque(false);
-         picturePanel.add(preview, BorderLayout.NORTH);
-         picturePanel.add(pictureButtons, BorderLayout.CENTER);
-
-         JPanel formPanel = UIStyle.form(new String[]{"Food Name:", "Category:", "Price (\u20B1):", "Availability:"}, new JComponent[]{nameField, categoryBox, priceField, availableBox});
-         JPanel right = new JPanel(new BorderLayout(0, 12));
-         right.setOpaque(false);
-         right.add(formPanel, BorderLayout.NORTH);
-         right.add(descriptionPanel, BorderLayout.CENTER);
-         JPanel panel = new JPanel(new BorderLayout(20, 0));
-         panel.setOpaque(false);
-         panel.add(picturePanel, BorderLayout.WEST);
-         panel.add(right, BorderLayout.CENTER);
-
-         int result = JOptionPane.showConfirmDialog(this, panel, dish == null ? "Add Food Item" : "Edit Food Item", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
-         if (result != JOptionPane.OK_OPTION) {
-            return;
-         }
-         String name = nameField.getText().trim();
-         String category = String.valueOf(categoryBox.getSelectedItem()).trim();
-         Double price = MoneyFormat.parseAmount(priceField.getText());
-         if (name.isEmpty() || category.isEmpty()) {
-            UIStyle.warn(this, "Food name and category are required.");
-            return;
-         }
-         if (price == null || price < 0.0) {
-            UIStyle.warn(this, "Please enter a valid price, for example 120 or 99.50.");
-            return;
-         }
-         data.addCategoryIfNew(category);
-         Restaurant.Dish target = dish == null ? new Restaurant.Dish(name, category, price, availableBox.isSelected(), 0) : dish;
-         target.name = name;
-         target.category = category;
-         target.price = price;
-         target.available = availableBox.isSelected();
-         target.description = descriptionArea.getText().trim();
-         target.imagePath = imagePath[0];
-         if (dish == null) {
-            data.restaurant.menuItems.add(target);
-         }
-         data.notifyChanged();
+      @Override
+      void onShow() {
+         super.onShow();
+         showCard("list");
+         refresh();
       }
    }
 
-   static class ModifierBuilder extends AppWindow {
-      private final Restaurant data = DATA;
+   static class ModifierPage extends Page {
       private final DefaultListModel<String> groupModel = new DefaultListModel<>();
       private final JList<String> groupList = new JList<>(groupModel);
       private final JTable optionTable = UIStyle.createTable(new String[]{"Item / Option", "Price Change"});
       private final DefaultTableModel optionModel = (DefaultTableModel)optionTable.getModel();
       private final JLabel groupTitle = new JLabel("Select a group");
       private final JCheckBox requiredBox = new JCheckBox("Customer must choose one");
+      private final CardLayout cardLayout = new CardLayout();
+      private final JPanel cards = new JPanel(cardLayout);
 
-      public ModifierBuilder() {
-         super("Modifier & Menu Builder", 1020, 650);
+      private final JLabel groupFormTitle = new JLabel();
+      private final JTextField groupNameField = UIStyle.styledField("");
+      private final JCheckBox groupRequiredCheck = new JCheckBox("Customer must choose one");
+      private Restaurant.ModifierGroup editingGroup;
+
+      private final JLabel optionFormTitle = new JLabel();
+      private final JTextField optionNameField = UIStyle.styledField("");
+      private final JTextField optionAmountField = UIStyle.styledField("0");
+      private Restaurant.ModifierGroup targetGroup;
+      private Restaurant.ModifierOption editingOption;
+
+      ModifierPage() {
          groupList.setFont(UIStyle.font(Font.PLAIN, 14));
          groupList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
          groupList.setFixedCellHeight(36);
@@ -1404,18 +1770,18 @@ public class RestaurantDashboardMangPinaasa extends JPanel {
                loadOptions();
             }
          });
-         JButton addGroup = compact(UIStyle.button("+ Group", UIStyle.PURPLE_LIGHT));
-         addGroup.addActionListener((e) -> showGroupDialog(null));
-         JButton editGroup = compact(UIStyle.button("Edit", UIStyle.PURPLE_DARK));
+         UIStyle.RoundedButton addGroup = UIStyle.compact(UIStyle.button("+ Group", UIStyle.PURPLE_LIGHT));
+         addGroup.addActionListener((e) -> showGroupForm(null));
+         UIStyle.RoundedButton editGroup = UIStyle.compact(UIStyle.button("Edit", UIStyle.PURPLE_DARK));
          editGroup.addActionListener((e) -> {
             Restaurant.ModifierGroup group = selectedGroup();
             if (group == null) {
                pickGroupFirst();
             } else {
-               showGroupDialog(group);
+               showGroupForm(group);
             }
          });
-         JButton deleteGroup = compact(UIStyle.button("Delete", UIStyle.RED));
+         UIStyle.RoundedButton deleteGroup = UIStyle.compact(UIStyle.button("Delete", UIStyle.RED));
          deleteGroup.addActionListener((e) -> deleteGroup());
 
          JLabel groupsHeading = new JLabel("Modifier Groups");
@@ -1452,7 +1818,7 @@ public class RestaurantDashboardMangPinaasa extends JPanel {
          optionScroll.setBorder(BorderFactory.createLineBorder(UIStyle.BORDER_GRAY));
          optionScroll.getViewport().setBackground(UIStyle.WHITE);
          JButton addOption = UIStyle.primaryButton("+ Add Item");
-         addOption.addActionListener((e) -> showOptionDialog(null));
+         addOption.addActionListener((e) -> showOptionForm(null));
          JButton editOption = UIStyle.button("Edit", UIStyle.PURPLE_DARK);
          editOption.addActionListener((e) -> editOption());
          JButton removeOption = UIStyle.button("Remove", UIStyle.RED);
@@ -1465,19 +1831,42 @@ public class RestaurantDashboardMangPinaasa extends JPanel {
          right.add(optionScroll, BorderLayout.CENTER);
          right.add(optionButtons, BorderLayout.SOUTH);
 
-         JPanel body = new JPanel(new BorderLayout(18, 0));
-         body.setOpaque(false);
-         body.add(left, BorderLayout.WEST);
-         body.add(right, BorderLayout.CENTER);
-         setContentPane(UIStyle.page("\uD83E\uDDE9", "Modifier & Menu Builder", null, body));
-         UIStyle.bind(this, () -> refreshGroups(groupList.getSelectedIndex()));
-         refreshGroups(0);
-         setVisible(true);
-      }
+         JPanel mainView = new JPanel(new BorderLayout(18, 0));
+         mainView.setOpaque(false);
+         mainView.add(left, BorderLayout.WEST);
+         mainView.add(right, BorderLayout.CENTER);
 
-      private JButton compact(JButton button) {
-         button.setBorder(BorderFactory.createEmptyBorder(8, 12, 8, 12));
-         return button;
+         groupRequiredCheck.setOpaque(false);
+         groupRequiredCheck.setFont(UIStyle.font(Font.PLAIN, 14));
+         JPanel groupForm = UIStyle.form(new String[]{"Group Name:", "Required:"}, new JComponent[]{groupNameField, groupRequiredCheck});
+         JButton saveGroup = UIStyle.primaryButton("Save Group");
+         saveGroup.addActionListener((e) -> saveGroup());
+         JButton cancelGroup = UIStyle.button("Cancel", UIStyle.PURPLE_DARK);
+         cancelGroup.addActionListener((e) -> {
+            notice.clear();
+            cardLayout.show(cards, "main");
+         });
+
+         JLabel optionHint = new JLabel("Use a minus sign for a discount, e.g. -10");
+         optionHint.setFont(UIStyle.font(Font.PLAIN, 12));
+         optionHint.setForeground(UIStyle.MUTED);
+         JPanel optionForm = UIStyle.form(new String[]{"Item Name:", "Price Change (\u20B1):", ""}, new JComponent[]{optionNameField, optionAmountField, optionHint});
+         JButton saveOption = UIStyle.primaryButton("Save Item");
+         saveOption.addActionListener((e) -> saveOption());
+         JButton cancelOption = UIStyle.button("Cancel", UIStyle.PURPLE_DARK);
+         cancelOption.addActionListener((e) -> {
+            notice.clear();
+            cardLayout.show(cards, "main");
+         });
+
+         cards.setOpaque(false);
+         cards.add(mainView, "main");
+         cards.add(UIStyle.formView(groupFormTitle, groupForm, UIStyle.buttonRow(saveGroup, cancelGroup), UIStyle.PURPLE_DARK), "group");
+         cards.add(UIStyle.formView(optionFormTitle, optionForm, UIStyle.buttonRow(saveOption, cancelOption), UIStyle.YELLOW_ACCENT), "option");
+
+         add(UIStyle.page("\uD83E\uDDE9", "Modifier & Menu Builder", null, notice, cards), BorderLayout.CENTER);
+         data.addListener(() -> refreshGroups(groupList.getSelectedIndex()));
+         refreshGroups(0);
       }
 
       private Restaurant.ModifierGroup selectedGroup() {
@@ -1486,7 +1875,7 @@ public class RestaurantDashboardMangPinaasa extends JPanel {
       }
 
       private void pickGroupFirst() {
-         JOptionPane.showMessageDialog(this, "Please select a modifier group first.", "Nothing selected", JOptionPane.INFORMATION_MESSAGE);
+         notice.warn("Please select a modifier group first.");
       }
 
       private void refreshGroups(int select) {
@@ -1517,26 +1906,32 @@ public class RestaurantDashboardMangPinaasa extends JPanel {
          }
       }
 
-      private void showGroupDialog(Restaurant.ModifierGroup group) {
-         JTextField nameField = UIStyle.styledField(group == null ? "" : group.name);
-         JCheckBox requiredCheck = new JCheckBox("Customer must choose one", group != null && group.required);
-         requiredCheck.setOpaque(false);
-         JPanel panel = UIStyle.form(new String[]{"Group Name:", "Required:"}, new JComponent[]{nameField, requiredCheck});
-         int result = JOptionPane.showConfirmDialog(this, panel, group == null ? "Add Modifier Group" : "Edit Modifier Group", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
-         if (result != JOptionPane.OK_OPTION) {
+      private void showGroupForm(Restaurant.ModifierGroup group) {
+         editingGroup = group;
+         notice.clear();
+         groupFormTitle.setText(group == null ? "Add Modifier Group" : "Edit Modifier Group");
+         groupNameField.setText(group == null ? "" : group.name);
+         groupRequiredCheck.setSelected(group != null && group.required);
+         cardLayout.show(cards, "group");
+      }
+
+      private void saveGroup() {
+         String name = groupNameField.getText().trim();
+         if (name.isEmpty()) {
+            notice.warn("Group name can't be empty.");
             return;
          }
-         String name = nameField.getText().trim();
-         if (name.isEmpty()) {
-            UIStyle.warn(this, "Group name can't be empty.");
-         } else if (group == null) {
-            data.modifierGroups.add(new Restaurant.ModifierGroup(name, requiredCheck.isSelected()));
+         cardLayout.show(cards, "main");
+         if (editingGroup == null) {
+            data.modifierGroups.add(new Restaurant.ModifierGroup(name, groupRequiredCheck.isSelected()));
             data.notifyChanged();
             groupList.setSelectedIndex(groupModel.size() - 1);
+            notice.success("Group \"" + name + "\" was added.");
          } else {
-            group.name = name;
-            group.required = requiredCheck.isSelected();
+            editingGroup.name = name;
+            editingGroup.required = groupRequiredCheck.isSelected();
             data.notifyChanged();
+            notice.success("Group \"" + name + "\" was updated.");
          }
       }
 
@@ -1544,9 +1939,11 @@ public class RestaurantDashboardMangPinaasa extends JPanel {
          Restaurant.ModifierGroup group = selectedGroup();
          if (group == null) {
             pickGroupFirst();
-         } else if (UIStyle.confirm(this, "Delete the group \"" + group.name + "\" and all its items?", "Delete Group")) {
-            data.modifierGroups.remove(group);
-            data.notifyChanged();
+         } else {
+            notice.confirm("Delete the group \"" + group.name + "\" and all its items?", () -> {
+               data.modifierGroups.remove(group);
+               data.notifyChanged();
+            });
          }
       }
 
@@ -1556,9 +1953,9 @@ public class RestaurantDashboardMangPinaasa extends JPanel {
             pickGroupFirst();
             return;
          }
-         int row = UIStyle.requireSelection(optionTable, this, "an item");
+         int row = UIStyle.requireSelection(optionTable, notice, "an item");
          if (row >= 0) {
-            showOptionDialog(group.options.get(row));
+            showOptionForm(group.options.get(row));
          }
       }
 
@@ -1568,47 +1965,56 @@ public class RestaurantDashboardMangPinaasa extends JPanel {
             pickGroupFirst();
             return;
          }
-         int row = UIStyle.requireSelection(optionTable, this, "an item");
+         int row = UIStyle.requireSelection(optionTable, notice, "an item");
          if (row >= 0) {
             Restaurant.ModifierOption option = group.options.get(row);
-            if (UIStyle.confirm(this, "Remove \"" + option.name + "\" from " + group.name + "?", "Remove Item")) {
-               group.options.remove(row);
+            notice.confirm("Remove \"" + option.name + "\" from " + group.name + "?", () -> {
+               group.options.remove(option);
                data.notifyChanged();
-            }
+            });
          }
       }
 
-      private void showOptionDialog(Restaurant.ModifierOption option) {
+      private void showOptionForm(Restaurant.ModifierOption option) {
          Restaurant.ModifierGroup group = selectedGroup();
          if (group == null) {
             pickGroupFirst();
             return;
          }
-         JTextField nameField = UIStyle.styledField(option == null ? "" : option.name);
-         JTextField amountField = UIStyle.styledField(option == null ? "0" : MoneyFormat.amountText(option.priceChange));
-         JLabel hint = new JLabel("Use a minus sign for a discount, e.g. -10");
-         hint.setFont(UIStyle.font(Font.PLAIN, 12));
-         hint.setForeground(UIStyle.MUTED);
-         JPanel panel = UIStyle.form(new String[]{"Item Name:", "Price Change (\u20B1):", ""}, new JComponent[]{nameField, amountField, hint});
-         int result = JOptionPane.showConfirmDialog(this, panel, option == null ? "Add Item to " + group.name : "Edit Item", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
-         if (result != JOptionPane.OK_OPTION) {
-            return;
-         }
-         Double amount = MoneyFormat.parseAmount(amountField.getText());
-         String name = nameField.getText().trim();
+         targetGroup = group;
+         editingOption = option;
+         notice.clear();
+         optionFormTitle.setText(option == null ? "Add Item to " + group.name : "Edit Item");
+         optionNameField.setText(option == null ? "" : option.name);
+         optionAmountField.setText(option == null ? "0" : MoneyFormat.amountText(option.priceChange));
+         cardLayout.show(cards, "option");
+      }
+
+      private void saveOption() {
+         Double amount = MoneyFormat.parseAmount(optionAmountField.getText());
+         String name = optionNameField.getText().trim();
          if (name.isEmpty()) {
-            UIStyle.warn(this, "Item name can't be empty.");
+            notice.warn("Item name can't be empty.");
          } else if (amount == null) {
-            UIStyle.warn(this, "Please enter a valid price change, for example 25, 0 or -10.");
+            notice.warn("Please enter a valid price change, for example 25, 0 or -10.");
          } else {
-            if (option == null) {
-               group.options.add(new Restaurant.ModifierOption(name, amount));
+            if (editingOption == null) {
+               targetGroup.options.add(new Restaurant.ModifierOption(name, amount));
             } else {
-               option.name = name;
-               option.priceChange = amount;
+               editingOption.name = name;
+               editingOption.priceChange = amount;
             }
+            cardLayout.show(cards, "main");
             data.notifyChanged();
+            notice.success("Item \"" + name + "\" was saved.");
          }
+      }
+
+      @Override
+      void onShow() {
+         super.onShow();
+         cardLayout.show(cards, "main");
+         refreshGroups(groupList.getSelectedIndex() < 0 ? 0 : groupList.getSelectedIndex());
       }
    }
 }
