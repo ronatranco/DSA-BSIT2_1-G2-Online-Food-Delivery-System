@@ -22,7 +22,7 @@ public class RestaurantLoginPanel extends JPanel {
     public JTextField txtRestaurantUser;
     public JPasswordField txtRestaurantPass;
     public JCheckBox chkRestaurantSavePass;
-    public JButton btnRestaurantLogin, btnRestaurantForgotPassword, btnRestaurantLoginBack;
+    public JButton btnRestaurantLogin, btnRestaurantForgotPassword, btnRestaurantLoginBack, btnDontHaveAccount;
     private MainFrame mainFrame;
 
     public RestaurantLoginPanel(MainFrame mainFrame) {
@@ -114,9 +114,18 @@ public class RestaurantLoginPanel extends JPanel {
         btnRestaurantLoginBack.setBorderPainted(false);
         btnRestaurantLoginBack.setFocusPainted(false);
         btnRestaurantLoginBack.setCursor(new Cursor(Cursor.HAND_CURSOR));
-        btnRestaurantLoginBack.setBounds(50, 445, 120, 30);
+        btnRestaurantLoginBack.setBounds(50, 490, 120, 30);
         rightPanelRestaurant.add(btnRestaurantLoginBack);
-
+        
+        btnDontHaveAccount = new JButton("Don't have acc?");
+        btnDontHaveAccount.setFont(new Font("Segoe UI", Font.BOLD, 13));
+        btnDontHaveAccount.setForeground(PURPLE_DARK);
+        btnDontHaveAccount.setContentAreaFilled(false);
+        btnDontHaveAccount.setBorderPainted(false);
+        btnDontHaveAccount.setFocusPainted(false);
+        btnDontHaveAccount.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        btnDontHaveAccount.setBounds(60, 445, 380, 30);
+        rightPanelRestaurant.add(btnDontHaveAccount);
         add(rightPanelRestaurant);
     }
 

@@ -6,6 +6,7 @@ package GUI;
 
 import Model.Customer;
 import Model.Order;
+
 import java.awt.*;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -42,13 +43,102 @@ public class CustomerDashboard extends JPanel {
     private CustomerDashboardHistory pnlRightHistory;
     private CustomerDashboardProfile pnlRightProfile;
     private CustomerDashboardViewCart pnlRightCart;
+    private Runnable onBackToCartCallback;
+    private CustomerDashboardCheckout pnlCheckout; 
+    private static boolean isFirstShow = true;
+    
+    private String savedFirstName = "";
+    private String savedLastName = "";
+    private String savedMobileNumber = "";
+    private String savedFullAddress = "";
+    
+    
+    // Complete Profile Pop-up
+    private void showProfileWarningDialog(String title, String message) {
+        Window parentWindow = SwingUtilities.getWindowAncestor(this);
+        JDialog dialog = new JDialog((Frame) parentWindow, title, true);
+        dialog.setUndecorated(true);
+        dialog.setSize(300, 150);
+        dialog.setLocationRelativeTo(parentWindow != null ? parentWindow : this);
 
+    JPanel panel = new JPanel() {
+        @Override
+        protected void paintComponent(Graphics g) {
+            Graphics2D g2 = (Graphics2D) g.create();
+            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+            int w = getWidth();
+            int h = getHeight();
+            g2.setColor(new Color(250, 248, 252)); 
+            g2.fillRoundRect(0, 0, w, h, 16, 16);
+            g2.setColor(PURPLE_DARK); 
+            g2.setStroke(new BasicStroke(1.5f));
+            g2.drawRoundRect(0, 0, w - 1, h - 1, 16, 16);
+            g2.dispose();
+        }
+    };  panel.setLayout(null);
+        panel.setOpaque(false);
+
+        JLabel lblTitle = new JLabel(title);
+        lblTitle.setFont(new Font("Segoe UI", Font.BOLD, 15));
+        lblTitle.setForeground(PURPLE_DARK);
+        lblTitle.setBounds(25, 21, 250, 20);
+        panel.add(lblTitle);
+
+        JTextArea lblMsg = new JTextArea(message);
+        lblMsg.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+        lblMsg.setForeground(TEXT_DARK);
+        lblMsg.setEditable(false);
+        lblMsg.setFocusable(false);
+        lblMsg.setOpaque(false);
+        lblMsg.setLineWrap(true);
+        lblMsg.setWrapStyleWord(true);
+        lblMsg.setBounds(25, 42, 250, 45); 
+        panel.add(lblMsg);
+
+    JButton btnOk = new JButton("OK") {
+        @Override
+        protected void paintComponent(Graphics g) {
+            Graphics2D g2 = (Graphics2D) g.create();
+            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+            g2.setColor(getBackground());
+            g2.fill(new java.awt.geom.RoundRectangle2D.Float(0, 0, getWidth(), getHeight(), 12, 12));
+            g2.dispose();
+            super.paintComponent(g);
+         }
+    };  btnOk.setFont(new Font("Segoe UI", Font.BOLD, 12));
+        btnOk.setForeground(COLOR_WHITE);
+        btnOk.setBackground(PURPLE_DARK);
+        btnOk.setOpaque(false);
+        btnOk.setContentAreaFilled(false);
+        btnOk.setBorderPainted(false);
+        btnOk.setFocusPainted(false);
+        btnOk.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        btnOk.setBounds(190, 95, 75, 30);
+        
+        btnOk.addActionListener(e -> {
+            dialog.dispose();
+            if (btnNavProfile != null) {
+            btnNavProfile.doClick();
+            }
+        }); panel.add(btnOk);
+            dialog.setContentPane(panel);
+            dialog.setVisible(true);
+    }
+    
     public CustomerDashboard(MainFrame mainFrame) {
         this.mainFrame = mainFrame;
+        this.controller = new Customer(this);
+        
         setLayout(null); 
         setBounds(0, 0, 1024, 720);
 
-        pnlMainBg = new JPanel();
+        pnlMainBg = new JPanel() {
+            @Override
+            public boolean isOptimizedDrawingEnabled() {
+                return false;
+            }
+        };
+        
         pnlMainBg.setLayout(null);
         pnlMainBg.setBackground(BG_LIGHT);
         pnlMainBg.setBounds(0, 0, 1024, 720);
@@ -100,7 +190,7 @@ public class CustomerDashboard extends JPanel {
         pnlsearchBar.add(txtSearchBar);
         pnlMainBg.add(pnlsearchBar);
         
-         // FOR DATE
+        // FOR DATE
         LocalDate today = LocalDate.now();
         DateTimeFormatter format = DateTimeFormatter.ofPattern("MMMM d, yyyy" + " |");
         String formattedDate = today.format(format);
@@ -181,7 +271,6 @@ public class CustomerDashboard extends JPanel {
         btnExpandLocation.addActionListener(new java.awt.event.ActionListener() {
             @Override
             public void actionPerformed(java.awt.event.ActionEvent e) {
-                // Toggles hidden panel visibility state
                 boolean isCurrentlyVisible = pnlExpandedLocation.isVisible();
                 pnlExpandedLocation.setVisible(!isCurrentlyVisible);
             }
@@ -204,7 +293,6 @@ public class CustomerDashboard extends JPanel {
                 if (currentW > 0) {
                     pnlLocationBanner.setSize(Math.max(0, currentW - 15), 35);
                     pnlMainBg.repaint();
-                    // Close expanded panel safely if search bar closes/loses focus
                     pnlExpandedLocation.setVisible(false);
                     btnExpandLocation.setText(">");
             }   else {
@@ -212,8 +300,7 @@ public class CustomerDashboard extends JPanel {
         }
     }
 });
-
-        
+        // DATE DASHBOARD
         lblDateRn = new JLabel(formattedDate, SwingConstants.RIGHT);
         lblDateRn.setFont(new Font("Segoe UI", Font.BOLD, 18));
         lblDateRn.setForeground(PURPLE_DARK);
@@ -450,21 +537,35 @@ public class CustomerDashboard extends JPanel {
             }
         });
         // == LAYER ORDER == 
-        pnlMainBg.setComponentZOrder(leftBannerNav, 0);       // Left Nav Panel
-        pnlMainBg.setComponentZOrder(pnlRightCart, 1);         // Order Summary Panel 
-        pnlMainBg.setComponentZOrder(pnlMenuMcDollibee, 2);
-        pnlMainBg.setComponentZOrder(pnlMenuBrainCells, 3); 
-        pnlMainBg.setComponentZOrder(pnlMenuMangPinaasa, 4);
-        pnlMainBg.setComponentZOrder(pnlRightProfile, 5);      // Profile Screen Panel
-        pnlMainBg.setComponentZOrder(pnlRightTrackOrder, 6);   // Track Order Screen
-        pnlMainBg.setComponentZOrder(pnlRightHistory, 7);      // History Panel
-        pnlMainBg.setComponentZOrder(pnlsearchBar, 8);         // Search Input Box Container
+        pnlMainBg.setComponentZOrder(leftBannerNav, 0);         // Left Nav Panel
+        pnlMainBg.setComponentZOrder(pnlRightCart, 1);          // Order Summary Panel 
+        pnlMainBg.setComponentZOrder(pnlMenuMcDollibee, 2);     // Restaurant 1
+        pnlMainBg.setComponentZOrder(pnlMenuBrainCells, 3);     // Restaurant 2
+        pnlMainBg.setComponentZOrder(pnlMenuMangPinaasa, 4);    // Restaurant 3
+        pnlMainBg.setComponentZOrder(pnlRightProfile, 5);       // Profile Screen Panel
+        pnlMainBg.setComponentZOrder(pnlRightTrackOrder, 6);    // Track Order Screen
+        pnlMainBg.setComponentZOrder(pnlRightHistory, 7);       // History Panel
+        pnlMainBg.setComponentZOrder(pnlsearchBar, 8);          // Search Input Box Container
         pnlMainBg.setComponentZOrder(pnlExpandedLocation, 9);   // Location Expander
         pnlMainBg.setComponentZOrder(pnlLocationBanner, 10);    // Location Banner
         pnlMainBg.setComponentZOrder(lblDateRn, 11);            // Live Date Header Label
         pnlMainBg.setComponentZOrder(pnlRestoCard, 12);         // Bottom Layer
         pnlMainBg.revalidate();
         pnlMainBg.repaint();
+        
+        this.addComponentListener(new java.awt.event.ComponentAdapter() {
+            @Override
+            public void componentShown(java.awt.event.ComponentEvent e) {
+                if (isFirstShow) {
+                    String currentProfileName = pnlRightProfile.getName();
+                    String currentProfileAddress = pnlRightProfile.getAddress();
+                    if (currentProfileName == null || currentProfileName.trim().isEmpty() || 
+                        currentProfileAddress == null || currentProfileAddress.trim().isEmpty()) {
+                        showProfileWarningDialog("Profile Information", "Update your personal details freely.");
+                    }   isFirstShow = false;
+                }
+            }
+        });
     }
         public JLabel getLblHome() {
             return lblHome;
@@ -478,8 +579,7 @@ public class CustomerDashboard extends JPanel {
             return lblProfile;
     }   public JLabel getLblExit() {
             return lblExit;
-    }
-        public JLabel getLblDateRn() {
+    }   public JLabel getLblDateRn() {
             return lblDateRn;
     }   public JPanel getLeftBannerNav() {
             return leftBannerNav;
@@ -536,4 +636,44 @@ public class CustomerDashboard extends JPanel {
     }   public MainFrame getMainFrame() {
             return mainFrame;
     }
-}
+        public String getSavedFirstName() { return savedFirstName; }
+        public void setSavedFirstName(String val) { this.savedFirstName = val; }
+        public String getSavedLastName() { return savedLastName; }
+        public void setSavedLastName(String val) { this.savedLastName = val; }
+        public String getSavedMobileNumber() { return savedMobileNumber; }
+        public void setSavedMobileNumber(String val) { this.savedMobileNumber = val; }
+        public String getSavedFullAddress() { return savedFullAddress; }
+        public void setSavedFullAddress(String val) { this.savedFullAddress = val; }
+        
+      
+        // For check out | Chloe
+        public void closeCheckoutPanels() {
+        for (Component c : pnlMainBg.getComponents()) {
+            if (c instanceof CustomerDashboardCheckout) {
+                c.setVisible(false);
+                pnlMainBg.remove(c);
+            }
+        }   if (pnlRightCart.getParent() == null) {
+                pnlMainBg.add(pnlRightCart);
+        }       pnlMainBg.revalidate();
+                pnlMainBg.repaint();
+    }   
+        public void showCheckoutScreen(Order order) {
+            if (pnlCheckout != null) {
+                pnlMainBg.remove(pnlCheckout);
+        }
+            pnlCheckout = new CustomerDashboardCheckout(order);
+            pnlCheckout.setOnBackToCartCallback(() -> {
+                pnlMainBg.remove(pnlCheckout);
+                pnlRightCart.setVisible(true);
+                pnlMainBg.revalidate();
+                pnlMainBg.repaint();
+            }); pnlMainBg.setComponentZOrder(pnlCheckout, 0);
+                pnlRightCart.setVisible(false);
+                pnlMainBg.revalidate();
+                pnlMainBg.repaint();
+        }
+   
+    }
+
+

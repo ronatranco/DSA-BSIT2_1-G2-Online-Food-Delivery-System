@@ -5,11 +5,13 @@
 
 package GUI;
 
+import Model.Restaurant;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.*;
 import javax.swing.border.LineBorder;
+import javax.swing.text.*;
 
 /**
  *
@@ -29,6 +31,9 @@ public class CustomerDashboardRestaurantMenus extends JPanel {
     private String restaurantName;
     private JLabel lblTitle;
     
+    private JPanel searchBarContainer1;
+    private JPanel seperateLine;
+    
     public CustomerDashboardRestaurantMenus(String restaurantName) {
         this.restaurantName = restaurantName;
 
@@ -45,7 +50,7 @@ public class CustomerDashboardRestaurantMenus extends JPanel {
         add(lblTitle);
         
         // SEARCH BAR
-        JPanel searchBarContainer1 = new JPanel(null);
+        searchBarContainer1 = new JPanel(null);
         searchBarContainer1.setBounds(477, 43, 405, 34); 
         searchBarContainer1.setBackground(COLOR_WHITE);
         searchBarContainer1.setBorder(new LineBorder(PURPLE_DARK, 1)); 
@@ -108,14 +113,53 @@ public class CustomerDashboardRestaurantMenus extends JPanel {
         });  
         
         // HEADER SEPARATOR
-        JPanel seperateLine = new JPanel();
+        seperateLine = new JPanel();
         seperateLine.setBackground(YELLOW_ACCENT);
         seperateLine.setBounds(40, 90, 842, 3);
         add(seperateLine);
         setupMenuLayout();
+        
+        // INFORMATION UPDATER FROM RESTO PACKAGE
+        Restaurant.Brand targetBrand;
+        if (restaurantName.equalsIgnoreCase("Brain Cells Milk Tea")) {
+            targetBrand = Restaurant.Brand.BRAIN_CELLS_MILK_TEA;
+        } else if (restaurantName.equalsIgnoreCase("Mang Pinaasa")) {
+            targetBrand = Restaurant.Brand.MANG_PINAASA;
+        } else {
+            targetBrand = Restaurant.Brand.MCDOLLIBEE;
+        }
+        Restaurant.get(targetBrand).addListener(new Runnable() {
+            @Override
+            public void run() {
+                removeAll();
+                foodCardsList.clear();
+                lblTitle = new JLabel(restaurantName + " Menu");
+                lblTitle.setFont(new Font("Segoe UI", Font.BOLD, 24));
+                lblTitle.setForeground(PURPLE_DARK);
+                lblTitle.setBounds(30, 30, 500, 40);
+                add(lblTitle);
+                add(searchBarContainer1);
+                add(seperateLine);
+                setupMenuLayout();
+                revalidate();
+                repaint();
+            }
+        });
     }
     
     private void setupMenuLayout() {
+        Restaurant.Brand brand;
+        if (restaurantName.equalsIgnoreCase("Brain Cells Milk Tea")) {
+            brand = Restaurant.Brand.BRAIN_CELLS_MILK_TEA;
+        } else if (restaurantName.equalsIgnoreCase("Mang Pinaasa")) {
+            brand = Restaurant.Brand.MANG_PINAASA;
+        } else {
+            brand = Restaurant.Brand.MCDOLLIBEE;
+        }
+        
+        Restaurant dataInstance = Restaurant.get(brand);
+        java.util.List<Restaurant.Dish> menuItems = dataInstance.restaurant.menuItems;
+        
         if (restaurantName.equalsIgnoreCase("McDollibee")) {
             lblTitle.setVisible(false);
             // LABEL 1
@@ -137,7 +181,7 @@ public class CustomerDashboardRestaurantMenus extends JPanel {
             fireIcon1.setBounds(37, 131, 30, 42);
             add(fireIcon1);
             // LABEL 2 SUBTITLE
-            JLabel lblPSub1 = new JLabel("Most ordered right neow.");
+            JLabel lblPSub1 = new JLabel("Most ordered right now.");
             lblPSub1.setFont(new Font("Segoe UI", Font.PLAIN, 19));
             lblPSub1.setForeground(COLOR_MUTED);
             lblPSub1.setBounds(40, 160, 300, 30);
@@ -149,14 +193,16 @@ public class CustomerDashboardRestaurantMenus extends JPanel {
             lblWhatsNew1.setBounds(40, 390, 200, 30);
             add(lblWhatsNew1);
             // FOOD CARD ROW 1 (POPULAR & IMAGES)
-            JPanel card1 = menuResto(40, 205, "src/main/java/gui/images/cdrestaurantmenuchicken.png", "McChicken Joy w/ Rice",
-                          "Crispy on the outside, juicy on the inside, and served with fluffy rice and savory gravy.", "₱135");
-            JPanel card2 = menuResto(474, 205, "src/main/java/gui/images/cdrestaurantmenuburger.png", "Yum Big Mac Burger",
-                          "Two juicy beef patties, legendary special sauce, crisp lettuce, cheese, pickles, and onions on a toasted sesame bun.", "₱120");
+            JPanel card1 = (menuItems.size() > 0) ? menuResto(40, 205, menuItems.get(0).imagePath, menuItems.get(0).name, menuItems.get(0).description, Restaurant.MoneyFormat.peso(menuItems.get(0).price))
+                           : menuResto(40, 205, "", "Unavailable", "Description Unavailable.", "₱");
+            JPanel card2 = (menuItems.size() > 1) ? menuResto(474, 205, menuItems.get(1).imagePath, menuItems.get(1).name, menuItems.get(1).description, Restaurant.MoneyFormat.peso(menuItems.get(1).price))
+                          : menuResto(474, 205, "", "Unavailable", "Description Unavailable.", "₱");
             // FOOD CARD ROW 2 (WHAT'S NEW & IMAGES)
-            JPanel card3 = menuResto(40, 445, "src/main/java/gui/images/cdrestaurantmenupapie.png", "Peach Apple Pie", 
-                          "A warm, crispy crust filled with sweet, gooey peach and apple goodness.", "₱65");
-            JPanel card4 = menuResto(474, 445, "", "Unavailable", "Description Unavailable.", "₱");
+            JPanel card3 = (menuItems.size() > 2) ? menuResto(40, 445, menuItems.get(2).imagePath, menuItems.get(2).name, menuItems.get(2).description, Restaurant.MoneyFormat.peso(menuItems.get(2).price))
+                          : menuResto(40, 445, "", "Unavailable", "Description Unavailable.", "₱");
+                          
+            JPanel card4 = (menuItems.size() > 3) ? menuResto(474, 445, menuItems.get(3).imagePath, menuItems.get(3).name, menuItems.get(3).description, Restaurant.MoneyFormat.peso(menuItems.get(3).price))
+                          : menuResto(474, 445, "", "Unavailable", "Description Unavailable.", "₱");
             add(card1); foodCardsList.add(card1);
             add(card2); foodCardsList.add(card2);
             add(card3); foodCardsList.add(card3);
@@ -183,7 +229,7 @@ public class CustomerDashboardRestaurantMenus extends JPanel {
             fireIcon2.setBounds(37, 131, 30, 42);
             add(fireIcon2);
             // LABEL 2 SUBTITLE
-            JLabel lblPSub2 = new JLabel("Most ordered right neow.");
+            JLabel lblPSub2 = new JLabel("Most ordered right now.");
             lblPSub2.setFont(new Font("Segoe UI", Font.PLAIN, 19));
             lblPSub2.setForeground(COLOR_MUTED);
             lblPSub2.setBounds(40, 160, 300, 30);
@@ -195,14 +241,18 @@ public class CustomerDashboardRestaurantMenus extends JPanel {
             lblWhatsNew2.setBounds(40, 390, 200, 30);
             add(lblWhatsNew2);
             // FOOD CARD ROW 1 (POPULAR)
-            JPanel card1 = menuResto(40, 205, "src/main/java/gui/images/cdrestaurantmenumilktea.png", "Watermelon Milk Tea", 
-                                     "A refreshing blend of creamy milk tea and sweet, juicy watermelon flavor.", "₱70");
-            JPanel card2 = menuResto(474, 205, "src/main/java/gui/images/cdrestaurantmenumatcha.png", "Matcha", 
-                                     "Smooth, earthy green tea blended into a rich and creamy treat.", "₱80");
+            JPanel card1 = (menuItems.size() > 0) ? menuResto(40, 205, menuItems.get(0).imagePath, menuItems.get(0).name, menuItems.get(0).description, Restaurant.MoneyFormat.peso(menuItems.get(0).price))
+                          : menuResto(40, 205, "", "Unavailable", "Description Unavailable.", "₱");
+                          
+            JPanel card2 = (menuItems.size() > 1) ? menuResto(474, 205, menuItems.get(1).imagePath, menuItems.get(1).name, menuItems.get(1).description, Restaurant.MoneyFormat.peso(menuItems.get(1).price))
+                          : menuResto(474, 205, "", "Unavailable", "Description Unavailable.", "₱");
             // FOOD CARD ROW 2 (WHAT'S NEW)
-            JPanel card3 = menuResto(40, 445, "src/main/java/gui/images/cdrestaurantmenudarkchoco.png", "Dark Choco", 
-                                    "Deeply decadent and velvety chocolate crafted for the ultimate sweet tooth.", "₱70");
-            JPanel card4 = menuResto(474, 445, "",  "Unavailable", "Description Unavailable.", "₱");
+            JPanel card3 = (menuItems.size() > 2) ? menuResto(40, 445, menuItems.get(2).imagePath, menuItems.get(2).name, menuItems.get(2).description, Restaurant.MoneyFormat.peso(menuItems.get(2).price))
+                          : menuResto(40, 445, "", "Unavailable", "Description Unavailable.", "₱");
+                          
+            JPanel card4 = (menuItems.size() > 3) ? menuResto(474, 445, menuItems.get(3).imagePath, menuItems.get(3).name, menuItems.get(3).description, Restaurant.MoneyFormat.peso(menuItems.get(3).price))
+                          : menuResto(474, 445, "", "Unavailable", "Description Unavailable.", "₱");
+
             add(card1); foodCardsList.add(card1);
             add(card2); foodCardsList.add(card2);
             add(card3); foodCardsList.add(card3);
@@ -229,7 +279,7 @@ public class CustomerDashboardRestaurantMenus extends JPanel {
             fireIcon3.setBounds(37, 131, 30, 42);
             add(fireIcon3);
             // LABEL 2 SUBTITLE
-            JLabel lblPSub3 = new JLabel("Most ordered right neow.");
+            JLabel lblPSub3 = new JLabel("Most ordered right now.");
             lblPSub3.setFont(new Font("Segoe UI", Font.PLAIN, 19));
             lblPSub3.setForeground(COLOR_MUTED);
             lblPSub3.setBounds(40, 160, 300, 30);
@@ -241,14 +291,22 @@ public class CustomerDashboardRestaurantMenus extends JPanel {
             lblWhatsNew3.setBounds(40, 390, 200, 30);
             add(lblWhatsNew3);
             // FOOD CARD ROW 1 (POPULAR)
-            JPanel card1 = menuResto(40, 205, "src/main/java/gui/images/cdrestaurantmenupaa.png", "Paa Malaki", 
-                                     "Soft, tender bites simmered in a savory, finger-licking-good savory glaze.", "₱165");
-            JPanel card2 = menuResto(474, 205, "src/main/java/gui/images/cdrestaurantmenubbq.png", "Pork Bbq", 
-                                     "Smoky, skewered grilled pork brushed in a sweet and savory marinade.", "₱140");
+            JPanel card1 = (menuItems.size() > 0) ? menuResto(40, 205, menuItems.get(0).imagePath, menuItems.get(0).name, 
+                            menuItems.get(0).description, Restaurant.MoneyFormat.peso(menuItems.get(0).price))
+                            : menuResto(40, 205, "", "Unavailable", "Description Unavailable.", "₱");
+                          
+            JPanel card2 = (menuItems.size() > 1) ? menuResto(474, 205, menuItems.get(1).imagePath, menuItems.get(1).name, 
+                            menuItems.get(1).description, Restaurant.MoneyFormat.peso(menuItems.get(1).price))
+                            : menuResto(474, 205, "", "Unavailable", "Description Unavailable.", "₱");
             // FOOD CARD ROW 2 (WHAT'S NEW)
-            JPanel card3 = menuResto(40, 445, "src/main/java/gui/images/cdrestaurantmenupliempo.png", "Pork Liempo", 
-                                     "Juicy grilled pork belly with ultra-crispy skin, served with a tangy vinegar dip.", "₱150");
-            JPanel card4 = menuResto(474, 445, "",  "Unavailable", "Description Unavailable.", "₱");
+            JPanel card3 = (menuItems.size() > 2) ? menuResto(40, 445, menuItems.get(2).imagePath, menuItems.get(2).name, 
+                            menuItems.get(2).description, Restaurant.MoneyFormat.peso(menuItems.get(2).price))
+                            : menuResto(40, 445, "", "Unavailable", "Description Unavailable.", "₱");
+                          
+            JPanel card4 = (menuItems.size() > 3) ? menuResto(474, 445, menuItems.get(3).imagePath, menuItems.get(3).name, 
+                            menuItems.get(3).description, Restaurant.MoneyFormat.peso(menuItems.get(3).price))
+                            : menuResto(474, 445, "", "Unavailable", "Description Unavailable.", "₱");
+            
             add(card1); foodCardsList.add(card1);
             add(card2); foodCardsList.add(card2);
             add(card3); foodCardsList.add(card3);
@@ -288,9 +346,9 @@ public class CustomerDashboardRestaurantMenus extends JPanel {
         imageBlock.setBounds(15, 15, 130, 85);
         imageBlock.setBackground(new Color(242, 240, 245));
         imageBlock.setBorder(new LineBorder(new Color(225, 222, 230), 1));
-        java.io.File imgFile = new java.io.File(imgPath);
+        java.io.File imgFile = (imgPath != null && !imgPath.trim().isEmpty()) ? new java.io.File(imgPath) : null;
         // FOOD IMAGE
-        if (imgFile.exists()) {
+        if (imgFile != null && imgFile.exists()) {
             java.awt.Image img = new ImageIcon(imgPath).getImage()
                                  .getScaledInstance(130, 85, java.awt.Image.SCALE_SMOOTH);
             JLabel lblImg = new JLabel(new ImageIcon(img));
@@ -309,11 +367,18 @@ public class CustomerDashboardRestaurantMenus extends JPanel {
         lblFoodName.setBounds(160, 15, 225, 30);
         foodCard.add(lblFoodName);
         // FOOD DESCRIPTION
-        JLabel lblDesc = new JLabel("<html><p style='text-align: justify;'>" + description + "</p></html>");
-        lblDesc.setFont(new Font("Segoe UI", Font.PLAIN, 13));
-        lblDesc.setForeground(COLOR_MUTED);
-        lblDesc.setBounds(160, 48, 225, 60);
-        lblDesc.setVerticalAlignment(SwingConstants.TOP);
+        JTextPane lblDesc = new JTextPane();
+        lblDesc.setText(description);
+        lblDesc.setBounds(158, 45, 225, 60);
+        lblDesc.setEditable(false);
+        lblDesc.setFocusable(false);
+        lblDesc.setOpaque(false);
+        SimpleAttributeSet attribs = new SimpleAttributeSet();
+        StyleConstants.setAlignment(attribs, StyleConstants.ALIGN_JUSTIFIED);
+        StyleConstants.setFontFamily(attribs, "Segoe UI");
+        StyleConstants.setFontSize(attribs, 13);
+        StyleConstants.setForeground(attribs, COLOR_MUTED);
+        lblDesc.setParagraphAttributes(attribs, true);
         foodCard.add(lblDesc);
         // PRICE CONTAINER
         JPanel pnlPrice = new JPanel(new BorderLayout());
@@ -338,25 +403,20 @@ public class CustomerDashboardRestaurantMenus extends JPanel {
         btnAdd.addMouseListener(new java.awt.event.MouseAdapter() {
             @Override
             public void mouseClicked(java.awt.event.MouseEvent e) {
-                // Prevent adding unavailable items or items without a valid price
                 String cleanPrice = priceText.replace("₱", "").trim();
                 if (foodName.equalsIgnoreCase("Unavailable") || cleanPrice.isEmpty()) {
                     return;
                 }
-
                 Container root = getParent();
                 while (root != null && !(root instanceof CustomerDashboard)) {
                     root = root.getParent();
-                }
-                if (root instanceof CustomerDashboard) {
+                }   if (root instanceof CustomerDashboard) {
                     CustomerDashboard dashboard = (CustomerDashboard) root;
                     CustomerDashboardViewCart cart = dashboard.getPnlRightCart();
-                    
                     String[][] itemToAdd = { { foodName, "1", cleanPrice } };
-                    
                     cart.addRestaurantCards(restaurantName, itemToAdd);
                     cart.updateCartTotals();
-                    cart.animateOpen(); // Automatically slides open the cart panel
+                    cart.animateOpen(); 
                 }
             }
         }); 

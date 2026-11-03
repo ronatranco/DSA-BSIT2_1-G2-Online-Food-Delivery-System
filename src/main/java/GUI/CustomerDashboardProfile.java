@@ -8,6 +8,8 @@ import java.awt.*;
 import java.awt.event.ActionListener;
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
+import Database.AccountDAO;
+import java.sql.SQLException;
 
 /**
  *
@@ -23,8 +25,16 @@ public class CustomerDashboardProfile extends JPanel {
     private Font HEADER_FONT  = new Font("Segoe UI", Font.BOLD, 26);
 
     private JTextField txtName1, txtName2, txtFullAdd, txtNumber, txtEmail, txtCPw, txtNPw;
+    private JComboBox<String> cmbCountryCode;
+    private JButton btnCodeSelector;
     private JButton btnSaveInfo, btnSaveEmail, btnSavePassword, btnDelAcc;
     private JScrollPane scrollPane;
+    
+    private static String savedHomeAddress = "";
+    public static String getSavedHomeAddress() { return savedHomeAddress; }
+    public static void setSavedHomeAddress(String address) {
+        savedHomeAddress = (address == null) ? "" : address.trim();
+    }
     
     public CustomerDashboardProfile() {
         setLayout(null);
@@ -64,11 +74,48 @@ public class CustomerDashboardProfile extends JPanel {
         pnlAddress.setBounds(85, 200, 300, 55);
         txtFullAdd = pnlAddress.getTextField();
         pnlMainProfile.add(pnlAddress);
-        // NUMBER FIELD
+        // MOBILE NUMBER FIELD
         pnlOutlineField pnlNumber = new pnlOutlineField("Mobile Number");
-        pnlNumber.setBounds(402, 200, 300, 55);
+        pnlNumber.setBounds(402, 200, 300, 55); 
         txtNumber = pnlNumber.getTextField();
         pnlMainProfile.add(pnlNumber);
+        pnlNumber.setLayout(new BorderLayout());
+        txtNumber.setBorder(BorderFactory.createEmptyBorder(2, 5, 2, 12)); 
+        // == COUNTRY CODE OPTION ==
+        JPopupMenu codeMenu = new JPopupMenu();
+        String[] countryCodes = {"+63", "+1", "+44", "+81"};
+        btnCodeSelector = new JButton("+63 ▼");
+        btnCodeSelector.setFont(REGULAR_FONT);
+        btnCodeSelector.setForeground(TEXT_DARK);
+        btnCodeSelector.setBackground(COLOR_WHITE);
+        btnCodeSelector.setOpaque(true);
+        btnCodeSelector.setBorder(BorderFactory.createEmptyBorder(0, 8, 0, 8));
+        btnCodeSelector.setContentAreaFilled(false); 
+        btnCodeSelector.setFocusPainted(false);
+        btnCodeSelector.setPreferredSize(new Dimension(65, 55));
+
+        for (String code : countryCodes) {
+            JMenuItem item = new JMenuItem(code);
+            item.setFont(REGULAR_FONT);
+            item.addActionListener(e -> btnCodeSelector.setText(code + " ▼"));
+            codeMenu.add(item);
+        }   btnCodeSelector.addActionListener(e -> codeMenu.show(btnCodeSelector, 0, btnCodeSelector.getHeight()));
+            pnlNumber.add(btnCodeSelector, BorderLayout.WEST);
+            pnlNumber.add(txtNumber, BorderLayout.CENTER);
+
+        txtNumber.addKeyListener(new java.awt.event.KeyAdapter() {
+            @Override
+            public void keyTyped(java.awt.event.KeyEvent e) {
+                char c = e.getKeyChar();
+                if (!Character.isDigit(c)) {
+                    e.consume();
+                    return;
+                }   
+                if (txtNumber.getText().length() >= 10) {
+                    e.consume();
+                }
+            }
+        });
         // SAVE BTN INFO
         btnSaveInfo = styleBtnSave("Save");
         btnSaveInfo.setBounds(85, 270, 100, 35);
@@ -166,6 +213,7 @@ public class CustomerDashboardProfile extends JPanel {
         scrollPane.getVerticalScrollBar().setUnitIncrement(16); 
         scrollPane.setBounds(0, 0, 824, 800);
         add(scrollPane, BorderLayout.CENTER);
+        loadFromDatabase();
     }
 
     // HELPER METHOD FOR SAVE BUTTONS
@@ -178,15 +226,83 @@ public class CustomerDashboardProfile extends JPanel {
         btn.setBorder(BorderFactory.createEmptyBorder(5, 15, 5, 15)); 
         return btn;
     }
-    public void animateOpen() {
-        setBounds(200, 0, 824, 720); 
+        // for displaying data logged in
+    public void loadFromDatabase() {
+        String login = AccountDAO.getLogin();
+        if (login == null) return; 
+
+        try {
+            AccountDAO.Account acc = AccountDAO.findByLogin(login);
+            if (acc == null) return;
+
+
+            String name = (acc.fullName == null) ? "" : acc.fullName.trim();
+            int space = name.indexOf(' ');
+            txtName1.setText(space == -1 ? name : name.substring(0, space));
+            txtName2.setText(space == -1 ? "" : name.substring(space + 1).trim());
+
+            txtEmail.setText(acc.email == null ? "" : acc.email);
+
+            String address = (acc.address == null) ? "" : acc.address;
+            txtFullAdd.setText(address);
+            setSavedHomeAddress(address);
+
+            loadPhoneNumber(toInternationalPhone(acc.phone));
+
+
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(this, "Could not load profile: " + ex.getMessage());
+        }
     }
 
-    public void animateClose() {
-        setBounds(1024, 0, 824, 720); 
+
+    private String toInternationalPhone(String phone) {
+        if (phone == null) return "";
+        phone = phone.trim();
+        if (phone.matches("0\\d{10}")) {
+            return "+63 " + phone.substring(1);
+        }
+        return phone;
     }
-    public String getName() {
+        public void animateOpen() {
+            setBounds(200, 0, 824, 720); 
+    }   public void animateClose() {
+            setBounds(1024, 0, 824, 720); 
+    }
+        public String getName() {
             return txtName1.getText().trim();
+    }   public String getFullName() {
+        String first = txtName1.getText().trim();
+        String last = txtName2.getText().trim();
+        if (first.isEmpty() && last.isEmpty()) {
+            return "User"; 
+        }   return (first + " " + last).trim(); 
+    }
+             public String getMobileNumber() {
+        String local = txtNumber.getText().trim();
+        if (local.isEmpty()) return "";
+        String selectedCode = btnCodeSelector.getText().replace(" ▼", "").trim();
+        return selectedCode + " " + local;
+    }   
+
+    public void loadPhoneNumber(String fullPhoneNumber) {
+        if (fullPhoneNumber == null || fullPhoneNumber.isEmpty()) {
+            txtNumber.setText("");
+            btnCodeSelector.setText("+63 ▼");
+            return;
+        }   fullPhoneNumber = fullPhoneNumber.trim();
+            String[] countryCodes = {"+63", "+1", "+44", "+81"};
+        for (String code : countryCodes) {
+            if (fullPhoneNumber.startsWith(code)) {
+                btnCodeSelector.setText(code + " ▼");
+                String cleanLocal = fullPhoneNumber.substring(code.length())
+                                                   .replace(" ", "")
+                                                   .trim();
+                txtNumber.setText(cleanLocal);
+                return;
+            }
+        }       txtNumber.setText(fullPhoneNumber);
+        
     }   public JTextField getTxtFieldName1() { 
             return txtName1;
     }   public JTextField getTxtFieldName2() { 

@@ -7,7 +7,9 @@ package GUI;
 
 import Database.databaseConnection;
 import Database.UserAuthentication;
+import Database.AccountDAO;
 import Model.Admin;
+
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -33,10 +35,12 @@ public class MainFrame extends JFrame implements ActionListener {
     private RestaurantLoginPanel panelRestaurantLogin;
     private AdminLoginPanel panelAdminLogin;
     private AdminDashboard panelAdminGUI;
-
+    
     // DASHBOARD PANELS
     private CustomerDashboard panelCustomerDashboard;
     private RestaurantDashboard panelRestaurantDashboard;
+    private RestaurantDashboardMilkTea panelMilkTeaDashboard;
+    private RestaurantDashboardMangPinaasa panelPinaasaDashboard;
     private final UserAuthentication userAuth;
     private Admin adminLogic;
 
@@ -69,7 +73,9 @@ public class MainFrame extends JFrame implements ActionListener {
         // Instantiate new dashboard panels (passing 'this' MainFrame instance)
         panelRestaurantDashboard = new RestaurantDashboard(this);
         panelCustomerDashboard = new CustomerDashboard(this);
-
+        panelMilkTeaDashboard = new RestaurantDashboardMilkTea(this);
+        panelPinaasaDashboard = new RestaurantDashboardMangPinaasa(this);
+        
         // Register panels as cards in CardLayout
         mainContainer.add(panelStart, "START");
         mainContainer.add(panelAuth, "AUTH");
@@ -83,7 +89,8 @@ public class MainFrame extends JFrame implements ActionListener {
         // Add customer and restaurant dashboards
         mainContainer.add(panelCustomerDashboard, "CUSTOMER_DASHBOARD");
         mainContainer.add(panelRestaurantDashboard, "RESTAURANT_DASHBOARD");
-
+        mainContainer.add(panelMilkTeaDashboard, "RESTAURANT_DASHBOARD_MILKTEA");
+        mainContainer.add(panelPinaasaDashboard, "RESTAURANT_DASHBOARD_PINAASA");
         registerActionListeners();
 
         showCard("START");
@@ -121,11 +128,14 @@ public class MainFrame extends JFrame implements ActionListener {
         panelRestaurantLogin.btnRestaurantLogin.addActionListener(this);
         panelRestaurantLogin.btnRestaurantForgotPassword.addActionListener(this);
         panelRestaurantLogin.btnRestaurantLoginBack.addActionListener(this);
+        panelRestaurantLogin.btnDontHaveAccount.addActionListener(this);
 
         // Admin Login Panel & GUI
         panelAdminLogin.btnAdminLogin.addActionListener(this);
         panelAdminLogin.btnAdminForgotPassword.addActionListener(this);
         panelAdminLogin.btnAdminLoginBack.addActionListener(this);
+        panelAdminLogin.btnDontHaveAccount.addActionListener(this);
+
         if (panelAdminGUI.getBtnLogout() != null) {
             panelAdminGUI.getBtnLogout().addActionListener(this);
         }
@@ -136,6 +146,12 @@ public class MainFrame extends JFrame implements ActionListener {
         }
         if (panelRestaurantDashboard.getBtnLogout() != null) {
             panelRestaurantDashboard.getBtnLogout().addActionListener(this);
+        }
+        if (panelMilkTeaDashboard.getBtnLogout() != null) {
+            panelMilkTeaDashboard.getBtnLogout().addActionListener(this);
+        }
+        if (panelPinaasaDashboard.getBtnLogout() != null) {
+            panelPinaasaDashboard.getBtnLogout().addActionListener(this);
         }
     }
 
@@ -184,6 +200,12 @@ public class MainFrame extends JFrame implements ActionListener {
             showCard("ROLE_SELECTION");
         }
         else if (source == panelCustomerLogin.btnDontHaveAccount) {
+            showCard("SIGNUP");
+        }
+        else if (source == panelRestaurantLogin.btnDontHaveAccount){
+            showCard("SIGNUP");
+        }
+        else if (source == panelAdminLogin.btnDontHaveAccount){
             showCard("SIGNUP");
         }
 
@@ -251,27 +273,49 @@ public class MainFrame extends JFrame implements ActionListener {
             String password = new String(panelCustomerLogin.txtLoginPassword.getPassword());
 
             if (authenticate(identifier, password, "customer")) {
+                AccountDAO.setLogin(identifier); 
                 panelCustomerLogin.txtLoginEmailOrUser.setText("");
                 panelCustomerLogin.txtLoginPassword.setText("");
                 if (panelCustomerLogin.chkLoginSavePassword != null) {
                     panelCustomerLogin.chkLoginSavePassword.setSelected(false);
-                }
+            }   mainContainer.remove(panelCustomerDashboard);
+                panelCustomerDashboard = new CustomerDashboard(this);
+                Model.Customer freshController = new Model.Customer(panelCustomerDashboard);
+                mainContainer.add(panelCustomerDashboard, "CUSTOMER_DASHBOARD");
+                mainContainer.revalidate();
+                mainContainer.repaint();
                 showCard("CUSTOMER_DASHBOARD");
             }
         }
 
+        // 9. RESTAURANT LOGIN (checks the database)
         // 9. RESTAURANT LOGIN (checks the database)
         else if (source == panelRestaurantLogin.btnRestaurantLogin) {
             String identifier = panelRestaurantLogin.txtRestaurantUser.getText().trim();
             String password = new String(panelRestaurantLogin.txtRestaurantPass.getPassword());
 
             if (authenticate(identifier, password, "restaurant")) {
+                AccountDAO.setLogin(identifier);
+
                 panelRestaurantLogin.txtRestaurantUser.setText("");
                 panelRestaurantLogin.txtRestaurantPass.setText("");
                 if (panelRestaurantLogin.chkRestaurantSavePass != null) {
                     panelRestaurantLogin.chkRestaurantSavePass.setSelected(false);
                 }
-                showCard("RESTAURANT_DASHBOARD");
+
+                String account = identifier.toLowerCase().replace(" ", "").replace("_", "");
+                String card = "RESTAURANT_DASHBOARD";
+                Model.Restaurant.Brand brand = Model.Restaurant.Brand.MCDOLLIBEE;   
+                if (account.contains("braincell") || account.contains("milktea")) {
+                    card = "RESTAURANT_DASHBOARD_MILKTEA";
+                    brand = Model.Restaurant.Brand.BRAIN_CELLS_MILK_TEA;            
+                } else if (account.contains("pinaasa")) {
+                    card = "RESTAURANT_DASHBOARD_PINAASA";
+                    brand = Model.Restaurant.Brand.MANG_PINAASA;                    
+                }
+
+                Model.Restaurant.get(brand).loadFromAccount(identifier);            
+                showCard(card);
             }
         }
 
@@ -293,12 +337,15 @@ public class MainFrame extends JFrame implements ActionListener {
         // 11. LOGOUT ACTIONS FROM ANY DASHBOARD (RETURNS TO ROLE SELECTION)
         else if ((panelAdminGUI.getBtnLogout() != null && source == panelAdminGUI.getBtnLogout()) ||
                  (panelCustomerDashboard.getBtnLogout() != null && source == panelCustomerDashboard.getBtnLogout()) ||
-                 (panelRestaurantDashboard.getBtnLogout() != null && source == panelRestaurantDashboard.getBtnLogout())) {
+                 (panelRestaurantDashboard.getBtnLogout() != null && source == panelRestaurantDashboard.getBtnLogout()) ||
+                 (panelMilkTeaDashboard.getBtnLogout() != null && source == panelMilkTeaDashboard.getBtnLogout()) ||
+                 (panelPinaasaDashboard.getBtnLogout() != null && source == panelPinaasaDashboard.getBtnLogout())) {
+            AccountDAO.clear();
             showCard("ROLE_SELECTION");
         }
     }
 
-    /** Checks the database. Shows an error dialog and returns false on failure. */
+    /** checks database. Shows an error dialog and returns false on failure. */
     private boolean authenticate(String login, String password, String role) {
         if (login.isEmpty() || password.isEmpty()) {
             JOptionPane.showMessageDialog(this, "Invalid Username or Password! \nIf you don't have an account, please create one.",
@@ -317,14 +364,14 @@ public class MainFrame extends JFrame implements ActionListener {
         return false;
     }
 
-    /** Validates the signup form and inserts the new user into the database. */
+    /** checks the signup form and inserts the new user into the database. */
     private void registerUser() {
         String name     = panelSignup.txtName.getText().trim();
         String username = panelSignup.txtUsername.getText().trim();
         String email    = panelSignup.txtEmail.getText().trim();
         String phone    = panelSignup.txtPhone.getText().trim();
         String address  = panelSignup.txtAddress.getText().trim();
-        String role     = panelSignup.cmbRole.getSelectedItem().toString().toLowerCase();
+        String role     = panelSignup.cmbRole.getSelectedItem().toString().toUpperCase();
         String password = new String(panelSignup.txtPassword.getPassword());
         String confirm  = new String(panelSignup.txtConfirmPassword.getPassword());
 
@@ -346,8 +393,8 @@ public class MainFrame extends JFrame implements ActionListener {
             return;
         }
 
-        String sql = "INSERT INTO users (full_name, username, email, phone, address, password, role) "
-                   + "VALUES (?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO accounts (full_name, username, email, phone, address, password_hash, role) "
+           + "VALUES (?, ?, ?, ?, ?, SHA2(?, 256), ?)";
 
         try (Connection con = databaseConnection.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {

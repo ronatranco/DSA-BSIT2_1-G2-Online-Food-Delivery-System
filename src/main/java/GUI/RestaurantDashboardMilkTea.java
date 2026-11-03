@@ -424,6 +424,7 @@ public class RestaurantDashboardMilkTea extends JPanel {
          }
       }
 
+      // Status Colors
       static Color statusColor(String value) {
          switch (value.toLowerCase()) {
             case "available":

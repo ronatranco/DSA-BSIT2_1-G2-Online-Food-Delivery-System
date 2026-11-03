@@ -23,7 +23,7 @@ public class AdminLoginPanel extends JPanel {
     public JTextField txtAdminUser;
     public JPasswordField txtAdminPass;
     public JCheckBox chkAdminSavePass;
-    public JButton btnAdminLogin, btnAdminForgotPassword, btnAdminLoginBack;
+    public JButton btnAdminLogin, btnAdminForgotPassword, btnAdminLoginBack, btnDontHaveAccount;
     private MainFrame mainFrame;
 
     public AdminLoginPanel(MainFrame mainFrame) {
@@ -115,9 +115,18 @@ public class AdminLoginPanel extends JPanel {
         btnAdminLoginBack.setBorderPainted(false);
         btnAdminLoginBack.setFocusPainted(false);
         btnAdminLoginBack.setCursor(new Cursor(Cursor.HAND_CURSOR));
-        btnAdminLoginBack.setBounds(50, 445, 120, 30);
+        btnAdminLoginBack.setBounds(50, 490, 120, 30);
         rightPanelAdmin.add(btnAdminLoginBack);
-
+        
+        btnDontHaveAccount = new JButton("Don't have acc?");
+        btnDontHaveAccount.setFont(new Font("Segoe UI", Font.BOLD, 13));
+        btnDontHaveAccount.setForeground(PURPLE_DARK);
+        btnDontHaveAccount.setContentAreaFilled(false);
+        btnDontHaveAccount.setBorderPainted(false);
+        btnDontHaveAccount.setFocusPainted(false);
+        btnDontHaveAccount.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        btnDontHaveAccount.setBounds(60, 445, 380, 30);
+        rightPanelAdmin.add(btnDontHaveAccount);
         add(rightPanelAdmin);
     }
 

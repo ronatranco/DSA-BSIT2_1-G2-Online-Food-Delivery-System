@@ -100,7 +100,7 @@ public class SignupPanel extends JPanel {
         // 6. Role
         JLabel lblRole = new JLabel("Role");
         lblRole.setBounds(60, 338, 380, 18);
-        cmbRole = new JComboBox<>(new String[]{"Customer", "Restaurant"});
+        cmbRole = new JComboBox<>(new String[]{"Customer", "Restaurant", "Admin"});
         cmbRole.setBounds(60, 358, 380, 30);
         rightPanelSignup.add(lblRole);
         rightPanelSignup.add(cmbRole);
