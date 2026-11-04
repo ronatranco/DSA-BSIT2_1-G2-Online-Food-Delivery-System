@@ -154,7 +154,7 @@ public class CustomerDashboard extends JPanel {
         lblName. setBounds(110, 34, 420, 35);
         pnlMainBg.add(lblName); 
         
-        // == SEARCH BAR ==
+        // SEARCH BAR 
         pnlsearchBar = new JPanel();
         pnlsearchBar.setLayout(null);
         pnlsearchBar.setBackground(COLOR_WHITE);
