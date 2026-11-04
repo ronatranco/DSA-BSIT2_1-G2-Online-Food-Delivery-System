@@ -289,7 +289,6 @@ public class MainFrame extends JFrame implements ActionListener {
         }
 
         // 9. RESTAURANT LOGIN (checks the database)
-        // 9. RESTAURANT LOGIN (checks the database)
         else if (source == panelRestaurantLogin.btnRestaurantLogin) {
             String identifier = panelRestaurantLogin.txtRestaurantUser.getText().trim();
             String password = new String(panelRestaurantLogin.txtRestaurantPass.getPassword());
