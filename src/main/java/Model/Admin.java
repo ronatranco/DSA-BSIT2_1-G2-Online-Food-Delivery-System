@@ -16,7 +16,7 @@ import javax.swing.JOptionPane;
 
 /**
  * @author rownavanana and gideon
- * CLASS FOR ADMIN BUSINESS LOGIC & BUTTON FUNCTIONALITY
+ * 
  */
 public class Admin implements ActionListener {
 
@@ -52,7 +52,6 @@ public class Admin implements ActionListener {
         if (source == adminDashboard.getBtnNavOverview()) {
             currentView = "OVERVIEW";
             
-            // Show "Hello, Admin!" on Dashboard
             if (adminDashboard.getLblName() != null) {
                 adminDashboard.getLblName().setText("Hello, Admin!");
                 adminDashboard.getLblName().setVisible(true);
@@ -67,7 +66,6 @@ public class Admin implements ActionListener {
         else if (source == adminDashboard.getBtnNavUsers()) {
             currentView = "USERS";
             
-            // Change text to page title for Customers (hides Hello, Admin cleanly without overlap)
             if (adminDashboard.getLblName() != null) {
                 adminDashboard.getLblName().setText("Manage Customer Accounts");
                 adminDashboard.getLblName().setVisible(true);
@@ -82,7 +80,6 @@ public class Admin implements ActionListener {
         else if (source == adminDashboard.getBtnNavRestaurants()) {
             currentView = "RESTAURANTS";
             
-            // Change text to page title for Restaurants
             if (adminDashboard.getLblName() != null) {
                 adminDashboard.getLblName().setText("Restaurant Accounts");
                 adminDashboard.getLblName().setVisible(true);
@@ -97,7 +94,6 @@ public class Admin implements ActionListener {
         else if (source == adminDashboard.getBtnNavOrders()) { // Profile view
             currentView = "PROFILE";
             
-            // Change text to page title for Admin Profile
             if (adminDashboard.getLblName() != null) {
                 adminDashboard.getLblName().setText("Admin Profile");
                 adminDashboard.getLblName().setVisible(true);
