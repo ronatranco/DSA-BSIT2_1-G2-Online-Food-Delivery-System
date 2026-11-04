@@ -12,20 +12,17 @@ import javax.swing.table.DefaultTableModel;
  * @author rownavanana
  */
 public class AdminDashboard extends JPanel {
-    // Exact requested color palette
-    public static final Color PURPLE_DARK   = new Color(74, 20, 140);   // Primary Headers, Primary Buttons, Customer Theme
-    public static final Color PURPLE_LIGHT  = new Color(156, 39, 176);  // Secondary Accents, Admin Theme Buttons
-    public static final Color YELLOW_ACCENT = new Color(255, 193, 7);    // Highlight Buttons, Driver Theme, Brand Accents
-    public static final Color BG_LIGHT      = new Color(248, 245, 250); // General Background for all Panels
-    public static final Color TEXT_DARK     = new Color(30, 30, 30);    // Default Body Text Color
+    public static final Color PURPLE_DARK   = new Color(74, 20, 140);  
+    public static final Color PURPLE_LIGHT  = new Color(156, 39, 176);  
+    public static final Color YELLOW_ACCENT = new Color(255, 193, 7);    
+    public static final Color BG_LIGHT      = new Color(248, 245, 250); 
+    public static final Color TEXT_DARK     = new Color(30, 30, 30);    
 
-    // Exact requested typography
     public static final Font HEADER_FONT  = new Font("Segoe UI", Font.BOLD, 26);
     public static final Font TITLE_FONT   = new Font("Segoe UI", Font.BOLD, 36);
     public static final Font REGULAR_FONT = new Font("Segoe UI", Font.PLAIN, 14);
     public static final Font BUTTON_FONT  = new Font("Segoe UI", Font.BOLD, 14);
 
-    // GUI Components
     private JButton btnNavOverview, btnNavUsers, btnNavRestaurants, btnNavOrders, btnLogout;
     private JButton btnDeleteSelectedUser, btnRefreshData;
     private JTable dataTable;
