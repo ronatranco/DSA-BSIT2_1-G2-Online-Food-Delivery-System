@@ -30,7 +30,6 @@ public class StartPanel extends JPanel {
         setLayout(null);
         setBackground(BG_LIGHT);
 
-        // Increased height from 200 to 220 and shifted Y slightly up so the ears have plenty of space
         JLabel logoStart = new JLabel("🐼", SwingConstants.CENTER);
         logoStart.setFont(new Font("Segoe UI Emoji", Font.PLAIN, 180));
         logoStart.setBounds(262, 85, 500, 220);
