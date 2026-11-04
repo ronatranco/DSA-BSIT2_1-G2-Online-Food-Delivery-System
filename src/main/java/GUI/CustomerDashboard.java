@@ -211,7 +211,7 @@ public class CustomerDashboard extends JPanel {
         lblLocationText.setForeground(PURPLE_DARK);
         lblLocationText.setBounds(6, 0, 120, 35); 
         pnlLocationBanner.add(lblLocationText);
-        // == BUTTON FOR EXPANDER ==
+        // BUTTON FOR EXPANDER
         btnExpandLocation = new JButton(">");
         btnExpandLocation.setFont(new Font("Segoe UI", Font.BOLD, 15));
         btnExpandLocation.setForeground(PURPLE_DARK);
@@ -223,13 +223,13 @@ public class CustomerDashboard extends JPanel {
         btnExpandLocation.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         pnlLocationBanner.add(btnExpandLocation);
         pnlMainBg.add(pnlLocationBanner);
-        // == EXPAND LOCATION PANEL ==
+        // EXPAND LOCATION PANEL 
         pnlExpandedLocation = new JPanel();
         pnlExpandedLocation.setLayout(null);
         pnlExpandedLocation.setBackground(COLOR_WHITE);
         pnlExpandedLocation.setBounds(675, 80, 300, 35); 
         pnlExpandedLocation.setVisible(false); 
-        // == DROP DOWN LOCATION ==
+        // DROP DOWN LOCATION 
         JButton btnLocationDropDown = new JButton("▼");
         btnLocationDropDown.setFont(new Font("Segoe UI", Font.PLAIN, 12));
         btnLocationDropDown.setForeground(PURPLE_DARK);
@@ -433,7 +433,7 @@ public class CustomerDashboard extends JPanel {
         lblExit.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         pnlMainBg.add(leftBannerNav);
         
-        // == MODEL CONNECTOR ==
+        // MODEL CONNECTOR
         //RESTO CARD
         pnlRestoCard = new CustomerDashboardRestaurant();
         pnlMainBg.add(pnlRestoCard);
@@ -476,7 +476,6 @@ public class CustomerDashboard extends JPanel {
         pnlMainBg.add(leftBannerNav);
         add(pnlMainBg);
 
-        // == LISTENERS ==
         btnNavLogoPanda.addActionListener(controller);
         btnNavHome.addActionListener(controller);
         btnNavCart.addActionListener(controller);
@@ -646,7 +645,6 @@ public class CustomerDashboard extends JPanel {
         public void setSavedFullAddress(String val) { this.savedFullAddress = val; }
         
       
-        // For check out | Chloe
         public void closeCheckoutPanels() {
         for (Component c : pnlMainBg.getComponents()) {
             if (c instanceof CustomerDashboardCheckout) {
