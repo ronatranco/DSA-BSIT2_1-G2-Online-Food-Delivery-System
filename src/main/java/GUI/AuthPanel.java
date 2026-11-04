@@ -29,7 +29,6 @@ public class AuthPanel extends JPanel {
         setLayout(null);
         setBackground(BG_LIGHT);
 
-        // Left Banner
         GradientPanel leftBannerAuth = new GradientPanel();
         leftBannerAuth.setBounds(0, 0, 480, 720);
         JLabel logoAuth = new JLabel("🐼", SwingConstants.CENTER);
@@ -48,7 +47,6 @@ public class AuthPanel extends JPanel {
         leftBannerAuth.add(subAuth);
         add(leftBannerAuth);
 
-        // Right Panel Options
         JPanel rightPanelAuth = new JPanel(null);
         rightPanelAuth.setBounds(480, 0, 544, 720);
         rightPanelAuth.setBackground(BG_LIGHT);
