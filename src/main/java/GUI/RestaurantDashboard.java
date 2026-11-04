@@ -1,12 +1,4 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package GUI;
-/**
- *
- * @author krist
- */
 
 import java.awt.*;
 import java.awt.event.*;
@@ -33,6 +25,7 @@ public class RestaurantDashboard extends JPanel {
    private static final int NAV_EXPANDED = 240;
    private static final int PAGE_X = 90;
    private static final int PAGE_W = 934;
+   private static final int PAGE_H = 630;
 
    private final JPanel pnlMainBg;
    private final JPanel leftBannerNav = new JPanel();
@@ -69,7 +62,6 @@ public class RestaurantDashboard extends JPanel {
       addPage("store", new StoreStatusPage());
       addPage("hours", new HoursPage());
       addPage("menu", new FoodItemsPage());
-      addPage("mods", new ModifierPage());
       addPage("incoming", new IncomingOrdersPage());
       addPage("orders", new OrderStatusPage());
       addPage("profile", new ProfilePage());
@@ -89,7 +81,7 @@ public class RestaurantDashboard extends JPanel {
    }
 
    private void addPage(String key, JComponent page) {
-      page.setBounds(PAGE_X, 0, PAGE_W, 720);
+      page.setBounds(PAGE_X, 0, PAGE_W, PAGE_H);
       page.setVisible(false);
       pnlMainBg.add(page);
       pages.put(key, page);
@@ -143,7 +135,6 @@ public class RestaurantDashboard extends JPanel {
          {"store", "\uD83C\uDFEC", "Store Status"},
          {"hours", "\uD83D\uDD52", "Operating Hours"},
          {"menu", "\uD83C\uDF7D", "Menu Items"},
-         {"mods", "\uD83E\uDDE9", "Modifier Builder"},
          {"incoming", "\uD83D\uDCE5", "Incoming Orders"},
          {"orders", "\uD83D\uDCCB", "Order Status"},
          {"profile", "\uD83C\uDFEA", "Restaurant Profile"}
@@ -161,7 +152,7 @@ public class RestaurantDashboard extends JPanel {
       }
 
       btnNavExit = new NavButton("[\u2190", "Logout");
-      btnNavExit.setBounds(0, 620, NAV_COLLAPSED, 45);
+      btnNavExit.setBounds(0, 560, NAV_COLLAPSED, 45);
       leftBannerNav.add(btnNavExit);
       allNav.add(btnNavExit);
 
@@ -262,7 +253,7 @@ public class RestaurantDashboard extends JPanel {
       north.add(buildHeader(), BorderLayout.NORTH);
       JPanel noticeWrap = new JPanel(new BorderLayout());
       noticeWrap.setOpaque(false);
-      noticeWrap.setBorder(BorderFactory.createEmptyBorder(12, 24, 0, 24));
+      noticeWrap.setBorder(BorderFactory.createEmptyBorder(8, 24, 0, 24));
       noticeWrap.add(homeNotice, BorderLayout.CENTER);
       north.add(noticeWrap, BorderLayout.CENTER);
       homePanel.add(north, BorderLayout.NORTH);
@@ -283,7 +274,7 @@ public class RestaurantDashboard extends JPanel {
    private JPanel buildHeader() {
       JPanel header = new JPanel(new BorderLayout());
       header.setBackground(UIStyle.WHITE);
-      header.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createMatteBorder(0, 0, 3, 0, UIStyle.YELLOW_ACCENT), BorderFactory.createEmptyBorder(18, 24, 15, 24)));
+      header.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createMatteBorder(0, 0, 3, 0, UIStyle.YELLOW_ACCENT), BorderFactory.createEmptyBorder(12, 24, 10, 24)));
       JLabel title = new JLabel("RESTAURANT DASHBOARD");
       title.setFont(UIStyle.font(Font.BOLD, 22));
       title.setForeground(UIStyle.TEXT_DARK);
@@ -317,9 +308,9 @@ public class RestaurantDashboard extends JPanel {
    }
 
    private JPanel buildContent() {
-      JPanel panel = new JPanel(new GridLayout(2, 1, 20, 20));
+      JPanel panel = new JPanel(new GridLayout(2, 1, 14, 14));
       panel.setBackground(UIStyle.BG_LIGHT);
-      panel.setBorder(BorderFactory.createEmptyBorder(20, 24, 25, 24));
+      panel.setBorder(BorderFactory.createEmptyBorder(12, 24, 14, 24));
       JPanel stats = new JPanel(new GridLayout(1, 4, 15, 0));
       stats.setBackground(UIStyle.BG_LIGHT);
       stats.add(UIStyle.statCard("MENU ITEMS", String.valueOf(data.restaurant.menuItems.size()), data.availableDishCount() + " available", UIStyle.PURPLE_LIGHT));
@@ -328,19 +319,19 @@ public class RestaurantDashboard extends JPanel {
       stats.add(UIStyle.statCard("REVENUE", MoneyFormat.peso(data.revenue()), "Today's revenue", UIStyle.GREEN));
 
       UIStyle.RoundedPanel quick = UIStyle.card(UIStyle.PURPLE_DARK);
-      quick.setPadding(20, 26, 24, 24);
+      quick.setPadding(14, 26, 16, 24);
       JLabel quickTitle = new JLabel("QUICK ACTIONS");
       quickTitle.setFont(UIStyle.font(Font.BOLD, 18));
       quickTitle.setForeground(UIStyle.TEXT_DARK);
-      quickTitle.setBorder(BorderFactory.createEmptyBorder(0, 0, 12, 0));
-      JPanel quickButtons = new JPanel(new GridLayout(2, 3, 15, 15));
+      quickTitle.setBorder(BorderFactory.createEmptyBorder(0, 0, 8, 0));
+      JPanel quickButtons = new JPanel(new GridLayout(2, 3, 12, 12));
       quickButtons.setOpaque(false);
       addQuick(quickButtons, "Manage Menu Items", () -> showPage("menu"));
       addQuick(quickButtons, "Incoming Orders", () -> showPage("incoming"));
       addQuick(quickButtons, "Order Status", () -> showPage("orders"));
       addQuick(quickButtons, "View Analytics", () -> homeNotice.info("Analytics is not available yet."));
       addQuick(quickButtons, "Operating Hours", () -> showPage("hours"));
-      addQuick(quickButtons, "Modifier Builder", () -> showPage("mods"));
+      addQuick(quickButtons, "Restaurant Profile", () -> showPage("profile"));
       quick.add(quickTitle, BorderLayout.NORTH);
       quick.add(quickButtons, BorderLayout.CENTER);
       panel.add(stats);
@@ -424,7 +415,6 @@ public class RestaurantDashboard extends JPanel {
          }
       }
 
-      // Status Colors
       static Color statusColor(String value) {
          switch (value.toLowerCase()) {
             case "available":
@@ -504,12 +494,12 @@ public class RestaurantDashboard extends JPanel {
       }
 
       public static JPanel page(String icon, String title, JComponent action, Notice notice, JComponent body) {
-         JPanel main = new JPanel(new BorderLayout(0, 14));
+         JPanel main = new JPanel(new BorderLayout(0, 10));
          main.setBackground(BG_LIGHT);
-         main.setBorder(BorderFactory.createEmptyBorder(20, 22, 20, 22));
+         main.setBorder(BorderFactory.createEmptyBorder(12, 22, 12, 22));
          JPanel header = new JPanel(new BorderLayout());
          header.setBackground(WHITE);
-         header.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createMatteBorder(0, 0, 3, 0, YELLOW_ACCENT), BorderFactory.createEmptyBorder(16, 24, 13, 24)));
+         header.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createMatteBorder(0, 0, 3, 0, YELLOW_ACCENT), BorderFactory.createEmptyBorder(10, 24, 8, 24)));
          JLabel titleLabel = new JLabel(icon + "  " + title);
          titleLabel.setFont(emojiFont(Font.BOLD, 25));
          titleLabel.setForeground(TEXT_DARK);
@@ -556,7 +546,7 @@ public class RestaurantDashboard extends JPanel {
       public static RoundedPanel statCard(String title, String value, String description, Color accent) {
          RoundedPanel card = new RoundedPanel(18, WHITE, BORDER_GRAY, accent);
          card.setLayout(new BoxLayout(card, BoxLayout.Y_AXIS));
-         card.setPadding(20, 22, 24, 12);
+         card.setPadding(14, 22, 14, 12);
          JLabel titleLabel = new JLabel(title);
          titleLabel.setFont(font(Font.BOLD, 13));
          titleLabel.setForeground(PURPLE_LIGHT);
@@ -576,7 +566,7 @@ public class RestaurantDashboard extends JPanel {
 
       public static RoundedPanel tableCard(JTable table) {
          RoundedPanel card = card(PURPLE_LIGHT);
-         card.setPadding(14, 20, 14, 14);
+         card.setPadding(10, 20, 10, 14);
          JScrollPane scroll = new JScrollPane(table);
          scroll.setBorder(BorderFactory.createLineBorder(BORDER_GRAY));
          scroll.getViewport().setBackground(WHITE);
@@ -1433,7 +1423,7 @@ public class RestaurantDashboard extends JPanel {
          cards.add(buildForm(), "form");
          cards.add(buildPicker(), "image");
 
-         int[] widths = {200, 90, 70, 110, 50};
+         int[] widths = {180, 105, 70, 105, 45};
          for (int i = 0; i < widths.length; ++i) {
             table.getColumnModel().getColumn(i).setPreferredWidth(widths[i]);
          }
@@ -1736,286 +1726,6 @@ public class RestaurantDashboard extends JPanel {
          super.onShow();
          showCard("list");
          refresh();
-      }
-   }
-
-   static class ModifierPage extends Page {
-      private final DefaultListModel<String> groupModel = new DefaultListModel<>();
-      private final JList<String> groupList = new JList<>(groupModel);
-      private final JTable optionTable = UIStyle.createTable(new String[]{"Item / Option", "Price Change"});
-      private final DefaultTableModel optionModel = (DefaultTableModel)optionTable.getModel();
-      private final JLabel groupTitle = new JLabel("Select a group");
-      private final JCheckBox requiredBox = new JCheckBox("Customer must choose one");
-      private final CardLayout cardLayout = new CardLayout();
-      private final JPanel cards = new JPanel(cardLayout);
-
-      private final JLabel groupFormTitle = new JLabel();
-      private final JTextField groupNameField = UIStyle.styledField("");
-      private final JCheckBox groupRequiredCheck = new JCheckBox("Customer must choose one");
-      private Restaurant.ModifierGroup editingGroup;
-
-      private final JLabel optionFormTitle = new JLabel();
-      private final JTextField optionNameField = UIStyle.styledField("");
-      private final JTextField optionAmountField = UIStyle.styledField("0");
-      private Restaurant.ModifierGroup targetGroup;
-      private Restaurant.ModifierOption editingOption;
-
-      ModifierPage() {
-         groupList.setFont(UIStyle.font(Font.PLAIN, 14));
-         groupList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-         groupList.setFixedCellHeight(36);
-         groupList.setSelectionBackground(UIStyle.SELECTION);
-         groupList.setSelectionForeground(UIStyle.TEXT_DARK);
-         groupList.addListSelectionListener((e) -> {
-            if (!e.getValueIsAdjusting()) {
-               loadOptions();
-            }
-         });
-         UIStyle.RoundedButton addGroup = UIStyle.compact(UIStyle.button("+ Group", UIStyle.PURPLE_LIGHT));
-         addGroup.addActionListener((e) -> showGroupForm(null));
-         UIStyle.RoundedButton editGroup = UIStyle.compact(UIStyle.button("Edit", UIStyle.PURPLE_DARK));
-         editGroup.addActionListener((e) -> {
-            Restaurant.ModifierGroup group = selectedGroup();
-            if (group == null) {
-               pickGroupFirst();
-            } else {
-               showGroupForm(group);
-            }
-         });
-         UIStyle.RoundedButton deleteGroup = UIStyle.compact(UIStyle.button("Delete", UIStyle.RED));
-         deleteGroup.addActionListener((e) -> deleteGroup());
-
-         JLabel groupsHeading = new JLabel("Modifier Groups");
-         groupsHeading.setFont(UIStyle.font(Font.BOLD, 16));
-         groupsHeading.setBorder(BorderFactory.createEmptyBorder(0, 0, 10, 0));
-         JScrollPane groupScroll = new JScrollPane(groupList);
-         groupScroll.setBorder(BorderFactory.createLineBorder(UIStyle.BORDER_GRAY));
-         JPanel groupButtons = UIStyle.buttonRow(addGroup, editGroup, deleteGroup);
-         groupButtons.setBorder(BorderFactory.createEmptyBorder(10, 0, 0, 0));
-         UIStyle.RoundedPanel left = UIStyle.card(UIStyle.PURPLE_DARK);
-         left.setPadding(20, 26, 20, 20);
-         left.setPreferredSize(new Dimension(330, 100));
-         left.add(groupsHeading, BorderLayout.NORTH);
-         left.add(groupScroll, BorderLayout.CENTER);
-         left.add(groupButtons, BorderLayout.SOUTH);
-
-         groupTitle.setFont(UIStyle.font(Font.BOLD, 18));
-         groupTitle.setForeground(UIStyle.TEXT_DARK);
-         requiredBox.setOpaque(false);
-         requiredBox.setFont(UIStyle.font(Font.PLAIN, 14));
-         requiredBox.addActionListener((e) -> {
-            Restaurant.ModifierGroup group = selectedGroup();
-            if (group != null) {
-               group.required = requiredBox.isSelected();
-               data.notifyChanged();
-            }
-         });
-         JPanel rightTop = new JPanel(new BorderLayout());
-         rightTop.setOpaque(false);
-         rightTop.setBorder(BorderFactory.createEmptyBorder(0, 0, 12, 0));
-         rightTop.add(groupTitle, BorderLayout.WEST);
-         rightTop.add(requiredBox, BorderLayout.EAST);
-         JScrollPane optionScroll = new JScrollPane(optionTable);
-         optionScroll.setBorder(BorderFactory.createLineBorder(UIStyle.BORDER_GRAY));
-         optionScroll.getViewport().setBackground(UIStyle.WHITE);
-         JButton addOption = UIStyle.primaryButton("+ Add Item");
-         addOption.addActionListener((e) -> showOptionForm(null));
-         JButton editOption = UIStyle.button("Edit", UIStyle.PURPLE_DARK);
-         editOption.addActionListener((e) -> editOption());
-         JButton removeOption = UIStyle.button("Remove", UIStyle.RED);
-         removeOption.addActionListener((e) -> removeOption());
-         JPanel optionButtons = UIStyle.buttonRow(addOption, editOption, removeOption);
-         optionButtons.setBorder(BorderFactory.createEmptyBorder(12, 0, 0, 0));
-         UIStyle.RoundedPanel right = UIStyle.card(UIStyle.YELLOW_ACCENT);
-         right.setPadding(20, 26, 20, 20);
-         right.add(rightTop, BorderLayout.NORTH);
-         right.add(optionScroll, BorderLayout.CENTER);
-         right.add(optionButtons, BorderLayout.SOUTH);
-
-         JPanel mainView = new JPanel(new BorderLayout(18, 0));
-         mainView.setOpaque(false);
-         mainView.add(left, BorderLayout.WEST);
-         mainView.add(right, BorderLayout.CENTER);
-
-         groupRequiredCheck.setOpaque(false);
-         groupRequiredCheck.setFont(UIStyle.font(Font.PLAIN, 14));
-         JPanel groupForm = UIStyle.form(new String[]{"Group Name:", "Required:"}, new JComponent[]{groupNameField, groupRequiredCheck});
-         JButton saveGroup = UIStyle.primaryButton("Save Group");
-         saveGroup.addActionListener((e) -> saveGroup());
-         JButton cancelGroup = UIStyle.button("Cancel", UIStyle.PURPLE_DARK);
-         cancelGroup.addActionListener((e) -> {
-            notice.clear();
-            cardLayout.show(cards, "main");
-         });
-
-         JLabel optionHint = new JLabel("Use a minus sign for a discount, e.g. -10");
-         optionHint.setFont(UIStyle.font(Font.PLAIN, 12));
-         optionHint.setForeground(UIStyle.MUTED);
-         JPanel optionForm = UIStyle.form(new String[]{"Item Name:", "Price Change (\u20B1):", ""}, new JComponent[]{optionNameField, optionAmountField, optionHint});
-         JButton saveOption = UIStyle.primaryButton("Save Item");
-         saveOption.addActionListener((e) -> saveOption());
-         JButton cancelOption = UIStyle.button("Cancel", UIStyle.PURPLE_DARK);
-         cancelOption.addActionListener((e) -> {
-            notice.clear();
-            cardLayout.show(cards, "main");
-         });
-
-         cards.setOpaque(false);
-         cards.add(mainView, "main");
-         cards.add(UIStyle.formView(groupFormTitle, groupForm, UIStyle.buttonRow(saveGroup, cancelGroup), UIStyle.PURPLE_DARK), "group");
-         cards.add(UIStyle.formView(optionFormTitle, optionForm, UIStyle.buttonRow(saveOption, cancelOption), UIStyle.YELLOW_ACCENT), "option");
-
-         add(UIStyle.page("\uD83E\uDDE9", "Modifier & Menu Builder", null, notice, cards), BorderLayout.CENTER);
-         data.addListener(() -> refreshGroups(groupList.getSelectedIndex()));
-         refreshGroups(0);
-      }
-
-      private Restaurant.ModifierGroup selectedGroup() {
-         int index = groupList.getSelectedIndex();
-         return index >= 0 && index < data.modifierGroups.size() ? data.modifierGroups.get(index) : null;
-      }
-
-      private void pickGroupFirst() {
-         notice.warn("Please select a modifier group first.");
-      }
-
-      private void refreshGroups(int select) {
-         groupModel.clear();
-         for (Restaurant.ModifierGroup group : data.modifierGroups) {
-            groupModel.addElement(group.name + (group.required ? "  (required)" : "  (optional)"));
-         }
-         if (select >= 0 && select < groupModel.size()) {
-            groupList.setSelectedIndex(select);
-         }
-         loadOptions();
-      }
-
-      private void loadOptions() {
-         optionModel.setRowCount(0);
-         Restaurant.ModifierGroup group = selectedGroup();
-         if (group == null) {
-            groupTitle.setText("Select a group");
-            requiredBox.setEnabled(false);
-            requiredBox.setSelected(false);
-            return;
-         }
-         groupTitle.setText(group.name);
-         requiredBox.setEnabled(true);
-         requiredBox.setSelected(group.required);
-         for (Restaurant.ModifierOption option : group.options) {
-            optionModel.addRow(new Object[]{option.name, MoneyFormat.pesoSigned(option.priceChange)});
-         }
-      }
-
-      private void showGroupForm(Restaurant.ModifierGroup group) {
-         editingGroup = group;
-         notice.clear();
-         groupFormTitle.setText(group == null ? "Add Modifier Group" : "Edit Modifier Group");
-         groupNameField.setText(group == null ? "" : group.name);
-         groupRequiredCheck.setSelected(group != null && group.required);
-         cardLayout.show(cards, "group");
-      }
-
-      private void saveGroup() {
-         String name = groupNameField.getText().trim();
-         if (name.isEmpty()) {
-            notice.warn("Group name can't be empty.");
-            return;
-         }
-         cardLayout.show(cards, "main");
-         if (editingGroup == null) {
-            data.modifierGroups.add(new Restaurant.ModifierGroup(name, groupRequiredCheck.isSelected()));
-            data.notifyChanged();
-            groupList.setSelectedIndex(groupModel.size() - 1);
-            notice.success("Group \"" + name + "\" was added.");
-         } else {
-            editingGroup.name = name;
-            editingGroup.required = groupRequiredCheck.isSelected();
-            data.notifyChanged();
-            notice.success("Group \"" + name + "\" was updated.");
-         }
-      }
-
-      private void deleteGroup() {
-         Restaurant.ModifierGroup group = selectedGroup();
-         if (group == null) {
-            pickGroupFirst();
-         } else {
-            notice.confirm("Delete the group \"" + group.name + "\" and all its items?", () -> {
-               data.modifierGroups.remove(group);
-               data.notifyChanged();
-            });
-         }
-      }
-
-      private void editOption() {
-         Restaurant.ModifierGroup group = selectedGroup();
-         if (group == null) {
-            pickGroupFirst();
-            return;
-         }
-         int row = UIStyle.requireSelection(optionTable, notice, "an item");
-         if (row >= 0) {
-            showOptionForm(group.options.get(row));
-         }
-      }
-
-      private void removeOption() {
-         Restaurant.ModifierGroup group = selectedGroup();
-         if (group == null) {
-            pickGroupFirst();
-            return;
-         }
-         int row = UIStyle.requireSelection(optionTable, notice, "an item");
-         if (row >= 0) {
-            Restaurant.ModifierOption option = group.options.get(row);
-            notice.confirm("Remove \"" + option.name + "\" from " + group.name + "?", () -> {
-               group.options.remove(option);
-               data.notifyChanged();
-            });
-         }
-      }
-
-      private void showOptionForm(Restaurant.ModifierOption option) {
-         Restaurant.ModifierGroup group = selectedGroup();
-         if (group == null) {
-            pickGroupFirst();
-            return;
-         }
-         targetGroup = group;
-         editingOption = option;
-         notice.clear();
-         optionFormTitle.setText(option == null ? "Add Item to " + group.name : "Edit Item");
-         optionNameField.setText(option == null ? "" : option.name);
-         optionAmountField.setText(option == null ? "0" : MoneyFormat.amountText(option.priceChange));
-         cardLayout.show(cards, "option");
-      }
-
-      private void saveOption() {
-         Double amount = MoneyFormat.parseAmount(optionAmountField.getText());
-         String name = optionNameField.getText().trim();
-         if (name.isEmpty()) {
-            notice.warn("Item name can't be empty.");
-         } else if (amount == null) {
-            notice.warn("Please enter a valid price change, for example 25, 0 or -10.");
-         } else {
-            if (editingOption == null) {
-               targetGroup.options.add(new Restaurant.ModifierOption(name, amount));
-            } else {
-               editingOption.name = name;
-               editingOption.priceChange = amount;
-            }
-            cardLayout.show(cards, "main");
-            data.notifyChanged();
-            notice.success("Item \"" + name + "\" was saved.");
-         }
-      }
-
-      @Override
-      void onShow() {
-         super.onShow();
-         cardLayout.show(cards, "main");
-         refreshGroups(groupList.getSelectedIndex() < 0 ? 0 : groupList.getSelectedIndex());
       }
    }
 }
