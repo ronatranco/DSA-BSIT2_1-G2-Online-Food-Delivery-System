@@ -57,7 +57,7 @@ public class Customer implements ActionListener, MouseListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        // == NAME DASHBOARD ==
+        // NAME DASHBOARD 
         if (e.getSource() == view.getPnlRightProfile().getBtnSaveInfo()
                 || e.getSource() == view.getPnlRightProfile().getTxtFieldName1()
                 || e.getSource() == view.getPnlRightProfile().getTxtFullAdd()) {
@@ -75,7 +75,7 @@ public class Customer implements ActionListener, MouseListener {
             }
         }
 
-        // == BUTTON CART ==
+        // BUTTON CART 
         if (e.getSource() == view.getBtnNavCart()) {
             closeAllSidebarsExcept("cart");
             if (!isCartVisible) {
@@ -85,7 +85,7 @@ public class Customer implements ActionListener, MouseListener {
                 view.getPnlRightCart().animateClose();
                 isCartVisible = false;
             }
-        } // == BUTTON PROFILE ==
+        } // BUTTON PROFILE 
         else if (e.getSource() == view.getBtnNavProfile()) {
             closeAllSidebarsExcept("profile");
             if (!isProfileVisible) {
@@ -97,7 +97,7 @@ public class Customer implements ActionListener, MouseListener {
                 collapseSidebar();
                 view.getPnlRightProfile().animateClose();
             }
-        } // == BUTTON TRACK ORDER ==
+        } // BUTTON TRACK ORDER
         else if (e.getSource() == view.getBtnNavTrack()) {
             closeAllSidebarsExcept("track");
             if (!isTrackOrderVisible) {
@@ -109,7 +109,7 @@ public class Customer implements ActionListener, MouseListener {
                 collapseSidebar();
                 view.getPnlRightTrackOrder().animateClose();
             }
-        } // == BUTTON HISTORY ==
+        } // BUTTON HISTORY 
         else if (e.getSource() == view.getBtnNavHistory()) {
             closeAllSidebarsExcept("history");
             if (!isHistoryVisible) {
@@ -121,7 +121,7 @@ public class Customer implements ActionListener, MouseListener {
                 collapseSidebar();
                 view.getPnlRightHistory().animateClose();
             }
-        } // == SUBPANEL & BUTTON LISTENERS ==
+        } // SUBPANEL & BUTTON LISTENERS
         else if (e.getSource() == view.getPnlRightCart().getCloseButton()) {
             view.getPnlRightCart().animateClose();
             isCartVisible = false;
@@ -139,7 +139,7 @@ public class Customer implements ActionListener, MouseListener {
             view.getTxtSearchBar().setText("What are you craving today?");
             view.getTxtSearchBar().setForeground(new Color(120, 120, 120));
             showAllRestaurants(view.getPnlRestoCard(), true);
-        } // == NAVIGATION ==
+        } // NAVIGATION
         else if (e.getSource() == view.getBtnNavLogoPanda()) {
             System.out.println("Routing: Logo action triggered.");
         } else if (e.getSource() == view.getBtnNavHome()) {
@@ -339,15 +339,15 @@ public class Customer implements ActionListener, MouseListener {
         view.getPnlRestoCard().topBannerQuote.setBounds(baseX, 135, 865, 120);
         GUI.CustomerDashboardRestaurant restoCard = view.getPnlRestoCard();
 
-        // == RESTAURANT SCROLL ==
+        // RESTAURANT SCROLL
         restoCard.scrollPane.setBounds(0, 320, 1024, 400);
-        // == RESTAURANT LABEL ==
+        // RESTAURANT LABEL 
         restoCard.lblRestaurant.setBounds(baseX, 270, 400, 50);
         if (restoCard.restoLine != null) {
             restoCard.restoLine.setBounds(baseX + 220, 298, 644, 5);
         }
 
-        // == ROW 1 RESTAURANT ==
+        // ROW 1 RESTAURANT 
         restoCard.pnlRestoCard1.setBounds(baseX, 113, 200, 130);
         if (restoCard.lblRestoImage1 != null) {
             restoCard.lblRestoImage1.setBounds(baseX - 14, 3, 230, 190);
@@ -364,7 +364,7 @@ public class Customer implements ActionListener, MouseListener {
         if (restoCard.lblRestoImage4 != null) {
             restoCard.lblRestoImage4.setBounds(baseX + 646, 45, 230, 150);
         }
-        // == ROW 2 RESTAURANT ==
+        // ROW 2 RESTAURANT
         restoCard.pnlRestoCard5.setBounds(baseX, 330, 200, 130);
         if (restoCard.lblRestoImage5 != null) {
             restoCard.lblRestoImage5.setBounds(baseX - 14, 260, 230, 160);
@@ -477,7 +477,7 @@ public class Customer implements ActionListener, MouseListener {
             return;
         }
         String lowerQuery = query.toLowerCase().trim();
-        // == RESTAURANT 1 ==
+        // RESTAURANT 1 
         boolean smatch1 = "mcdollibee".contains(lowerQuery);
         if (restoCard.pnlRestoCard1 != null) {
             restoCard.pnlRestoCard1.setVisible(smatch1);
@@ -485,7 +485,7 @@ public class Customer implements ActionListener, MouseListener {
         if (restoCard.lblRestoImage1 != null) {
             restoCard.lblRestoImage1.setVisible(smatch1);
         }
-        // == RESTAURANT 2 ==
+        // RESTAURANT 2 
         boolean smatch2 = "brain cells milk tea".contains(lowerQuery);
         if (restoCard.pnlRestoCard2 != null) {
             restoCard.pnlRestoCard2.setVisible(smatch2);
@@ -493,7 +493,7 @@ public class Customer implements ActionListener, MouseListener {
         if (restoCard.lblRestoImage2 != null) {
             restoCard.lblRestoImage2.setVisible(smatch2);
         }
-        // == RESTAURANT 3 ==
+        // RESTAURANT 3 
         boolean smatch3 = "mang pinaasa".contains(lowerQuery);
         if (restoCard.pnlRestoCard3 != null) {
             restoCard.pnlRestoCard3.setVisible(smatch3);
@@ -501,7 +501,7 @@ public class Customer implements ActionListener, MouseListener {
         if (restoCard.lblRestoImage3 != null) {
             restoCard.lblRestoImage3.setVisible(smatch3);
         }
-        // == RESTAURANT 4 ==
+        // RESTAURANT 4 
         boolean smatch4 = "kamote korner".contains(lowerQuery);
         if (restoCard.pnlRestoCard4 != null) {
             restoCard.pnlRestoCard4.setVisible(smatch4);
@@ -509,7 +509,7 @@ public class Customer implements ActionListener, MouseListener {
         if (restoCard.lblRestoImage4 != null) {
             restoCard.lblRestoImage4.setVisible(smatch4);
         }
-        // == RESTAURANT 5 ==
+        // RESTAURANT 5 
         boolean smatch5 = "petsa hut".contains(lowerQuery);
         if (restoCard.pnlRestoCard5 != null) {
             restoCard.pnlRestoCard5.setVisible(smatch5);
@@ -517,7 +517,7 @@ public class Customer implements ActionListener, MouseListener {
         if (restoCard.lblRestoImage5 != null) {
             restoCard.lblRestoImage5.setVisible(smatch5);
         }
-        // == RESTAURANT 6 ==
+        // RESTAURANT 6 
         boolean smatch6 = "bibang's".contains(lowerQuery);
         if (restoCard.pnlRestoCard6 != null) {
             restoCard.pnlRestoCard6.setVisible(smatch6);
@@ -525,7 +525,7 @@ public class Customer implements ActionListener, MouseListener {
         if (restoCard.lblRestoImage6 != null) {
             restoCard.lblRestoImage6.setVisible(smatch6);
         }
-        // == RESTAURANT 7 ==
+        // RESTAURANT 7 
         boolean smatch7 = "sinabon".contains(lowerQuery);
         if (restoCard.pnlRestoCard7 != null) {
             restoCard.pnlRestoCard7.setVisible(smatch7);
@@ -533,7 +533,7 @@ public class Customer implements ActionListener, MouseListener {
         if (restoCard.lblRestoImage7 != null) {
             restoCard.lblRestoImage7.setVisible(smatch7);
         }
-        // == RESTAURANT 8 ==
+        // RESTAURANT 8 
         boolean smatch8 = "kuya's fried chicken".contains(lowerQuery);
         if (restoCard.pnlRestoCard8 != null) {
             restoCard.pnlRestoCard8.setVisible(smatch8);
@@ -546,28 +546,28 @@ public class Customer implements ActionListener, MouseListener {
     }
 
     private void showAllRestaurants(GUI.CustomerDashboardRestaurant restoCard, boolean visible) {
-        // == RESTAURANT 1 ==
+        // RESTAURANT 1 
         if (restoCard.pnlRestoCard1 != null) restoCard.pnlRestoCard1.setVisible(visible);
         if (restoCard.lblRestoImage1 != null) restoCard.lblRestoImage1.setVisible(visible);
-        // == RESTAURANT 2 ==
+        // RESTAURANT 2 
         if (restoCard.pnlRestoCard2 != null) restoCard.pnlRestoCard2.setVisible(visible);
         if (restoCard.lblRestoImage2 != null) restoCard.lblRestoImage2.setVisible(visible);
-        // == RESTAURANT 3 ==
+        // RESTAURANT 3 
         if (restoCard.pnlRestoCard3 != null) restoCard.pnlRestoCard3.setVisible(visible);
         if (restoCard.lblRestoImage3 != null) restoCard.lblRestoImage3.setVisible(visible);
-        // == RESTAURANT 4 ==
+        // RESTAURANT 4 
         if (restoCard.pnlRestoCard4 != null) restoCard.pnlRestoCard4.setVisible(visible);
         if (restoCard.lblRestoImage4 != null) restoCard.lblRestoImage4.setVisible(visible);
-        // == RESTAURANT 5 ==
+        // RESTAURANT 5 
         if (restoCard.pnlRestoCard5 != null) restoCard.pnlRestoCard5.setVisible(visible);
         if (restoCard.lblRestoImage5 != null) restoCard.lblRestoImage5.setVisible(visible);
-        // == RESTAURANT 6 ==
+        // RESTAURANT 6 
         if (restoCard.pnlRestoCard6 != null) restoCard.pnlRestoCard6.setVisible(visible);
         if (restoCard.lblRestoImage6 != null) restoCard.lblRestoImage6.setVisible(visible);
-        // == RESTAURANT 7 ==
+        // RESTAURANT 7 
         if (restoCard.pnlRestoCard7 != null) restoCard.pnlRestoCard7.setVisible(visible);
         if (restoCard.lblRestoImage7 != null) restoCard.lblRestoImage7.setVisible(visible);
-        // == RESTAURANT 8 ==
+        // RESTAURANT 8
         if (restoCard.pnlRestoCard8 != null) restoCard.pnlRestoCard8.setVisible(visible);
         if (restoCard.lblRestoImage8 != null) restoCard.lblRestoImage8.setVisible(visible);
 
