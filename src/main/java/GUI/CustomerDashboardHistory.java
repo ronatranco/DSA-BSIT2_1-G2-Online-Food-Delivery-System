@@ -534,7 +534,6 @@ public class CustomerDashboardHistory extends JPanel {
         return card;
     }
 
-
     // 9. Helper Methods
     private void addMetaItem(JPanel panel, String icon, String title, String value, int x, int y) {
         JLabel lblIcon = new JLabel(icon, SwingConstants.CENTER);
@@ -657,7 +656,6 @@ public class CustomerDashboardHistory extends JPanel {
         return false;
     }
 
-    
     // 10. Panel Actions 
     public void animateOpen() {
         refreshOrders();
