@@ -47,6 +47,7 @@ public class CustomerDashboardRestaurant extends JPanel {
         JLabel lblBannerImage = new JLabel(new ImageIcon(bannerImg));
         lblBannerImage.setBounds(345, 12, 490, 100);
         topBannerQuote.add(lblBannerImage);
+        
         JTextArea lblText = new JTextArea("YOUR HOT DELIVERY ON HIGH-SPEED PRIORITY!");
         lblText.setBounds(40, 25, 360, 70); 
         lblText.setForeground(YELLOW_ACCENT);

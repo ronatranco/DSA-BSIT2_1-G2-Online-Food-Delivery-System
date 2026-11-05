@@ -249,7 +249,7 @@ public class CustomerDashboardProfile extends JPanel {
         btn.setBorder(BorderFactory.createEmptyBorder(5, 15, 5, 15)); 
         return btn;
     }
-        // for displaying data logged in
+        // FOR DISPLAYING DATA LOGGED IN
     public void loadFromDatabase() {
         String login = AccountDAO.getLogin();
         if (login == null) return; 

@@ -187,7 +187,7 @@ public class AdminPanelGUI extends JPanel {
         DefaultTableModel model = new DefaultTableModel(data, columns) {
             @Override
             public boolean isCellEditable(int row, int column) {
-                return false; // Disable editing directly inside cell
+                return false; 
             }
         };
 

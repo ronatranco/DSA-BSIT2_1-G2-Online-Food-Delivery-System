@@ -305,7 +305,7 @@ public class MainFrame extends JFrame implements ActionListener {
             }
         }
 
-        // 10. ADMIN LOGIN (checks the database)
+        // 10. ADMIN LOGIN (CHECKS THE DATABASE)
         else if (source == panelAdminLogin.btnAdminLogin) {
             String username = panelAdminLogin.txtAdminUser.getText().trim();
             String password = new String(panelAdminLogin.txtAdminPass.getPassword());
@@ -349,7 +349,7 @@ public class MainFrame extends JFrame implements ActionListener {
         return false;
     }
 
-    /** checks the signup form and inserts the new user into the database. */
+    // CHECKS SIGNUP FORM & INSTERTS NEW USER INTO THE DATABASE
     private void registerUser() {
         String name     = panelSignup.txtName.getText().trim();
         String username = panelSignup.txtUsername.getText().trim();

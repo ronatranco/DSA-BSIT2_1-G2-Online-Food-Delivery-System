@@ -26,7 +26,7 @@ public class Customer implements ActionListener, MouseListener {
     private boolean isTrackOrderVisible = false;
     private boolean isHistoryVisible = false;
 
-    // Animation
+    // ANIMATION
     private javax.swing.Timer animationTimer;
     private double preciseWidth = 80.0;
     private int currentWidth = 80;
@@ -34,7 +34,7 @@ public class Customer implements ActionListener, MouseListener {
     private final int MAX_WIDTH = 200;
     private boolean targetsExpand = false;
 
-    // For easing curves
+    // FOR EASING CURVES
     private long animationStartTime;
     private double animationDuration = 280.0;
     private double startWidth;
@@ -150,7 +150,6 @@ public class Customer implements ActionListener, MouseListener {
         } else if (e.getSource() == view.getBtnNavExit()) {
             System.out.println("Logging out...");
         }
-        // NOTE: Checkout is handled inside CustomerDashboardViewCart (btnCheckout listener).
     }
 
     @Override

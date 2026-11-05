@@ -1,6 +1,5 @@
 package Database;
 
-// CHANGED: removed imports for FileInputStream, IOException, Properties
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
