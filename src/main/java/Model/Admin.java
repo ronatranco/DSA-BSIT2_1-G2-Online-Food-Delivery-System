@@ -15,7 +15,7 @@ import java.sql.SQLException;
 import javax.swing.JOptionPane;
 
 /**
- * @author rownavanana and gideon
+ * @author rownavanana and calalang
  * 
  */
 public class Admin implements ActionListener {
