@@ -129,7 +129,6 @@ public class AdminDashboard extends JPanel implements MouseListener {
         lblLogoTitle.setVisible(false);
         leftBannerNav.add(lblLogoTitle);
 
-        // 1. DASHBOARD first thing to na makikita ng adminnm 
         btnNavHome = new JButton("📊");
         btnNavHome.setFont(new Font("Segoe UI Emoji", Font.PLAIN, 22));
         btnNavHome.setForeground(YELLOW_ACCENT);
@@ -148,7 +147,6 @@ public class AdminDashboard extends JPanel implements MouseListener {
         leftBannerNav.add(lblHome);
         lblHome.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 
-        // 2. CUSTOMERS acc
         btnNavCustomers = new JButton("👥");
         btnNavCustomers.setFont(new Font("Segoe UI Emoji", Font.PLAIN, 22));
         btnNavCustomers.setForeground(YELLOW_ACCENT);
@@ -167,14 +165,13 @@ public class AdminDashboard extends JPanel implements MouseListener {
         leftBannerNav.add(lblCustomers);
         lblCustomers.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 
-        // 3. RESTAURANTS acc
         btnNavRestaurants = new JButton("🍽️");
         btnNavRestaurants.setFont(new Font("Segoe UI Emoji", Font.PLAIN, 22));
         btnNavRestaurants.setForeground(YELLOW_ACCENT);
         btnNavRestaurants.setBounds(0, 260, 80, 45);
         btnNavRestaurants.setContentAreaFilled(false);
         btnNavRestaurants.setBorderPainted(false);
-        btnNavRestaurants.setFocusPainted(false); // Removes white focus border
+        btnNavRestaurants.setFocusPainted(false); 
         leftBannerNav.add(btnNavRestaurants);
         btnNavRestaurants.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 
@@ -186,14 +183,13 @@ public class AdminDashboard extends JPanel implements MouseListener {
         leftBannerNav.add(lblRestaurants);
         lblRestaurants.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 
-        // 4. ADMIN PROFILE
         btnNavProfile = new JButton("👤");
         btnNavProfile.setFont(new Font("Segoe UI Emoji", Font.PLAIN, 22));
         btnNavProfile.setForeground(YELLOW_ACCENT);
         btnNavProfile.setBounds(0, 325, 80, 45);
         btnNavProfile.setContentAreaFilled(false);
         btnNavProfile.setBorderPainted(false);
-        btnNavProfile.setFocusPainted(false); // Removes white focus border
+        btnNavProfile.setFocusPainted(false); 
         leftBannerNav.add(btnNavProfile);
         btnNavProfile.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 
@@ -205,7 +201,6 @@ public class AdminDashboard extends JPanel implements MouseListener {
         leftBannerNav.add(lblProfile);
         lblProfile.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 
-        // 5. log out button the exit 
         btnNavExit = new JButton("[←");
         btnNavExit.setFont(new Font("Segoe UI Emoji", Font.PLAIN, 22));
         btnNavExit.setForeground(YELLOW_ACCENT);
@@ -226,7 +221,6 @@ public class AdminDashboard extends JPanel implements MouseListener {
         
         pnlMainBg.add(leftBannerNav);
         
-        // OVERVIEW DASHBOARD PANEL
         pnlOverviewCard = new JPanel();
         pnlOverviewCard.setLayout(null);
         pnlOverviewCard.setBounds(110, 140, 880, 520);
@@ -238,21 +232,53 @@ public class AdminDashboard extends JPanel implements MouseListener {
         pnlOverviewCard.add(card2);
         pnlMainBg.add(pnlOverviewCard);
 
-        // ADMIN PROFILE PANEL
         pnlProfileCard = new JPanel();
         pnlProfileCard.setLayout(null);
         pnlProfileCard.setBounds(110, 140, 880, 520);
         pnlProfileCard.setOpaque(false);
+
         JLabel lblProfileTitle = new JLabel("Administrator Profile & Full Access Control");
         lblProfileTitle.setFont(new Font("Segoe UI", Font.BOLD, 20));
         lblProfileTitle.setForeground(PURPLE_DARK);
         lblProfileTitle.setBounds(0, 0, 500, 30);
         pnlProfileCard.add(lblProfileTitle);
-        JLabel lblAdminInfo = new JLabel("<html><b>Username:</b> admin<br><b>Role:</b> System Administrator<br><b>Permissions:</b> Full Access (View Passwords, Manage Accounts, Ban/Delete Users & Restaurants)</html>");
-        lblAdminInfo.setFont(new Font("Segoe UI", Font.PLAIN, 15));
-        lblAdminInfo.setForeground(TEXT_DARK);
-        lblAdminInfo.setBounds(0, 50, 600, 100);
-        pnlProfileCard.add(lblAdminInfo);
+
+        JLabel lblUserLabel = new JLabel("Username: ");
+        lblUserLabel.setFont(new Font("Segoe UI", Font.BOLD, 15));
+        lblUserLabel.setForeground(TEXT_DARK);
+        lblUserLabel.setBounds(0, 50, 100, 25);
+        pnlProfileCard.add(lblUserLabel);
+
+        JLabel lblUserVal = new JLabel("admin");
+        lblUserVal.setFont(new Font("Segoe UI", Font.PLAIN, 15));
+        lblUserVal.setForeground(TEXT_DARK);
+        lblUserVal.setBounds(95, 50, 300, 25);
+        pnlProfileCard.add(lblUserVal);
+
+        JLabel lblRoleLabel = new JLabel("Role: ");
+        lblRoleLabel.setFont(new Font("Segoe UI", Font.BOLD, 15));
+        lblRoleLabel.setForeground(TEXT_DARK);
+        lblRoleLabel.setBounds(0, 80, 100, 25);
+        pnlProfileCard.add(lblRoleLabel);
+
+        JLabel lblRoleVal = new JLabel("System Administrator");
+        lblRoleVal.setFont(new Font("Segoe UI", Font.PLAIN, 15));
+        lblRoleVal.setForeground(TEXT_DARK);
+        lblRoleVal.setBounds(50, 80, 300, 25);
+        pnlProfileCard.add(lblRoleVal);
+
+        JLabel lblPermLabel = new JLabel("Permissions: ");
+        lblPermLabel.setFont(new Font("Segoe UI", Font.BOLD, 15));
+        lblPermLabel.setForeground(TEXT_DARK);
+        lblPermLabel.setBounds(0, 110, 100, 25);
+        pnlProfileCard.add(lblPermLabel);
+
+        JLabel lblPermVal = new JLabel("Full Access (View Passwords, Manage Accounts, Ban/Delete Users & Restaurants)");
+        lblPermVal.setFont(new Font("Segoe UI", Font.PLAIN, 15));
+        lblPermVal.setForeground(TEXT_DARK);
+        lblPermVal.setBounds(100, 110, 750, 25);
+        pnlProfileCard.add(lblPermVal);
+
         pnlProfileCard.setVisible(false);
         pnlMainBg.add(pnlProfileCard);
 
@@ -384,7 +410,6 @@ public class AdminDashboard extends JPanel implements MouseListener {
         btn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
     }
 
-    // --- CLICKABLE TEXT & HOVER ANIMATION LOGIC ---
     @Override
     public void mouseClicked(MouseEvent e) {
         Object source = e.getSource();

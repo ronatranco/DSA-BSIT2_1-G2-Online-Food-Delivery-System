@@ -37,11 +37,13 @@ public class RestaurantLoginPanel extends JPanel {
         logoRestaurant.setFont(new Font("Segoe UI Emoji", Font.PLAIN, 140));
         logoRestaurant.setBounds(20, 140, 440, 180);
         leftBannerRestaurant.add(logoRestaurant);
+        
         JLabel titleRestaurantBanner = new JLabel("GrabPanda", SwingConstants.CENTER);
         titleRestaurantBanner.setFont(new Font("Segoe UI", Font.BOLD, 38));
         titleRestaurantBanner.setForeground(YELLOW_ACCENT);
         titleRestaurantBanner.setBounds(20, 330, 440, 45);
         leftBannerRestaurant.add(titleRestaurantBanner);
+        
         JLabel subRestaurantBanner = new JLabel("Fast & Fresh Food Delivery", SwingConstants.CENTER);
         subRestaurantBanner.setFont(new Font("Segoe UI", Font.BOLD, 16));
         subRestaurantBanner.setForeground(Color.WHITE);

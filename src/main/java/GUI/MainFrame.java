@@ -36,7 +36,6 @@ public class MainFrame extends JFrame implements ActionListener {
     private AdminLoginPanel panelAdminLogin;
     private AdminDashboard panelAdminGUI;
     
-    // DASHBOARD PANELS
     private CustomerDashboard panelCustomerDashboard;
     private RestaurantDashboard panelRestaurantDashboard;
     private RestaurantDashboardMilkTea panelMilkTeaDashboard;
@@ -60,7 +59,6 @@ public class MainFrame extends JFrame implements ActionListener {
         mainContainer = new JPanel(cardLayout);
         add(mainContainer, BorderLayout.CENTER);
 
-        // Instantiate existing login/auth panels
         panelStart = new StartPanel(this);
         panelAuth = new AuthPanel(this);
         panelRoleSelection = new RoleSelectionPanel(this);
@@ -70,13 +68,11 @@ public class MainFrame extends JFrame implements ActionListener {
         panelAdminLogin = new AdminLoginPanel(this);
         panelAdminGUI = new AdminDashboard(this);
 
-        // Instantiate new dashboard panels (passing 'this' MainFrame instance)
         panelRestaurantDashboard = new RestaurantDashboard(this);
         panelCustomerDashboard = new CustomerDashboard(this);
         panelMilkTeaDashboard = new RestaurantDashboardMilkTea(this);
         panelPinaasaDashboard = new RestaurantDashboardMangPinaasa(this);
         
-        // Register panels as cards in CardLayout
         mainContainer.add(panelStart, "START");
         mainContainer.add(panelAuth, "AUTH");
         mainContainer.add(panelRoleSelection, "ROLE_SELECTION");
@@ -86,7 +82,6 @@ public class MainFrame extends JFrame implements ActionListener {
         mainContainer.add(panelAdminLogin, "ADMIN_LOGIN");
         mainContainer.add(panelAdminGUI, "ADMIN_DASHBOARD");
 
-        // Add customer and restaurant dashboards
         mainContainer.add(panelCustomerDashboard, "CUSTOMER_DASHBOARD");
         mainContainer.add(panelRestaurantDashboard, "RESTAURANT_DASHBOARD");
         mainContainer.add(panelMilkTeaDashboard, "RESTAURANT_DASHBOARD_MILKTEA");
@@ -101,36 +96,29 @@ public class MainFrame extends JFrame implements ActionListener {
     }
     
     private void registerActionListeners() {
-        // Start Panel
         panelStart.btnStart.addActionListener(this);
         
-        // Auth Panel
         panelAuth.btnNavLogin.addActionListener(this);
         panelAuth.btnNavRegister.addActionListener(this);
 
-        // Role Selection Panel
         panelRoleSelection.btnRoleCustomer.addActionListener(this);
         panelRoleSelection.btnRoleRestaurant.addActionListener(this);
         panelRoleSelection.btnRoleAdmin.addActionListener(this);
         panelRoleSelection.btnRoleBack.addActionListener(this);
 
-        // Signup Panel
         panelSignup.btnRegister.addActionListener(this);
         panelSignup.btnAlreadyHaveAccount.addActionListener(this);
 
-        // Customer Login Panel
         panelCustomerLogin.btnCustomerLogin.addActionListener(this);
         panelCustomerLogin.btnForgotPassword.addActionListener(this);
         panelCustomerLogin.btnDontHaveAccount.addActionListener(this);
         panelCustomerLogin.btnCustomerLoginBack.addActionListener(this);
 
-        // Restaurant Login Panel
         panelRestaurantLogin.btnRestaurantLogin.addActionListener(this);
         panelRestaurantLogin.btnRestaurantForgotPassword.addActionListener(this);
         panelRestaurantLogin.btnRestaurantLoginBack.addActionListener(this);
         panelRestaurantLogin.btnDontHaveAccount.addActionListener(this);
 
-        // Admin Login Panel & GUI
         panelAdminLogin.btnAdminLogin.addActionListener(this);
         panelAdminLogin.btnAdminForgotPassword.addActionListener(this);
         panelAdminLogin.btnAdminLoginBack.addActionListener(this);
@@ -140,7 +128,6 @@ public class MainFrame extends JFrame implements ActionListener {
             panelAdminGUI.getBtnLogout().addActionListener(this);
         }
 
-        // Dashboard Logout Buttons (Safely registers listeners if not null)
         if (panelCustomerDashboard.getBtnLogout() != null) {
             panelCustomerDashboard.getBtnLogout().addActionListener(this);
         }
@@ -344,7 +331,6 @@ public class MainFrame extends JFrame implements ActionListener {
         }
     }
 
-    /** checks database. Shows an error dialog and returns false on failure. */
     private boolean authenticate(String login, String password, String role) {
         if (login.isEmpty() || password.isEmpty()) {
             JOptionPane.showMessageDialog(this, "Invalid Username or Password! \nIf you don't have an account, please create one.",

@@ -37,11 +37,13 @@ public class CustomerLoginPanel extends JPanel {
         logoCustomer.setFont(new Font("Segoe UI Emoji", Font.PLAIN, 140));
         logoCustomer.setBounds(20, 140, 440, 180);
         leftBannerCustomer.add(logoCustomer);
+        
         JLabel titleCustBanner = new JLabel("GrabPanda", SwingConstants.CENTER);
         titleCustBanner.setFont(new Font("Segoe UI", Font.BOLD, 38));
         titleCustBanner.setForeground(YELLOW_ACCENT);
         titleCustBanner.setBounds(20, 330, 440, 45);
         leftBannerCustomer.add(titleCustBanner);
+        
         JLabel subCustBanner = new JLabel("Fast & Fresh Food Delivery", SwingConstants.CENTER);
         subCustBanner.setFont(new Font("Segoe UI", Font.BOLD, 16));
         subCustBanner.setForeground(Color.WHITE);

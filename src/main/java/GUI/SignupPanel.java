@@ -35,11 +35,13 @@ public class SignupPanel extends JPanel {
         logoSignup.setFont(new Font("Segoe UI Emoji", Font.PLAIN, 140));
         logoSignup.setBounds(20, 140, 440, 180);
         leftBannerSignup.add(logoSignup);
+        
         JLabel titleSignupBanner = new JLabel("GrabPanda", SwingConstants.CENTER);
         titleSignupBanner.setFont(new Font("Segoe UI", Font.BOLD, 38));
         titleSignupBanner.setForeground(YELLOW_ACCENT);
         titleSignupBanner.setBounds(20, 330, 440, 45);
         leftBannerSignup.add(titleSignupBanner);
+        
         JLabel subSignupBanner = new JLabel("Fast & Fresh Food Delivery", SwingConstants.CENTER);
         subSignupBanner.setFont(new Font("Segoe UI", Font.BOLD, 16));
         subSignupBanner.setForeground(Color.WHITE);
@@ -57,7 +59,6 @@ public class SignupPanel extends JPanel {
         lblSignupTitle.setBounds(60, 20, 400, 40);
         rightPanelSignup.add(lblSignupTitle);
 
-        // 1. Full Name
         JLabel lblName = new JLabel("Full Name");
         lblName.setBounds(60, 68, 380, 18);
         txtName = new JTextField();
@@ -65,7 +66,6 @@ public class SignupPanel extends JPanel {
         rightPanelSignup.add(lblName);
         rightPanelSignup.add(txtName);
 
-        // 2. Username
         JLabel lblUsername = new JLabel("Username");
         lblUsername.setBounds(60, 122, 380, 18);
         txtUsername = new JTextField();
@@ -73,7 +73,6 @@ public class SignupPanel extends JPanel {
         rightPanelSignup.add(lblUsername);
         rightPanelSignup.add(txtUsername);
 
-        // 3. Email Address
         JLabel lblEmail = new JLabel("Email Address (@gmail.com)");
         lblEmail.setBounds(60, 176, 380, 18);
         txtEmail = new JTextField();
@@ -81,7 +80,6 @@ public class SignupPanel extends JPanel {
         rightPanelSignup.add(lblEmail);
         rightPanelSignup.add(txtEmail);
 
-        // 4. Phone Number
         JLabel lblPhone = new JLabel("Phone Number (11 digits, e.g., 09123456789)");
         lblPhone.setBounds(60, 230, 380, 18);
         txtPhone = new JTextField();
@@ -89,7 +87,6 @@ public class SignupPanel extends JPanel {
         rightPanelSignup.add(lblPhone);
         rightPanelSignup.add(txtPhone);
 
-        // 5. Address
         JLabel lblAddress = new JLabel("Address");
         lblAddress.setBounds(60, 284, 380, 18);
         txtAddress = new JTextField();
@@ -97,7 +94,6 @@ public class SignupPanel extends JPanel {
         rightPanelSignup.add(lblAddress);
         rightPanelSignup.add(txtAddress);
 
-        // 6. Role
         JLabel lblRole = new JLabel("Role");
         lblRole.setBounds(60, 338, 380, 18);
         cmbRole = new JComboBox<>(new String[]{"Customer", "Restaurant", "Admin"});
@@ -105,7 +101,6 @@ public class SignupPanel extends JPanel {
         rightPanelSignup.add(lblRole);
         rightPanelSignup.add(cmbRole);
 
-        // 7. Password
         JLabel lblPassword = new JLabel("Password");
         lblPassword.setBounds(60, 392, 380, 18);
         txtPassword = new JPasswordField();
@@ -114,7 +109,6 @@ public class SignupPanel extends JPanel {
         rightPanelSignup.add(lblPassword);
         rightPanelSignup.add(passPanelSignup);
 
-        // 8. Confirm Password zxz
         JLabel lblConfirmPassword = new JLabel("Confirm Password");
         lblConfirmPassword.setBounds(60, 446, 380, 18);
         txtConfirmPassword = new JPasswordField();
@@ -123,7 +117,6 @@ public class SignupPanel extends JPanel {
         rightPanelSignup.add(lblConfirmPassword);
         rightPanelSignup.add(confirmPassPanelSignup);
 
-        // 9. Save Password Checkbox
         chkSavePassword = new JCheckBox("Save Password");
         chkSavePassword.setFont(new Font("Segoe UI", Font.PLAIN, 12));
         chkSavePassword.setBackground(BG_LIGHT);
@@ -131,7 +124,6 @@ public class SignupPanel extends JPanel {
         chkSavePassword.setFocusPainted(false);
         rightPanelSignup.add(chkSavePassword);
 
-        // 10. Register Button
         btnRegister = new JButton("REGISTER");
         btnRegister.setFont(new Font("Segoe UI", Font.BOLD, 14));
         btnRegister.setBackground(PURPLE_DARK);
@@ -140,7 +132,6 @@ public class SignupPanel extends JPanel {
         btnRegister.setBounds(60, 534, 380, 42);
         rightPanelSignup.add(btnRegister);
 
-        // 11. Already have an account Button
         btnAlreadyHaveAccount = new JButton("Already have an account?");
         btnAlreadyHaveAccount.setFont(new Font("Segoe UI", Font.BOLD, 13));
         btnAlreadyHaveAccount.setForeground(PURPLE_DARK);
@@ -154,7 +145,6 @@ public class SignupPanel extends JPanel {
         add(rightPanelSignup);
     }
 
-    /** Clears every input field on the form (called by MainFrame after a successful signup). */
     public void clearFields() {
         txtName.setText("");
         txtUsername.setText("");
