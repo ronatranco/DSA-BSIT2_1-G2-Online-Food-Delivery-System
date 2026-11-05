@@ -33,6 +33,7 @@ public class RestaurantLoginPanel extends JPanel {
 
         GradientPanel leftBannerRestaurant = new GradientPanel();
         leftBannerRestaurant.setBounds(0, 0, 480, 720);
+        
         JLabel logoRestaurant = new JLabel("🐼", SwingConstants.CENTER);
         logoRestaurant.setFont(new Font("Segoe UI Emoji", Font.PLAIN, 140));
         logoRestaurant.setBounds(20, 140, 440, 180);
