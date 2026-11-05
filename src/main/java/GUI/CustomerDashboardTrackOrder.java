@@ -338,7 +338,7 @@ public class CustomerDashboardTrackOrder extends JPanel {
         };
         panel.setOpaque(false);
 
-        // Icon badge
+        // 11.1.2.2 Icon badge
         JLabel badge = new JLabel(icon, SwingConstants.CENTER) {
             @Override
             protected void paintComponent(Graphics g) {
