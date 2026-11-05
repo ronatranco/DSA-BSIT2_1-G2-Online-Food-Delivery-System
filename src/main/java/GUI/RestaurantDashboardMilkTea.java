@@ -251,6 +251,7 @@ public class RestaurantDashboardMilkTea extends JPanel {
       JPanel north = new JPanel(new BorderLayout());
       north.setOpaque(false);
       north.add(buildHeader(), BorderLayout.NORTH);
+      
       JPanel noticeWrap = new JPanel(new BorderLayout());
       noticeWrap.setOpaque(false);
       noticeWrap.setBorder(BorderFactory.createEmptyBorder(8, 24, 0, 24));
@@ -280,18 +281,21 @@ public class RestaurantDashboardMilkTea extends JPanel {
       title.setForeground(UIStyle.TEXT_DARK);
       welcome.setFont(UIStyle.font(Font.PLAIN, 15));
       welcome.setForeground(UIStyle.MUTED);
+      
       JPanel headerText = new JPanel();
       headerText.setBackground(UIStyle.WHITE);
       headerText.setLayout(new BoxLayout(headerText, BoxLayout.Y_AXIS));
       headerText.add(title);
       headerText.add(Box.createVerticalStrut(5));
       headerText.add(welcome);
+      
       JPanel statusRow = new JPanel(new FlowLayout(FlowLayout.RIGHT, 8, 0));
       statusRow.setOpaque(false);
       statusRow.add(statusChip);
       statusRow.add(statusButton("Open", Restaurant.StoreStatus.OPEN));
       statusRow.add(statusButton("Close", Restaurant.StoreStatus.CLOSED));
       statusRow.add(statusButton("Pause", Restaurant.StoreStatus.PAUSED));
+      
       JPanel statusWrap = new JPanel(new GridBagLayout());
       statusWrap.setOpaque(false);
       statusWrap.add(statusRow);
@@ -311,6 +315,7 @@ public class RestaurantDashboardMilkTea extends JPanel {
       JPanel panel = new JPanel(new GridLayout(2, 1, 14, 14));
       panel.setBackground(UIStyle.BG_LIGHT);
       panel.setBorder(BorderFactory.createEmptyBorder(12, 24, 14, 24));
+      
       JPanel stats = new JPanel(new GridLayout(1, 4, 15, 0));
       stats.setBackground(UIStyle.BG_LIGHT);
       stats.add(UIStyle.statCard("MENU ITEMS", String.valueOf(data.restaurant.menuItems.size()), data.availableDishCount() + " available", UIStyle.PURPLE_LIGHT));
@@ -324,6 +329,7 @@ public class RestaurantDashboardMilkTea extends JPanel {
       quickTitle.setFont(UIStyle.font(Font.BOLD, 18));
       quickTitle.setForeground(UIStyle.TEXT_DARK);
       quickTitle.setBorder(BorderFactory.createEmptyBorder(0, 0, 8, 0));
+      
       JPanel quickButtons = new JPanel(new GridLayout(2, 3, 12, 12));
       quickButtons.setOpaque(false);
       addQuick(quickButtons, "Manage Menu Items", () -> showPage("menu"));
@@ -497,6 +503,7 @@ public class RestaurantDashboardMilkTea extends JPanel {
          JPanel main = new JPanel(new BorderLayout(0, 10));
          main.setBackground(BG_LIGHT);
          main.setBorder(BorderFactory.createEmptyBorder(12, 22, 12, 22));
+         
          JPanel header = new JPanel(new BorderLayout());
          header.setBackground(WHITE);
          header.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createMatteBorder(0, 0, 3, 0, YELLOW_ACCENT), BorderFactory.createEmptyBorder(10, 24, 8, 24)));
@@ -504,6 +511,7 @@ public class RestaurantDashboardMilkTea extends JPanel {
          titleLabel.setFont(emojiFont(Font.BOLD, 25));
          titleLabel.setForeground(TEXT_DARK);
          header.add(titleLabel, BorderLayout.WEST);
+         
          if (action != null) {
             JPanel actionWrap = new JPanel(new GridBagLayout());
             actionWrap.setOpaque(false);
@@ -531,6 +539,7 @@ public class RestaurantDashboardMilkTea extends JPanel {
          card.add(title, BorderLayout.NORTH);
          card.add(body, BorderLayout.CENTER);
          card.add(buttons, BorderLayout.SOUTH);
+         
          JPanel wrap = new JPanel(new BorderLayout());
          wrap.setOpaque(false);
          wrap.add(card, BorderLayout.NORTH);
@@ -547,12 +556,15 @@ public class RestaurantDashboardMilkTea extends JPanel {
          RoundedPanel card = new RoundedPanel(18, WHITE, BORDER_GRAY, accent);
          card.setLayout(new BoxLayout(card, BoxLayout.Y_AXIS));
          card.setPadding(14, 22, 14, 12);
+         
          JLabel titleLabel = new JLabel(title);
          titleLabel.setFont(font(Font.BOLD, 13));
          titleLabel.setForeground(PURPLE_LIGHT);
+         
          JLabel valueLabel = new JLabel(value);
          valueLabel.setFont(font(Font.BOLD, 26));
          valueLabel.setForeground(TEXT_DARK);
+         
          JLabel descriptionLabel = new JLabel(description);
          descriptionLabel.setFont(font(Font.PLAIN, 12));
          descriptionLabel.setForeground(MUTED);
@@ -593,6 +605,7 @@ public class RestaurantDashboardMilkTea extends JPanel {
          table.setFillsViewportHeight(true);
          table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
          table.setDefaultRenderer(Object.class, new RowRenderer());
+         
          JTableHeader header = table.getTableHeader();
          header.setReorderingAllowed(false);
          header.setPreferredSize(new Dimension(0, 40));
@@ -921,11 +934,13 @@ public class RestaurantDashboardMilkTea extends JPanel {
          options.add(optionCard("\uD83D\uDFE2", Restaurant.StoreStatus.OPEN, "Customers can place new orders."));
          options.add(optionCard("\uD83D\uDD34", Restaurant.StoreStatus.CLOSED, "The store is closed and not taking any orders."));
          options.add(optionCard("\u23F8", Restaurant.StoreStatus.PAUSED, "Temporarily stop new orders (for example when the kitchen is too busy). Current orders continue."));
+         
          JPanel statusRow = new JPanel(new FlowLayout(FlowLayout.LEFT, 12, 0));
          statusRow.setOpaque(false);
          statusRow.setBorder(BorderFactory.createEmptyBorder(0, 0, 18, 0));
          statusRow.add(UIStyle.fieldLabel("Current status:"));
          statusRow.add(chip);
+         
          JPanel noteWrap = new JPanel(new BorderLayout());
          noteWrap.setOpaque(false);
          noteWrap.setBorder(BorderFactory.createEmptyBorder(16, 0, 0, 0));
@@ -935,6 +950,7 @@ public class RestaurantDashboardMilkTea extends JPanel {
          card.add(statusRow, BorderLayout.NORTH);
          card.add(options, BorderLayout.CENTER);
          card.add(noteWrap, BorderLayout.SOUTH);
+         
          JPanel body = new JPanel(new BorderLayout());
          body.setOpaque(false);
          body.add(card, BorderLayout.NORTH);
@@ -948,9 +964,11 @@ public class RestaurantDashboardMilkTea extends JPanel {
          UIStyle.RoundedPanel body = new UIStyle.RoundedPanel(18, UIStyle.BG_LIGHT, UIStyle.BORDER_GRAY, color);
          body.setLayout(new BorderLayout(0, 12));
          body.setPadding(18, 22, 18, 16);
+         
          JLabel heading = new JLabel(icon + "  " + status.getLabel());
          heading.setFont(UIStyle.emojiFont(Font.BOLD, 18));
          heading.setForeground(UIStyle.TEXT_DARK);
+         
          JTextArea text = UIStyle.wrapText(description, 13, UIStyle.MUTED, 180, 84);
          UIStyle.RoundedButton button = UIStyle.button("", color);
          button.addActionListener((e) -> data.setStoreStatus(status));
@@ -1153,11 +1171,14 @@ public class RestaurantDashboardMilkTea extends JPanel {
       IncomingOrdersPage() {
          JButton simulate = UIStyle.primaryButton("+ Simulate New Order");
          simulate.addActionListener((e) -> simulateOrder());
+         
          JButton accept = UIStyle.button("Accept Order", UIStyle.GREEN);
          accept.addActionListener((e) -> acceptSelected());
+         
          JButton reject = UIStyle.button("Reject Order", UIStyle.RED);
          reject.addActionListener((e) -> rejectSelected());
          storeNote.setFont(UIStyle.font(Font.BOLD, 13));
+         
          JPanel body = new JPanel(new BorderLayout(0, 12));
          body.setOpaque(false);
          body.add(storeNote, BorderLayout.NORTH);
@@ -1238,12 +1259,16 @@ public class RestaurantDashboardMilkTea extends JPanel {
 
          JButton preparing = UIStyle.button("Mark Preparing", UIStyle.ORANGE);
          preparing.addActionListener((e) -> changeStatus(Restaurant.Order.PREPARING));
+         
          JButton ready = UIStyle.button("Mark Out for Delivery", UIStyle.PURPLE_DARK);
          ready.addActionListener((e) -> changeStatus(Restaurant.Order.READY));
+         
          JButton completed = UIStyle.button("Mark Delivered", UIStyle.GREEN);
          completed.addActionListener((e) -> changeStatus(Restaurant.Order.COMPLETED));
+         
          JButton cancel = UIStyle.button("Cancel Order", UIStyle.RED);
          cancel.addActionListener((e) -> changeStatus(Restaurant.Order.CANCELLED));
+         
          JPanel body = new JPanel(new BorderLayout(0, 12));
          body.setOpaque(false);
          body.add(filterBar, BorderLayout.NORTH);
@@ -1322,6 +1347,7 @@ public class RestaurantDashboardMilkTea extends JPanel {
          form.add(new JLabel(""));
          form.add(UIStyle.buttonRow(save, undo));
          card.add(form, BorderLayout.CENTER);
+         
          JPanel body = new JPanel(new BorderLayout());
          body.setOpaque(false);
          body.add(card, BorderLayout.NORTH);
@@ -1391,16 +1417,22 @@ public class RestaurantDashboardMilkTea extends JPanel {
       FoodItemsPage() {
          JButton addBtn = UIStyle.primaryButton("+ Add Food Item");
          addBtn.addActionListener((e) -> openForm(null));
+         
          UIStyle.RoundedButton edit = UIStyle.compact(UIStyle.button("Edit Selected", UIStyle.PURPLE_DARK));
          edit.addActionListener((e) -> editSelected());
+         
          UIStyle.RoundedButton toggle = UIStyle.compact(UIStyle.button("Toggle Availability", UIStyle.ORANGE));
          toggle.addActionListener((e) -> toggleSelected());
+         
          UIStyle.RoundedButton changePicture = UIStyle.compact(UIStyle.button("Change Picture", UIStyle.PURPLE_LIGHT));
          changePicture.addActionListener((e) -> changePictureOfSelected());
+         
          UIStyle.RoundedButton removePicture = UIStyle.compact(UIStyle.button("Remove Picture", UIStyle.RED));
          removePicture.addActionListener((e) -> removePictureOfSelected());
+         
          UIStyle.RoundedButton delete = UIStyle.compact(UIStyle.button("Delete Item", UIStyle.RED));
          delete.addActionListener((e) -> deleteSelected());
+         
          JPanel actions = new JPanel(new GridLayout(2, 3, 10, 10));
          actions.setOpaque(false);
          actions.add(edit);
@@ -1413,6 +1445,7 @@ public class RestaurantDashboardMilkTea extends JPanel {
          left.setOpaque(false);
          left.add(UIStyle.tableCard(table), BorderLayout.CENTER);
          left.add(actions, BorderLayout.SOUTH);
+         
          JPanel listView = new JPanel(new BorderLayout(18, 0));
          listView.setOpaque(false);
          listView.add(left, BorderLayout.CENTER);
@@ -1454,16 +1487,19 @@ public class RestaurantDashboardMilkTea extends JPanel {
          detailMeta.setFont(UIStyle.font(Font.PLAIN, 14));
          detailMeta.setForeground(UIStyle.MUTED);
          detailStatus.setFont(UIStyle.font(Font.BOLD, 14));
+         
          JPanel labels = new JPanel(new GridLayout(3, 1, 0, 6));
          labels.setOpaque(false);
          labels.add(detailName);
          labels.add(detailMeta);
          labels.add(detailStatus);
+         
          JPanel text = new JPanel(new BorderLayout(0, 10));
          text.setOpaque(false);
          text.setBorder(BorderFactory.createEmptyBorder(14, 0, 0, 0));
          text.add(labels, BorderLayout.NORTH);
          text.add(detailDescription, BorderLayout.CENTER);
+         
          UIStyle.RoundedPanel card = UIStyle.card(UIStyle.YELLOW_ACCENT);
          card.setPadding(20, 26, 20, 18);
          card.setPreferredSize(new Dimension(300, 100));
@@ -1477,8 +1513,10 @@ public class RestaurantDashboardMilkTea extends JPanel {
          descriptionArea.setLineWrap(true);
          descriptionArea.setWrapStyleWord(true);
          descriptionArea.setBorder(BorderFactory.createEmptyBorder(6, 8, 6, 8));
+         
          JScrollPane descriptionScroll = new JScrollPane(descriptionArea);
          descriptionScroll.setBorder(BorderFactory.createLineBorder(UIStyle.BORDER_GRAY));
+         
          JPanel descriptionPanel = new JPanel(new BorderLayout(0, 6));
          descriptionPanel.setOpaque(false);
          descriptionPanel.add(UIStyle.fieldLabel("Description:"), BorderLayout.NORTH);
@@ -1504,6 +1542,7 @@ public class RestaurantDashboardMilkTea extends JPanel {
          pictureButtons.setOpaque(false);
          pictureButtons.add(chooseButton);
          pictureButtons.add(removeButton);
+         
          JPanel picturePanel = new JPanel(new BorderLayout(0, 10));
          picturePanel.setOpaque(false);
          picturePanel.add(preview, BorderLayout.NORTH);
@@ -1514,6 +1553,7 @@ public class RestaurantDashboardMilkTea extends JPanel {
          right.setOpaque(false);
          right.add(formPanel, BorderLayout.NORTH);
          right.add(descriptionPanel, BorderLayout.CENTER);
+         
          JPanel body = new JPanel(new BorderLayout(20, 0));
          body.setOpaque(false);
          body.add(picturePanel, BorderLayout.WEST);
@@ -1560,6 +1600,7 @@ public class RestaurantDashboardMilkTea extends JPanel {
          title.setFont(UIStyle.font(Font.BOLD, 18));
          title.setForeground(UIStyle.TEXT_DARK);
          title.setBorder(BorderFactory.createEmptyBorder(0, 0, 12, 0));
+         
          UIStyle.RoundedPanel card = UIStyle.card(UIStyle.PURPLE_LIGHT);
          card.setPadding(20, 26, 20, 20);
          card.add(title, BorderLayout.NORTH);

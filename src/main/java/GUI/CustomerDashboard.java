@@ -211,6 +211,7 @@ public class CustomerDashboard extends JPanel {
         lblLocationText.setForeground(PURPLE_DARK);
         lblLocationText.setBounds(6, 0, 120, 35); 
         pnlLocationBanner.add(lblLocationText);
+        
         // BUTTON FOR EXPANDER
         btnExpandLocation = new JButton(">");
         btnExpandLocation.setFont(new Font("Segoe UI", Font.BOLD, 15));
@@ -223,12 +224,14 @@ public class CustomerDashboard extends JPanel {
         btnExpandLocation.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         pnlLocationBanner.add(btnExpandLocation);
         pnlMainBg.add(pnlLocationBanner);
+        
         // EXPAND LOCATION PANEL 
         pnlExpandedLocation = new JPanel();
         pnlExpandedLocation.setLayout(null);
         pnlExpandedLocation.setBackground(COLOR_WHITE);
         pnlExpandedLocation.setBounds(675, 80, 300, 35); 
         pnlExpandedLocation.setVisible(false); 
+        
         // DROP DOWN LOCATION 
         JButton btnLocationDropDown = new JButton("▼");
         btnLocationDropDown.setFont(new Font("Segoe UI", Font.PLAIN, 12));

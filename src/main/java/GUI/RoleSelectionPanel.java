@@ -36,11 +36,13 @@ public class RoleSelectionPanel extends JPanel {
         logoRole.setFont(new Font("Segoe UI Emoji", Font.PLAIN, 140));
         logoRole.setBounds(20, 140, 440, 180);
         leftBannerRole.add(logoRole);
+        
         JLabel titleRoleBanner = new JLabel("GrabPanda", SwingConstants.CENTER);
         titleRoleBanner.setFont(new Font("Segoe UI", Font.BOLD, 38));
         titleRoleBanner.setForeground(YELLOW_ACCENT);
         titleRoleBanner.setBounds(20, 330, 440, 45);
         leftBannerRole.add(titleRoleBanner);
+        
         JLabel subRoleBanner = new JLabel("Fast & Fresh Food Delivery", SwingConstants.CENTER);
         subRoleBanner.setFont(new Font("Segoe UI", Font.BOLD, 16));
         subRoleBanner.setForeground(Color.WHITE);

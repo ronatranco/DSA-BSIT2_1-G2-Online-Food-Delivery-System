@@ -54,12 +54,14 @@ public class CustomerDashboardRestaurantMenus extends JPanel {
         searchBarContainer1.setBounds(477, 43, 405, 34); 
         searchBarContainer1.setBackground(COLOR_WHITE);
         searchBarContainer1.setBorder(new LineBorder(PURPLE_DARK, 1)); 
+        
         // SEARCH BAR ICON
         JLabel searchIcon1 = new JLabel(" 🔍");
         searchIcon1.setFont(new Font("Segoe UI Emoji", Font.PLAIN, 14));
         searchIcon1.setForeground(PURPLE_DARK);
         searchIcon1.setBounds(10, 0, 30, 38);
         searchBarContainer1.add(searchIcon1);
+        
         // SEARCH BAR FIELD
         JTextField searchBar1 = new JTextField("Search in menu");
         searchBar1.setBounds(47, 2, 351, 30);
@@ -69,6 +71,7 @@ public class CustomerDashboardRestaurantMenus extends JPanel {
         searchBar1.setBorder(null); 
         searchBarContainer1.add(searchBar1);
         add(searchBarContainer1);
+        
         // SEARCH BAR FOCUS & ACTION LISTENERS
         searchIcon1.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         searchIcon1.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -83,6 +86,7 @@ public class CustomerDashboardRestaurantMenus extends JPanel {
                     requestFocusInWindow();
             }
         });
+        
         searchBar1.addFocusListener(new java.awt.event.FocusListener() {
             @Override
             public void focusGained(java.awt.event.FocusEvent e) {
@@ -99,6 +103,7 @@ public class CustomerDashboardRestaurantMenus extends JPanel {
                 }
             }
         });
+        
         searchBar1.addActionListener(new java.awt.event.ActionListener() {
             @Override
             public void actionPerformed(java.awt.event.ActionEvent e) {
@@ -399,7 +404,7 @@ public class CustomerDashboardRestaurantMenus extends JPanel {
         btnAdd.setBounds(240, 110, 145, 20);
         btnAdd.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         
-        // == ADD TO CART LISTENER ==
+        // ADD TO CART LISTENER
         btnAdd.addMouseListener(new java.awt.event.MouseAdapter() {
             @Override
             public void mouseClicked(java.awt.event.MouseEvent e) {
@@ -420,6 +425,7 @@ public class CustomerDashboardRestaurantMenus extends JPanel {
                 }
             }
         }); 
+        
         foodCard.add(btnAdd);
         return foodCard;
             
