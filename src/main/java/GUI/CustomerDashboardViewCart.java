@@ -361,9 +361,6 @@ public class CustomerDashboardViewCart extends JPanel {
                     if (dashboardRoot instanceof CustomerDashboard) {
                         CustomerDashboard dashboard = (CustomerDashboard) dashboardRoot;
                         dashboard.getLblDateRn().setVisible(true);
-                        
-                        // The order now lives in OrderStore: it shows in Track Order as Pending
-                        // and only reaches Order History once the customer confirms Received.
 
                         for (Component comp : parent.getComponents()) {
                             if (comp instanceof CustomerDashboardRestaurant) {
@@ -393,8 +390,6 @@ public class CustomerDashboardViewCart extends JPanel {
         lblFooterQuote.setBounds(14, 662, 312, 20);
         add(lblFooterQuote); 
     }
-    
-    
 
     // 9. Cart & Restaurant Display Logic
     // 9.1 Update Subtotal Display
@@ -1133,7 +1128,7 @@ public class CustomerDashboardViewCart extends JPanel {
         dialog.setVisible(true);
     }    
         
-    // 14. Custom Confirm Dialog (Centered Message)
+    // 14. Custom Confirm Dialog 
     private boolean showCustomConfirmDialog(String title, String message) {
         final boolean[] confirmed = {false};
 
