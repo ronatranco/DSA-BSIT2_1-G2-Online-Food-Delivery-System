@@ -91,7 +91,7 @@ public class Admin implements ActionListener {
             toggleActionButtons(true);
             loadRestaurantsFromDatabase();
         } 
-        else if (source == adminDashboard.getBtnNavOrders()) { // Profile view
+        else if (source == adminDashboard.getBtnNavOrders()) { 
             currentView = "PROFILE";
             
             if (adminDashboard.getLblName() != null) {
