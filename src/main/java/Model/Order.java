@@ -62,8 +62,6 @@ public class Order {
 
     public String getDeliveryAddress() { return deliveryAddress; }
     public void setDeliveryAddress(String deliveryAddress) { this.deliveryAddress = deliveryAddress; }
-    
-    
 
     // 2. Business Logic & Calculations
     public void addOrderItem(OrderItem item) {
@@ -134,7 +132,6 @@ public class Order {
             this.unitPrice = Math.max(0.0, unitPrice);
             this.specialInstructions = specialInstructions != null ? specialInstructions : "";
         }
-        
 
         //5. OrderItem Getters & Setters
         public String getItemName() { return itemName; }
