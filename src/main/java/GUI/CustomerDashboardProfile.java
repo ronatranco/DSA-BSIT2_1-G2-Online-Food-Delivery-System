@@ -187,45 +187,25 @@ public class CustomerDashboardProfile extends JPanel {
         pnlPwLine.setBounds(85, 800, 615, 2); 
         pnlMainProfile.add(pnlPwLine);
         
-        // PAYMEBT METHOD
-        JLabel lblPay = new JLabel("Payment Method");
-        lblPay.setFont(HEADER_FONT);
-        lblPay.setForeground(PURPLE_DARK);
-        lblPay.setBounds(85, 820, 250, 35); 
-        pnlMainProfile.add(lblPay);
-        
-        // PAYMENT SUBTITLE
-        JLabel lblPayST = new JLabel("You have no saved payment options yet.");
-        lblPayST.setFont(REGULAR_FONT);
-        lblPayST.setForeground(PURPLE_DARK);
-        lblPayST.setBounds(85, 860, 280, 35); 
-        pnlMainProfile.add(lblPayST);
-        
-        // SEPARATOR LINE
-        JPanel pnlPayLine = new JPanel();
-        pnlPayLine.setBackground(PURPLE_DARK);
-        pnlPayLine.setBounds(85, 910, 615, 2); 
-        pnlMainProfile.add(pnlPayLine);
-        
         // == ACC ==
         JLabel lblAcc = new JLabel("Account Management");
         lblAcc.setFont(HEADER_FONT);
         lblAcc.setForeground(PURPLE_DARK);
-        lblAcc.setBounds(85, 930, 280, 35); 
+        lblAcc.setBounds(85, 820, 280, 35); 
         pnlMainProfile.add(lblAcc);
         
         // == ACC SUBTITLE ==
         JLabel lblAccST = new JLabel("You can delete your account and personal data associated with it");
         lblAccST.setFont(REGULAR_FONT);
         lblAccST.setForeground(PURPLE_DARK);
-        lblAccST.setBounds(85, 970, 420, 35); 
+        lblAccST.setBounds(85, 860, 420, 35); 
         pnlMainProfile.add(lblAccST);
         
         // BTN DELETE ACC
         btnDelAcc = styleBtnSave("Delete my account");
         btnDelAcc.setForeground(COLOR_WHITE);
         btnDelAcc.setBackground(PURPLE_DARK);
-        btnDelAcc.setBounds(85, 1020, 180, 35);
+        btnDelAcc.setBounds(85, 905, 180, 35);
         pnlMainProfile.add(btnDelAcc);
         
         // SCROLL PANE
