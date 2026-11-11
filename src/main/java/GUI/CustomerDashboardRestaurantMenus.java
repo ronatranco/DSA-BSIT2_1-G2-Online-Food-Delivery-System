@@ -173,6 +173,12 @@ public class CustomerDashboardRestaurantMenus extends JPanel {
             lblResto1.setForeground(PURPLE_DARK);
             lblResto1.setBounds(40, 37, 260, 55);
             add(lblResto1);
+            // LOCATION
+            JLabel lblRestoLoc11 = new JLabel("LOCATION B");
+            lblRestoLoc11.setFont(new Font("Segoe UI", Font.PLAIN, 15));
+            lblRestoLoc11.setForeground(new Color(199, 195, 217));
+            lblRestoLoc11.setBounds(798, 82, 260, 55);
+            add(lblRestoLoc11);
             // LABEL 2
             JLabel lblPopular1 = new JLabel("Popular");
             lblPopular1.setFont(new Font("Segoe UI", Font.BOLD, 29));
@@ -221,6 +227,12 @@ public class CustomerDashboardRestaurantMenus extends JPanel {
             lblResto2.setForeground(PURPLE_DARK);
             lblResto2.setBounds(40, 35, 350, 55);
             add(lblResto2);
+            // LOCATION
+            JLabel lblRestoLoc22 = new JLabel("LOCATION C");
+            lblRestoLoc22.setFont(new Font("Segoe UI", Font.PLAIN, 15));
+            lblRestoLoc22.setForeground(new Color(199, 195, 217));
+            lblRestoLoc22.setBounds(798, 82, 260, 55);
+            add(lblRestoLoc22);
             // LABEL 2
             JLabel lblPopular2 = new JLabel("Popular");
             lblPopular2.setFont(new Font("Segoe UI", Font.BOLD, 29));
@@ -271,6 +283,12 @@ public class CustomerDashboardRestaurantMenus extends JPanel {
             lblResto3.setForeground(PURPLE_DARK);
             lblResto3.setBounds(40, 35, 350, 55);
             add(lblResto3); 
+            // LOCATION
+            JLabel lblRestoLoc33 = new JLabel("LOCATION A");
+            lblRestoLoc33.setFont(new Font("Segoe UI", Font.PLAIN, 15));
+            lblRestoLoc33.setForeground(new Color(199, 195, 217));
+            lblRestoLoc33.setBounds(798, 82, 260, 55);
+            add(lblRestoLoc33);
             // LABEL 2
             JLabel lblPopular3 = new JLabel("Popular");
             lblPopular3.setFont(new Font("Segoe UI", Font.BOLD, 29));

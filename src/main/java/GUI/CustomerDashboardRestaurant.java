@@ -22,9 +22,9 @@ public class CustomerDashboardRestaurant extends JPanel {
     
     public JPanel topBannerQuote, pnlRestoCard1, pnlRestoCard2, pnlRestoCard3, pnlRestoCard4, 
                   pnlRestoCard5, pnlRestoCard6, pnlRestoCard7, pnlRestoCard8;
-    public JLabel lblRestaurant, lblRestoName1, lblRestoName2, lblRestoName3, lblRestoName4, lblRestoName5, lblRestoName6, 
-                  lblRestoName7, lblRestoName8, lblRestoImage1, lblRestoImage2, lblRestoImage3, lblRestoImage4, lblRestoImage5,
-                  lblRestoImage6, lblRestoImage7, lblRestoImage8;
+    public JLabel lblRestaurant, lblRestoName1, lblRestoName11, lblRestoName2, lblRestoName22, lblRestoName3, lblRestoName33, lblRestoName4, lblRestoName44, 
+                  lblRestoName5, lblRestoName55, lblRestoName6, lblRestoName66, lblRestoName7, lblRestoName77, lblRestoName8, lblRestoName88, lblRestoImage1, 
+                  lblRestoImage2, lblRestoImage3, lblRestoImage4, lblRestoImage5, lblRestoImage6, lblRestoImage7, lblRestoImage8;
     public JScrollPane scrollPane;
     public JPanel scrollContentPanel, restoLine;
 
@@ -133,6 +133,12 @@ public class CustomerDashboardRestaurant extends JPanel {
         addHoverEffect(lblRestoName1);
         pnlRestoCard1.add(lblRestoName1);
         
+        lblRestoName11 = new JLabel("Location B", SwingConstants.CENTER);
+        lblRestoName11.setFont(new Font("Segoe UI", Font.PLAIN, 12));
+        lblRestoName11.setForeground(new Color(199, 195, 217));
+        lblRestoName11.setBounds(0, 99, 200, 30); 
+        pnlRestoCard1.add(lblRestoName11);
+        
         // RESTAURANT 2 (BRAIN CELLS MILK TEA)
         pnlRestoCard2 = new JPanel();
         pnlRestoCard2.setLayout(null);
@@ -156,6 +162,13 @@ public class CustomerDashboardRestaurant extends JPanel {
         lblRestoName2.setBounds(0, 79, 200, 30); 
         addHoverEffect(lblRestoName2);
         pnlRestoCard2.add(lblRestoName2);
+        
+        lblRestoName22 = new JLabel("Location C", SwingConstants.CENTER);
+        lblRestoName22.setFont(new Font("Segoe UI", Font.PLAIN, 12)); 
+        lblRestoName22.setForeground(new Color(199, 195, 217));
+        lblRestoName22.setBounds(0, 99, 200, 30); 
+        addHoverEffect(lblRestoName2);
+        pnlRestoCard2.add(lblRestoName22);
         
         // RESTAURANT 3 (MANG PINAASA)
         pnlRestoCard3 = new JPanel();
@@ -181,6 +194,11 @@ public class CustomerDashboardRestaurant extends JPanel {
         addHoverEffect(lblRestoName3);
         pnlRestoCard3.add(lblRestoName3);
         
+        lblRestoName33 = new JLabel("Location A", SwingConstants.CENTER);
+        lblRestoName33.setFont(new Font("Segoe UI", Font.PLAIN, 12)); 
+        lblRestoName33.setForeground(new Color(199, 195, 217));
+        lblRestoName33.setBounds(0, 99, 200, 30); 
+        pnlRestoCard3.add(lblRestoName33);
         
         // RESTAURANT 4 (KAMOTE KORNER)
         pnlRestoCard4 = new JPanel();
@@ -203,6 +221,12 @@ public class CustomerDashboardRestaurant extends JPanel {
         lblRestoName4.setBounds(0, 78, 200, 30); 
         addHoverEffect(lblRestoName4);
         pnlRestoCard4.add(lblRestoName4);
+        
+        lblRestoName44 = new JLabel("Location A", SwingConstants.CENTER);
+        lblRestoName44.setFont(new Font("Segoe UI", Font.PLAIN, 12)); 
+        lblRestoName44.setForeground(new Color(199, 195, 217));
+        lblRestoName44.setBounds(0, 99, 200, 30); 
+        pnlRestoCard4.add(lblRestoName44);
         
         // ROW 2 RESTAURANT
         // RESTAURANT 5 (PETSA HUT)
@@ -229,6 +253,12 @@ public class CustomerDashboardRestaurant extends JPanel {
         addHoverEffect(lblRestoName5);
         pnlRestoCard5.add(lblRestoName5);
         
+        lblRestoName55 = new JLabel("Location A", SwingConstants.CENTER);
+        lblRestoName55.setFont(new Font("Segoe UI", Font.PLAIN, 12)); 
+        lblRestoName55.setForeground(new Color(199, 195, 217));
+        lblRestoName55.setBounds(0, 99, 200, 30); 
+        pnlRestoCard5.add(lblRestoName55);
+        
         // RESTAURANT 6 (BIBANG'S)
         pnlRestoCard6 = new JPanel();
         pnlRestoCard6.setLayout(null);
@@ -252,6 +282,12 @@ public class CustomerDashboardRestaurant extends JPanel {
         lblRestoName6.setBounds(0, 78, 200, 30); 
         addHoverEffect(lblRestoName6);
         pnlRestoCard6.add(lblRestoName6);
+        
+        lblRestoName66 = new JLabel("Location B", SwingConstants.CENTER);
+        lblRestoName66.setFont(new Font("Segoe UI", Font.PLAIN, 12)); 
+        lblRestoName66.setForeground(new Color(199, 195, 217));
+        lblRestoName66.setBounds(0, 99, 200, 30); 
+        pnlRestoCard6.add(lblRestoName66);
         
         // RESTAURANT 7 (SINABON)
         pnlRestoCard7 = new JPanel();
@@ -277,6 +313,12 @@ public class CustomerDashboardRestaurant extends JPanel {
         addHoverEffect(lblRestoName7);
         pnlRestoCard7.add(lblRestoName7);
         
+        lblRestoName77 = new JLabel("Location B", SwingConstants.CENTER);
+        lblRestoName77.setFont(new Font("Segoe UI", Font.PLAIN, 12)); 
+        lblRestoName77.setForeground(new Color(199, 195, 217));
+        lblRestoName77.setBounds(0, 99, 200, 30); 
+        pnlRestoCard7.add(lblRestoName77);
+        
         // RESTAURANT 8 (KUYA'S FRIED CHICKEN)
         pnlRestoCard8 = new JPanel();
         pnlRestoCard8.setLayout(null);
@@ -300,6 +342,12 @@ public class CustomerDashboardRestaurant extends JPanel {
         lblRestoName8.setBounds(0, 78, 200, 30); 
         addHoverEffect(lblRestoName8);
         pnlRestoCard8.add(lblRestoName8);
+        
+        lblRestoName88 = new JLabel("Location C", SwingConstants.CENTER);
+        lblRestoName88.setFont(new Font("Segoe UI", Font.PLAIN, 12)); 
+        lblRestoName88.setForeground(new Color(199, 195, 217));
+        lblRestoName88.setBounds(0, 99, 200, 30); 
+        pnlRestoCard8.add(lblRestoName88);
     }
 
     private void addHoverEffect(JLabel label) {

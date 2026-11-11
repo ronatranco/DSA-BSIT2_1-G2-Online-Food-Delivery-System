@@ -32,6 +32,7 @@ public class CustomerDashboard extends JPanel {
     private JTextField txtSearchBar;
     private JLabel lblPlaceholder, lblLocationText, lblLogoPanda, lblName, lblHome, lblTrack, lblCart, lblHistory, lblProfile, lblExit, lblSearchIcon, lblDateRn;
     private Timer slideTimer;
+    private Timer slideInTimer;
     private int bannerTargetX = 530; 
     private int bannerCurrentX = 110;
  
@@ -148,7 +149,7 @@ public class CustomerDashboard extends JPanel {
         leftBannerNav.setBackground(PURPLE_DARK);
         leftBannerNav.setBounds(0, 0, 80, 720);
         
-        lblName = new JLabel("Hello, User!");
+        lblName = new JLabel("Hello, ");
         lblName.setFont( new Font("Segoe UI", Font.BOLD, 18));
         lblName.setForeground(PURPLE_DARK);
         lblName. setBounds(110, 34, 420, 35);
@@ -176,8 +177,9 @@ public class CustomerDashboard extends JPanel {
                     txtSearchBar.setText("What are you craving today?");
                     txtSearchBar.setForeground(COLOR_MUTED);
                 }
-                controller.searchRestaurants(txtSearchBar.getText());
-                pnlMainBg.requestFocusInWindow();
+                    lblPlaceholder.setText("");
+                    controller.searchRestaurants(txtSearchBar.getText());
+                    pnlMainBg.requestFocusInWindow();
             }
         });
 
@@ -232,6 +234,13 @@ public class CustomerDashboard extends JPanel {
         pnlExpandedLocation.setBounds(675, 80, 300, 35); 
         pnlExpandedLocation.setVisible(false); 
         
+        // SELECTED LOCATION
+        lblPlaceholder = new JLabel();
+        lblPlaceholder.setFont(new Font("Segoe UI", Font.BOLD, 14));
+        lblPlaceholder.setForeground(PURPLE_DARK);
+        lblPlaceholder.setBounds(160, 0, 210, 35); 
+        pnlExpandedLocation.add(lblPlaceholder);
+        
         // DROP DOWN LOCATION 
         JButton btnLocationDropDown = new JButton("▼");
         btnLocationDropDown.setFont(new Font("Segoe UI", Font.PLAIN, 12));
@@ -253,7 +262,12 @@ public class CustomerDashboard extends JPanel {
                 java.awt.event.ActionListener menuListener = new java.awt.event.ActionListener() {
                     @Override
                     public void actionPerformed(java.awt.event.ActionEvent ev) {
-                        lblPlaceholder.setText(ev.getActionCommand());
+                        String selectedLocation = ev.getActionCommand();
+                        lblPlaceholder.setText(selectedLocation);
+                        
+                        if (controller != null) {
+                            controller.filterRestaurantsByLocation(selectedLocation);
+                        }
                     }
                 };
                 item1.addActionListener(menuListener);
@@ -289,7 +303,7 @@ public class CustomerDashboard extends JPanel {
                     ((Timer)e.getSource()).stop();
         }
     }
-});     Timer slideInTimer = new Timer(10, new java.awt.event.ActionListener() {
+});     slideInTimer = new Timer(10, new java.awt.event.ActionListener() {
         @Override
             public void actionPerformed(java.awt.event.ActionEvent e) {
                 int currentW = pnlLocationBanner.getWidth();
@@ -534,7 +548,9 @@ public class CustomerDashboard extends JPanel {
                 if (text.isEmpty() || text.equals("What are you craving today?")) {
                     txtSearchBar.setText("What are you craving today?");
                     txtSearchBar.setForeground(COLOR_MUTED);
-                }   controller.searchRestaurants(txtSearchBar.getText());
+                }   
+                    lblPlaceholder.setText("");
+                    controller.searchRestaurants(txtSearchBar.getText());
                     pnlMainBg.requestFocusInWindow();
             }
         });
@@ -558,6 +574,8 @@ public class CustomerDashboard extends JPanel {
         this.addComponentListener(new java.awt.event.ComponentAdapter() {
             @Override
             public void componentShown(java.awt.event.ComponentEvent e) {
+                loadUserDataFromDatabase();
+                
                 if (isFirstShow) {
                     String currentProfileName = pnlRightProfile.getName();
                     String currentProfileAddress = pnlRightProfile.getAddress();
@@ -629,6 +647,14 @@ public class CustomerDashboard extends JPanel {
             return pnlMenuBrainCells;
     }   public CustomerDashboardRestaurantMenus getPnlMenuMangPinaasa() { 
             return pnlMenuMangPinaasa;
+    }   public Timer getSlideInTimer() {
+            return slideInTimer;
+    }   public JButton getBtnExpandLocation() {
+            return btnExpandLocation;
+    }   public JLabel getLblPlaceholder() {
+            return lblPlaceholder;
+    }   public JPanel getPnlExpandedLocation() {
+            return pnlExpandedLocation;
     }   public JPanel getPnlMainBg() {
             return pnlMainBg;
     }   public JLabel getLblName() {
@@ -674,7 +700,23 @@ public class CustomerDashboard extends JPanel {
                 pnlMainBg.revalidate();
                 pnlMainBg.repaint();
         }
-   
+        public void loadUserDataFromDatabase() {
+            if (pnlRightProfile != null) {
+                pnlRightProfile.loadFromDatabase();
+                String firstName = pnlRightProfile.getName(); 
+                String fullAddress = pnlRightProfile.getAddress();
+                String mobileNumber = pnlRightProfile.getMobileNumber();
+                this.savedFirstName = firstName;
+                this.savedFullAddress = fullAddress;
+                this.savedMobileNumber = mobileNumber;
+                
+            if (firstName == null || firstName.trim().isEmpty()) {
+                this.lblName.setText("Hello, User!");
+        }   else {
+                this.lblName.setText("Hello, " + firstName + "!");
+        }
+        }
     }
+}
 
 
