@@ -314,7 +314,7 @@ public class CustomerDashboardViewCart extends JPanel {
             }
         }
 
-        Order newOrder = generateOrderFromSelection("CUST-001", liveName, livePhone, liveAddress);
+        Order newOrder = generateOrderFromSelection(Order.OrderStore.getSessionCustomerId(), liveName, livePhone, liveAddress);
 
         if (newOrder != null) {
             Container parent = this.getParent();
@@ -483,7 +483,7 @@ public class CustomerDashboardViewCart extends JPanel {
                 }
 
                 if (!itemFound) {
-                    JPanel newItemRow = createItemRow(existingRestaurantCard, newItemName, Math.min(newQty, MAX_ITEM_QTY), newUnitPrice, "");
+                    JPanel newItemRow = createItemRow(existingRestaurantCard, newItemName, Math.min(newQty, MAX_ITEM_QTY), newUnitPrice, (item.length > 3 ? item[3] : ""));
                     existingRestaurantCard.add(Box.createRigidArea(new Dimension(0, 6)));
                     existingRestaurantCard.add(newItemRow);
                     
@@ -601,7 +601,7 @@ public class CustomerDashboardViewCart extends JPanel {
             int qty = Integer.parseInt(item[1]);
             double unitPrice = Double.parseDouble(item[2]);
 
-            JPanel itemRow = createItemRow(RestaurantCard, itemName, Math.min(qty, MAX_ITEM_QTY), unitPrice, "");
+            JPanel itemRow = createItemRow(RestaurantCard, itemName, Math.min(qty, MAX_ITEM_QTY), unitPrice, (item.length > 3 ? item[3] : ""));
             RestaurantCard.add(itemRow);
 
             if (i < items.length - 1) {
@@ -654,7 +654,7 @@ public class CustomerDashboardViewCart extends JPanel {
     }
     
 
-    // 10. Quantity Controls (Scaled to width 330)
+    // 10. Quantity Controls 
     // 10.1 Max 
     private static final int MAX_ITEM_QTY = 25;            
     private static final int MAX_INSTRUCTION_CHARS = 100;  
@@ -1461,6 +1461,10 @@ public class CustomerDashboardViewCart extends JPanel {
     public void addCartActions(ActionListener listener) {
         btnExitCart.addActionListener(listener);
         btnCheckout.addActionListener(listener);
+    }
+
+    public JPanel getCartContainer() {
+        return ContainerPanel;
     }
 
     public JButton getCloseButton() {
