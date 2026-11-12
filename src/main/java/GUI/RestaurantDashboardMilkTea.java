@@ -6,7 +6,8 @@
 package GUI;
 /**
  *
- * @author krist
+ * @author Encrid9 
+ * <darchristian4@gmail.com>
  */
 
 import java.awt.*;
@@ -371,12 +372,6 @@ public class RestaurantDashboardMilkTea extends JPanel {
       private final List<Restaurant.Order> shown = new ArrayList<>();
 
       IncomingOrdersPage() {
-         JButton simulate = UIStyle.primaryButton("+ Simulate New Order");
-         simulate.addActionListener((e) -> {
-            if (data.simulateIncomingOrder() == null) {
-               notice.warn("There are no available menu items to order.");
-            }
-         });
          JButton accept = UIStyle.button("Accept Order", UIStyle.GREEN);
          accept.addActionListener((e) -> acceptSelected());
          JButton reject = UIStyle.button("Reject Order", UIStyle.RED);
@@ -385,7 +380,7 @@ public class RestaurantDashboardMilkTea extends JPanel {
          body.setOpaque(false);
          body.add(UIStyle.tableCard(table), BorderLayout.CENTER);
          body.add(UIStyle.buttonRow(accept, reject), BorderLayout.SOUTH);
-         add(UIStyle.page("\uD83D\uDCE5", "Incoming Orders", simulate, notice, body), BorderLayout.CENTER);
+         add(UIStyle.page("\uD83D\uDCE5", "Incoming Orders", null, notice, body), BorderLayout.CENTER);
          data.addListener(this::refresh);
          refresh();
       }
