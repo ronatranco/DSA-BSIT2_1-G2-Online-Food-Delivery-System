@@ -11,7 +11,12 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import javax.swing.JCheckBox;
 import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  *
@@ -20,6 +25,8 @@ import javax.swing.JLabel;
 public class Customer implements ActionListener, MouseListener {
 
     private CustomerDashboard view;
+  
+    private final String cartOwnerId = Order.OrderStore.getSessionCustomerId();
 
     private boolean isCartVisible = false;
     private boolean isProfileVisible = false;
@@ -155,6 +162,7 @@ public class Customer implements ActionListener, MouseListener {
             showAllRestaurants(view.getPnlRestoCard(), true);
         } else if (e.getSource() == view.getBtnNavExit()) {
             System.out.println("Logging out...");
+            saveCart();
             view.getMainFrame().showCard("ROLE_SELECTION");
         }
     }
@@ -238,6 +246,7 @@ public class Customer implements ActionListener, MouseListener {
             }
         } else if (e.getSource() == view.getLblExit()) {
             System.out.println("Logging out...");
+            saveCart();
             view.getMainFrame().showCard("ROLE_SELECTION");
         }
         view.getPnlMainBg().repaint();
@@ -639,6 +648,96 @@ public class Customer implements ActionListener, MouseListener {
 
         restoCard.scrollContentPanel.revalidate();
         view.getPnlMainBg().repaint();
+    }
+
+    // CART SAVE / RESTORE 
+    public void saveCart() {
+        if (view == null || view.getPnlRightCart() == null) return;
+        List<String[]> rows = new ArrayList<>();
+        JPanel container = view.getPnlRightCart().getCartContainer();
+        if (container == null) return;
+
+        for (java.awt.Component comp : container.getComponents()) {
+            if (!(comp instanceof JPanel)) continue;
+            JPanel card = (JPanel) comp;
+
+            String restaurantName = null;
+            for (java.awt.Component headerComp : card.getComponents()) {
+                if (headerComp instanceof JPanel) {
+                    for (java.awt.Component sub : ((JPanel) headerComp).getComponents()) {
+                        if (sub instanceof JCheckBox) {
+                            restaurantName = ((JCheckBox) sub).getText();
+                        }
+                    }
+                }
+            }
+            if (restaurantName == null) continue;
+
+            for (java.awt.Component c : card.getComponents()) {
+                if (!(c instanceof JPanel)) continue;
+                JPanel row = (JPanel) c;
+                if (row.getComponentCount() == 0 || !(row.getComponent(0) instanceof JPanel)) continue;
+
+                JPanel topSubRow = (JPanel) row.getComponent(0);
+                String itemName = "";
+                int qty = 0;
+                double unitPrice = 0.0;
+
+                for (java.awt.Component sub : topSubRow.getComponents()) {
+                    if (sub instanceof JLabel) {
+                        itemName = ((JLabel) sub).getText();
+                    } else if (sub instanceof JPanel) {
+                        for (java.awt.Component rc : ((JPanel) sub).getComponents()) {
+                            if (rc instanceof JPanel) {
+                                for (java.awt.Component q : ((JPanel) rc).getComponents()) {
+                                    if (q instanceof JLabel) {
+                                        try { qty = Integer.parseInt(((JLabel) q).getText()); }
+                                        catch (NumberFormatException ignored) {}
+                                    }
+                                }
+                            } else if (rc instanceof JLabel) {
+                                String t = ((JLabel) rc).getText().replace("\u20B1", "").replace(",", "").trim();
+                                try {
+                                    double line = Double.parseDouble(t);
+                                    if (qty > 0) unitPrice = line / qty;
+                                } catch (NumberFormatException ignored) {}
+                            }
+                        }
+                    }
+                }
+
+                String instructions = "";
+                for (java.awt.Component sub : row.getComponents()) {
+                    if (sub instanceof JTextField) {
+                        String text = ((JTextField) sub).getText().trim();
+                        if (!text.isEmpty() && !text.equals("Add special instructions...")) {
+                            instructions = text;
+                        }
+                    }
+                }
+
+                if (!itemName.isEmpty() && qty > 0) {
+                    rows.add(new String[]{restaurantName, itemName, String.valueOf(qty),
+                            String.valueOf(unitPrice), instructions});
+                }
+            }
+        }
+        Order.OrderStore.saveCart(cartOwnerId, rows);
+    }
+
+    public void restoreCart() {
+        if (view == null || view.getPnlRightCart() == null) return;
+        JPanel container = view.getPnlRightCart().getCartContainer();
+        if (container == null || container.getComponentCount() > 0) return; 
+
+        List<String[]> rows = Order.OrderStore.loadCart(cartOwnerId);
+        if (rows.isEmpty()) return;
+
+        for (String[] r : rows) {
+            String[][] item = { { r[1], r[2], r[3], r[4] } };
+            view.getPnlRightCart().addRestaurantCards(r[0], item);
+        }
+        view.getPnlRightCart().updateCartTotals();
     }
 
     @Override
