@@ -86,7 +86,7 @@ public class CustomerDashboardCheckout extends JPanel {
     }
     
     public CustomerDashboardCheckout() {
-        this(new Order("ORD-DEFAULT", "CUST-001", "Default Restaurant", new ArrayList<>(), "PENDING"));
+        this(new Order("ORD-DEFAULT", Order.OrderStore.getSessionCustomerId(), "Default Restaurant", new ArrayList<>(), "PENDING"));
     }
 
     private static class CustomAddressData {
