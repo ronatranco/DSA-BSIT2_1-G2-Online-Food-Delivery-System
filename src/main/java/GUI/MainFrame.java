@@ -261,6 +261,7 @@ public class MainFrame extends JFrame implements ActionListener {
 
             if (authenticate(identifier, password, "customer")) {
                 AccountDAO.setLogin(identifier); 
+                Model.Order.OrderStore.startSession(identifier);   
                 panelCustomerLogin.txtLoginEmailOrUser.setText("");
                 panelCustomerLogin.txtLoginPassword.setText("");
                 if (panelCustomerLogin.chkLoginSavePassword != null) {
@@ -268,6 +269,7 @@ public class MainFrame extends JFrame implements ActionListener {
             }   mainContainer.remove(panelCustomerDashboard);
                 panelCustomerDashboard = new CustomerDashboard(this);
                 Model.Customer freshController = new Model.Customer(panelCustomerDashboard);
+                freshController.restoreCart();
                 mainContainer.add(panelCustomerDashboard, "CUSTOMER_DASHBOARD");
                 mainContainer.revalidate();
                 mainContainer.repaint();
@@ -327,6 +329,7 @@ public class MainFrame extends JFrame implements ActionListener {
                  (panelMilkTeaDashboard.getBtnLogout() != null && source == panelMilkTeaDashboard.getBtnLogout()) ||
                  (panelPinaasaDashboard.getBtnLogout() != null && source == panelPinaasaDashboard.getBtnLogout())) {
             AccountDAO.clear();
+            Model.Order.OrderStore.endSession();
             showCard("ROLE_SELECTION");
         }
     }
@@ -340,7 +343,7 @@ public class MainFrame extends JFrame implements ActionListener {
         try {
             if (userAuth.authenticate(login, password, role)) {
                 return true;
-            }// Added error message
+            }
             JOptionPane.showMessageDialog(this, "Invalid Username or Password! \nIf you don't have an account, please create one.",
                     "Login Failed", JOptionPane.ERROR_MESSAGE);
         } catch (SQLException ex) {
