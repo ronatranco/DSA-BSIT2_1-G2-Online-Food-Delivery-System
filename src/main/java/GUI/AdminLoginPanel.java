@@ -38,11 +38,13 @@ public class AdminLoginPanel extends JPanel {
         logoAdmin.setFont(new Font("Segoe UI Emoji", Font.PLAIN, 140));
         logoAdmin.setBounds(20, 140, 440, 180);
         leftBannerAdmin.add(logoAdmin);
+        
         JLabel titleAdminBanner = new JLabel("GrabPanda", SwingConstants.CENTER);
         titleAdminBanner.setFont(new Font("Segoe UI", Font.BOLD, 38));
         titleAdminBanner.setForeground(YELLOW_ACCENT);
         titleAdminBanner.setBounds(20, 330, 440, 45);
         leftBannerAdmin.add(titleAdminBanner);
+        
         JLabel subAdminBanner = new JLabel("Fast & Fresh Food Delivery", SwingConstants.CENTER);
         subAdminBanner.setFont(new Font("Segoe UI", Font.BOLD, 16));
         subAdminBanner.setForeground(Color.WHITE);

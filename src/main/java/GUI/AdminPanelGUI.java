@@ -32,7 +32,6 @@ public class AdminPanelGUI extends JPanel {
         setLayout(new BorderLayout());
         setBackground(BG_LIGHT);
 
-        // --- 1. HEADER PANEL ---
         JPanel headerPanel = new JPanel(new BorderLayout());
         headerPanel.setBackground(PURPLE_DARK);
         headerPanel.setPreferredSize(new Dimension(1024, 65));
@@ -57,7 +56,6 @@ public class AdminPanelGUI extends JPanel {
 
         add(headerPanel, BorderLayout.NORTH);
 
-        // --- 2. NAVIGATION TABS ---
         JTabbedPane adminTabs = new JTabbedPane(JTabbedPane.TOP);
         adminTabs.setFont(new Font("Segoe UI", Font.BOLD, 13));
         adminTabs.setBackground(BG_LIGHT);
@@ -71,13 +69,11 @@ public class AdminPanelGUI extends JPanel {
         add(adminTabs, BorderLayout.CENTER);
     }
 
-    // --- DASHBOARD TAB ---
     private JPanel createDashboardTab() {
         JPanel mainDashboard = new JPanel(new BorderLayout(20, 20));
         mainDashboard.setBackground(BG_LIGHT);
         mainDashboard.setBorder(new EmptyBorder(20, 25, 20, 25));
 
-        // Metric Grid
         JPanel metricsPanel = new JPanel(new GridLayout(2, 2, 20, 20));
         metricsPanel.setOpaque(false);
 
@@ -125,7 +121,6 @@ public class AdminPanelGUI extends JPanel {
         return card;
     }
 
-    // --- USER MANAGEMENT TAB ---
     private JPanel createUsersTab() {
         String[] columns = {"User ID", "Name", "Role", "Email", "Status"};
         Object[][] data = {
@@ -138,7 +133,6 @@ public class AdminPanelGUI extends JPanel {
         return createTableSection("Customer & Driver Accounts Management", columns, data, "Add New User", "Suspend Account");
     }
 
-    // --- RESTAURANTS TAB ---
     private JPanel createRestaurantsTab() {
         String[] columns = {"Resto ID", "Restaurant Name", "Owner Name", "Status"};
         Object[][] data = {
@@ -151,7 +145,6 @@ public class AdminPanelGUI extends JPanel {
         return createTableSection("Restaurant Applications & Approvals", columns, data, "Add Partner", "Approve Application");
     }
 
-    // --- ORDER OVERSIGHT TAB ---
     private JPanel createOrdersTab() {
         String[] columns = {"Order ID", "Customer", "Restaurant", "Total Amount", "Status"};
         Object[][] data = {
@@ -162,13 +155,11 @@ public class AdminPanelGUI extends JPanel {
         return createTableSection("System-Wide Active Orders Oversight", columns, data, "Filter by Date", "Cancel Order");
     }
 
-    // --- REUSABLE TABLE SECTION BUILDER ---
     private JPanel createTableSection(String sectionTitle, String[] columns, Object[][] data, String primaryBtnText, String secondaryBtnText) {
         JPanel container = new JPanel(new BorderLayout(15, 15));
         container.setBackground(BG_LIGHT);
         container.setBorder(new EmptyBorder(20, 25, 20, 25));
 
-        // Top Toolbar
         JPanel topBar = new JPanel(new BorderLayout(10, 10));
         topBar.setOpaque(false);
 
@@ -193,11 +184,10 @@ public class AdminPanelGUI extends JPanel {
         topBar.add(lblTitle, BorderLayout.WEST);
         topBar.add(actionPanel, BorderLayout.EAST);
 
-        // Table Customization
         DefaultTableModel model = new DefaultTableModel(data, columns) {
             @Override
             public boolean isCellEditable(int row, int column) {
-                return false; // Disable editing directly inside cell
+                return false; 
             }
         };
 
@@ -209,7 +199,6 @@ public class AdminPanelGUI extends JPanel {
         table.setShowGrid(true);
         table.setGridColor(new Color(240, 235, 245));
 
-        // Modern Header Styling
         JTableHeader header = table.getTableHeader();
         header.setFont(new Font("Segoe UI", Font.BOLD, 13));
         header.setBackground(PURPLE_DARK);
@@ -217,7 +206,6 @@ public class AdminPanelGUI extends JPanel {
         header.setPreferredSize(new Dimension(0, 38));
         header.setReorderingAllowed(false);
 
-        // Center Cell Renderer
         DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
         centerRenderer.setHorizontalAlignment(JLabel.CENTER);
         for (int i = 0; i < table.getColumnCount(); i++) {
@@ -234,7 +222,6 @@ public class AdminPanelGUI extends JPanel {
         return container;
     }
 
-    // --- SYSTEM SETTINGS TAB ---
     private JPanel createSettingsTab() {
         JPanel container = new JPanel(new BorderLayout());
         container.setBackground(BG_LIGHT);
@@ -251,7 +238,6 @@ public class AdminPanelGUI extends JPanel {
         gbc.insets = new Insets(10, 10, 10, 10);
         gbc.anchor = GridBagConstraints.WEST;
 
-        // Title
         gbc.gridx = 0; gbc.gridy = 0; gbc.gridwidth = 2;
         JLabel lblHeader = new JLabel("Platform & Financial Configuration");
         lblHeader.setFont(new Font("Segoe UI", Font.BOLD, 18));
@@ -260,28 +246,24 @@ public class AdminPanelGUI extends JPanel {
 
         gbc.gridwidth = 1;
 
-        // Commission Rate
         gbc.gridx = 0; gbc.gridy = 1;
         formCard.add(new JLabel("Platform Commission Rate (%):"), gbc);
         gbc.gridx = 1;
         JTextField txtCommission = new JTextField("12.5", 15);
         formCard.add(txtCommission, gbc);
 
-        // Delivery Base Fee
         gbc.gridx = 0; gbc.gridy = 2;
         formCard.add(new JLabel("Base Delivery Fee (₱):"), gbc);
         gbc.gridx = 1;
         JTextField txtBaseFee = new JTextField("49.00", 15);
         formCard.add(txtBaseFee, gbc);
 
-        // Voucher Max Discount
         gbc.gridx = 0; gbc.gridy = 3;
         formCard.add(new JLabel("Max Voucher Discount Limit (₱):"), gbc);
         gbc.gridx = 1;
         JTextField txtVoucherLimit = new JTextField("100.00", 15);
         formCard.add(txtVoucherLimit, gbc);
 
-        // Maintenance Mode Toggle
         gbc.gridx = 0; gbc.gridy = 4;
         formCard.add(new JLabel("System Maintenance Mode:"), gbc);
         gbc.gridx = 1;
@@ -289,7 +271,6 @@ public class AdminPanelGUI extends JPanel {
         chkMaintenance.setOpaque(false);
         formCard.add(chkMaintenance, gbc);
 
-        // Save Button
         gbc.gridx = 1; gbc.gridy = 5;
         JButton btnSave = createStyledButton("Save Configurations", PURPLE_DARK, Color.WHITE);
         formCard.add(btnSave, gbc);

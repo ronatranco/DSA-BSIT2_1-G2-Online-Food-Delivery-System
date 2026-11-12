@@ -47,33 +47,38 @@ public class CustomerDashboardProfile extends JPanel {
         pnlMainProfile.setBackground(COLOR_WHITE);
         pnlMainProfile.setPreferredSize(new Dimension(824, 1300)); 
         
-        // == MY PROFILE ==
+        // USER'S PROFILE
         JLabel lblProfile = new JLabel("Your Information");
         lblProfile.setFont(HEADER_FONT);
         lblProfile.setForeground(PURPLE_DARK);
         lblProfile.setBounds(85, 77, 250, 35); 
         pnlMainProfile.add(lblProfile);
+        
         // PROFILE ICON
         JLabel lblInfoIcon = new JLabel("\u24D8");
         lblInfoIcon.setFont(new Font("Dialog", Font.PLAIN, 30));
         lblInfoIcon.setForeground(PURPLE_DARK);
         lblInfoIcon.setBounds(310, 79, 30, 30);
         pnlMainProfile.add(lblInfoIcon);
+        
         // FIRST NAME FIELD
         pnlOutlineField pnlFirstName = new pnlOutlineField("First Name");
         pnlFirstName.setBounds(85, 130, 300, 55);
         txtName1 = pnlFirstName.getTextField();
         pnlMainProfile.add(pnlFirstName);
+        
         // LAST NAME FIELD
         pnlOutlineField pnlFullName = new pnlOutlineField("Last Name");
         pnlFullName.setBounds(402, 130, 300, 55);
         txtName2 = pnlFullName.getTextField();
         pnlMainProfile.add(pnlFullName);
+        
         // ADDRESS FIELD
         pnlOutlineField pnlAddress = new pnlOutlineField("Full Address");
         pnlAddress.setBounds(85, 200, 300, 55);
         txtFullAdd = pnlAddress.getTextField();
         pnlMainProfile.add(pnlAddress);
+        
         // MOBILE NUMBER FIELD
         pnlOutlineField pnlNumber = new pnlOutlineField("Mobile Number");
         pnlNumber.setBounds(402, 200, 300, 55); 
@@ -81,7 +86,8 @@ public class CustomerDashboardProfile extends JPanel {
         pnlMainProfile.add(pnlNumber);
         pnlNumber.setLayout(new BorderLayout());
         txtNumber.setBorder(BorderFactory.createEmptyBorder(2, 5, 2, 12)); 
-        // == COUNTRY CODE OPTION ==
+        
+        // COUNTRY CODE OPTION FOR PHONE NUMBER
         JPopupMenu codeMenu = new JPopupMenu();
         String[] countryCodes = {"+63", "+1", "+44", "+81"};
         btnCodeSelector = new JButton("+63 ▼");
@@ -120,91 +126,88 @@ public class CustomerDashboardProfile extends JPanel {
         btnSaveInfo = styleBtnSave("Save");
         btnSaveInfo.setBounds(85, 270, 100, 35);
         pnlMainProfile.add(btnSaveInfo);
+        
         // SEPARATOR LINE
         JPanel pnlPLine = new JPanel();
         pnlPLine.setBackground(PURPLE_DARK);
         pnlPLine.setBounds(85, 330, 615, 2); 
         pnlMainProfile.add(pnlPLine);
+        
         // == EMAIL SECTION ==
         JLabel lblEmail = new JLabel("Email");
         lblEmail.setFont(HEADER_FONT);
         lblEmail.setForeground(PURPLE_DARK);
         lblEmail.setBounds(85, 350, 250, 35); 
         pnlMainProfile.add(lblEmail);
+        
         // EMAIL FIELD
         pnlOutlineField pnlEmail = new pnlOutlineField("Email Address");
         pnlEmail.setBounds(85, 400, 615, 55);
         txtEmail = pnlEmail.getTextField();
         pnlMainProfile.add(pnlEmail);
+        
         // SAVE BTN EMAIL
         btnSaveEmail = styleBtnSave("Save");
         btnSaveEmail.setBounds(85, 470, 100, 35);
         pnlMainProfile.add(btnSaveEmail);
+        
         // SEPARATOR LINE
         JPanel pnlELine = new JPanel();
         pnlELine.setBackground(PURPLE_DARK);
         pnlELine.setBounds(85, 530, 615, 2); 
         pnlMainProfile.add(pnlELine);
+        
         // == PASSWORD ==
         JLabel lblPw = new JLabel("Password");
         lblPw.setFont(HEADER_FONT);
         lblPw.setForeground(PURPLE_DARK);
         lblPw.setBounds(85, 550, 250, 35); 
         pnlMainProfile.add(lblPw);
+        
         // CURRENT PW FIELD
         pnlOutlineField pnlCPw = new pnlOutlineField("Current Password");
         pnlCPw.setBounds(85, 600, 615, 55);
         txtCPw = pnlCPw.getTextField();
         pnlMainProfile.add(pnlCPw);
+        
         // NEW PW FIELD
         pnlOutlineField pnlNPw = new pnlOutlineField("New Password");
         pnlNPw.setBounds(85, 670, 615, 55);
         txtNPw = pnlNPw.getTextField();
         pnlMainProfile.add(pnlNPw);
+        
         // SAVE BTN PW
         btnSavePassword = styleBtnSave("Save");
         btnSavePassword.setBounds(85, 740, 100, 35);
         pnlMainProfile.add(btnSavePassword);
+        
         // SEPARATOR LINE
         JPanel pnlPwLine = new JPanel();
         pnlPwLine.setBackground(PURPLE_DARK);
         pnlPwLine.setBounds(85, 800, 615, 2); 
         pnlMainProfile.add(pnlPwLine);
-        // == PAYMENTS ==
-        JLabel lblPay = new JLabel("Payment Method");
-        lblPay.setFont(HEADER_FONT);
-        lblPay.setForeground(PURPLE_DARK);
-        lblPay.setBounds(85, 820, 250, 35); 
-        pnlMainProfile.add(lblPay);
-        // == PAYMENT SUBTITLE ==
-        JLabel lblPayST = new JLabel("You have no saved payment options yet.");
-        lblPayST.setFont(REGULAR_FONT);
-        lblPayST.setForeground(PURPLE_DARK);
-        lblPayST.setBounds(85, 860, 280, 35); 
-        pnlMainProfile.add(lblPayST);
-        // SEPARATOR LINE
-        JPanel pnlPayLine = new JPanel();
-        pnlPayLine.setBackground(PURPLE_DARK);
-        pnlPayLine.setBounds(85, 910, 615, 2); 
-        pnlMainProfile.add(pnlPayLine);
+        
         // == ACC ==
         JLabel lblAcc = new JLabel("Account Management");
         lblAcc.setFont(HEADER_FONT);
         lblAcc.setForeground(PURPLE_DARK);
-        lblAcc.setBounds(85, 930, 280, 35); 
+        lblAcc.setBounds(85, 820, 280, 35); 
         pnlMainProfile.add(lblAcc);
+        
         // == ACC SUBTITLE ==
         JLabel lblAccST = new JLabel("You can delete your account and personal data associated with it");
         lblAccST.setFont(REGULAR_FONT);
         lblAccST.setForeground(PURPLE_DARK);
-        lblAccST.setBounds(85, 970, 420, 35); 
+        lblAccST.setBounds(85, 860, 420, 35); 
         pnlMainProfile.add(lblAccST);
+        
         // BTN DELETE ACC
         btnDelAcc = styleBtnSave("Delete my account");
         btnDelAcc.setForeground(COLOR_WHITE);
         btnDelAcc.setBackground(PURPLE_DARK);
-        btnDelAcc.setBounds(85, 1020, 180, 35);
+        btnDelAcc.setBounds(85, 905, 180, 35);
         pnlMainProfile.add(btnDelAcc);
+        
         // SCROLL PANE
         scrollPane = new JScrollPane(pnlMainProfile);
         scrollPane.setBorder(null); 
@@ -226,7 +229,7 @@ public class CustomerDashboardProfile extends JPanel {
         btn.setBorder(BorderFactory.createEmptyBorder(5, 15, 5, 15)); 
         return btn;
     }
-        // for displaying data logged in
+        // FOR DISPLAYING DATA LOGGED IN
     public void loadFromDatabase() {
         String login = AccountDAO.getLogin();
         if (login == null) return; 

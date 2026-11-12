@@ -190,7 +190,7 @@ public class CustomerDashboardHistory extends JPanel {
         containerPanel = new JPanel();
         containerPanel.setLayout(new BoxLayout(containerPanel, BoxLayout.Y_AXIS));
         containerPanel.setOpaque(false);
-        containerPanel.setBorder(new EmptyBorder(0, 0, 20, 0));
+        containerPanel.setBorder(new EmptyBorder(2, 2, 20, 2));
 
         // 4.2 Scroll Pane
         scrollPane = new JScrollPane(containerPanel);
@@ -349,9 +349,9 @@ public class CustomerDashboardHistory extends JPanel {
                 Graphics2D g2 = (Graphics2D) g.create();
                 g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
                 g2.setColor(COLOR_WHITE);
-                g2.fillRoundRect(0, 0, getWidth(), getHeight(), 20, 20);
+                g2.fillRoundRect(1, 1, getWidth() - 2, getHeight() - 2, 20, 20);
                 g2.setColor(CARD_BORDER);
-                g2.drawRoundRect(0, 0, getWidth() - 1, getHeight() - 1, 20, 20);
+                g2.drawRoundRect(1, 1, getWidth() - 3, getHeight() - 3, 20, 20);
                 g2.dispose();
             }
         };
@@ -380,12 +380,20 @@ public class CustomerDashboardHistory extends JPanel {
 
         // 8.1.2 Divider & Item List
         JSeparator cardSep = new JSeparator();
-        cardSep.setBounds(0, 46, 200, 1);
+        cardSep.setBounds(0, 50, 200, 1);
         cardSep.setForeground(DIVIDER_COLOR);
         cardSep.setBackground(DIVIDER_COLOR);
         leftPnl.add(cardSep);
 
-        int yOffset = 50;
+        int yOffset = 60;
+        FontMetrics badgeFm = leftPnl.getFontMetrics(new Font("Segoe UI", Font.BOLD, 10));
+        int nameX = 48;   
+        if (order.getItems() != null) {
+            for (int i = 0; i < Math.min(order.getItems().size(), 2); i++) {
+                int w = Math.max(28, badgeFm.stringWidth(order.getItems().get(i).getQuantity() + "×") + 14);
+                nameX = Math.max(nameX, 10 + w + 10);
+            }
+        }
         if (order.getItems() != null) {
             int maxItems = Math.min(order.getItems().size(), 2); 
             for (int i = 0; i < maxItems; i++) {
@@ -397,14 +405,15 @@ public class CustomerDashboardHistory extends JPanel {
                         Graphics2D g2 = (Graphics2D) g.create();
                         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
                         g2.setColor(YELLOW_LIGHT);
-                        g2.fillRoundRect(0, 0, getWidth(), getHeight(), 6, 6);
+                        g2.fillRoundRect(1, 1, getWidth() - 2, getHeight() - 2, 6, 6);
                         g2.setColor(YELLOW_BORDER);
-                        g2.drawRoundRect(0, 0, getWidth() - 1, getHeight() - 1, 6, 6);
+                        g2.drawRoundRect(1, 1, getWidth() - 3, getHeight() - 3, 6, 6);
                         g2.dispose();
                         super.paintComponent(g);
                     }
                 };
-                badge.setBounds(10, yOffset, 26, 18);
+                int badgeW = Math.max(28, badgeFm.stringWidth(item.getQuantity() + "×") + 14);
+                badge.setBounds(10, yOffset, badgeW, 18);
                 badge.setFont(new Font("Segoe UI", Font.BOLD, 10));
                 badge.setForeground(AMBER_TEXT);
                 leftPnl.add(badge);
@@ -412,10 +421,10 @@ public class CustomerDashboardHistory extends JPanel {
                 JLabel itemNameLbl = new JLabel(item.getItemName());
                 itemNameLbl.setFont(new Font("Segoe UI", Font.PLAIN, 12));
                 itemNameLbl.setForeground(TEXT_DARK);
-                itemNameLbl.setBounds(42, yOffset, 155, 18);
+                itemNameLbl.setBounds(nameX, yOffset, 200 - nameX, 18);
                 leftPnl.add(itemNameLbl);
 
-                yOffset += 22; 
+                yOffset += 24; 
             }
         }
 
@@ -448,10 +457,19 @@ public class CustomerDashboardHistory extends JPanel {
         centerPnl.setOpaque(false);
         centerPnl.setBounds(220, 16, 265, 153);
 
-        addMetaItem(centerPnl, "📋", "ORDER ID", order.getOrderId(), 10, 2);
-        addMetaItem(centerPnl, "📅", "ORDER DATE", order.getOrderDate(), 10, 40);
-        addMetaItem(centerPnl, "🛵", "DELIVERY DATE", order.getDeliveryDate(), 10, 78);
-        addMetaItem(centerPnl, "💳", "PAYMENT", order.getPaymentMop(), 10, 116);
+        FontMetrics metaFm = card.getFontMetrics(new Font("Segoe UI", Font.BOLD, 11));
+        int metaTextW = 0;
+        for (String v : new String[]{order.getOrderId(), order.getOrderDate(), order.getDeliveryDate(), order.getPaymentMop()}) {
+            if (v != null) metaTextW = Math.max(metaTextW, metaFm.stringWidth(v));
+        }
+        metaTextW = Math.min(metaTextW + 6, 228);
+        int metaBlockW = 32 + metaTextW;
+        int metaX = Math.max(4, (265 - metaBlockW) / 2);   
+
+        addMetaItem(centerPnl, "📋", "ORDER ID", order.getOrderId(), metaX, 2, metaTextW);
+        addMetaItem(centerPnl, "📅", "ORDER DATE", order.getOrderDate(), metaX, 40, metaTextW);
+        addMetaItem(centerPnl, "🛵", "DELIVERY DATE", order.getDeliveryDate(), metaX, 78, metaTextW);
+        addMetaItem(centerPnl, "💳", "PAYMENT", order.getPaymentMop(), metaX, 116, metaTextW);
 
         card.add(centerPnl);
 
@@ -473,7 +491,7 @@ public class CustomerDashboardHistory extends JPanel {
                 g2.dispose();
             }
         };
-        badgePnl.setBounds(10, 0, 175, 32);
+        badgePnl.setBounds(10, 36, 175, 32);
         badgePnl.setOpaque(false);
 
         JLabel statusTextLbl = new JLabel((isDelivered ? "✔  " : "🛵  ") + order.getStatus(), SwingConstants.CENTER);
@@ -483,30 +501,7 @@ public class CustomerDashboardHistory extends JPanel {
         badgePnl.add(statusTextLbl);
         rightPnl.add(badgePnl);
 
-        // 8.3.2 View Details Button
-        JButton detailsBtn = new JButton("View Details  →") {
-            @Override
-            protected void paintComponent(Graphics g) {
-                Graphics2D g2 = (Graphics2D) g.create();
-                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                g2.setColor(COLOR_WHITE);
-                g2.fill(new RoundRectangle2D.Float(0, 0, getWidth(), getHeight(), 18, 18));
-                g2.setColor(CARD_BORDER);
-                g2.draw(new RoundRectangle2D.Float(0, 0, getWidth() - 1, getHeight() - 1, 18, 18));
-                g2.dispose();
-                super.paintComponent(g);
-            }
-        };
-        detailsBtn.setFont(new Font("Segoe UI", Font.BOLD, 11));
-        detailsBtn.setForeground(PURPLE_DARK);
-        detailsBtn.setContentAreaFilled(false);
-        detailsBtn.setBorderPainted(false);
-        detailsBtn.setFocusPainted(false);
-        detailsBtn.setCursor(new Cursor(Cursor.HAND_CURSOR));
-        detailsBtn.setBounds(10, 44, 175, 36);
-        rightPnl.add(detailsBtn);
-
-        // 8.3.3 Re-Order Button
+        // 8.3.2 Re-Order Button
         JButton reorderBtn = new JButton("🔄  Re-Order") {
             @Override
             protected void paintComponent(Graphics g) {
@@ -524,7 +519,7 @@ public class CustomerDashboardHistory extends JPanel {
         reorderBtn.setBorderPainted(false);
         reorderBtn.setFocusPainted(false);
         reorderBtn.setCursor(new Cursor(Cursor.HAND_CURSOR));
-        reorderBtn.setBounds(10, 88, 175, 36);
+        reorderBtn.setBounds(10, 80, 175, 36);
 
         reorderBtn.addActionListener(e -> reOrderToCheckout(order));
 
@@ -534,9 +529,8 @@ public class CustomerDashboardHistory extends JPanel {
         return card;
     }
 
-
     // 9. Helper Methods
-    private void addMetaItem(JPanel panel, String icon, String title, String value, int x, int y) {
+    private void addMetaItem(JPanel panel, String icon, String title, String value, int x, int y, int textW) {
         JLabel lblIcon = new JLabel(icon, SwingConstants.CENTER);
         lblIcon.setFont(new Font("Segoe UI Emoji", Font.PLAIN, 16));
         lblIcon.setForeground(PURPLE_TEXT); 
@@ -546,13 +540,13 @@ public class CustomerDashboardHistory extends JPanel {
         JLabel lblMetaTitle = new JLabel(title);
         lblMetaTitle.setFont(new Font("Segoe UI", Font.BOLD, 9));
         lblMetaTitle.setForeground(TEXT_DARK);
-        lblMetaTitle.setBounds(x + 32, y, 160, 11);
+        lblMetaTitle.setBounds(x + 32, y, textW, 11);
         panel.add(lblMetaTitle);
 
         JLabel lblValue = new JLabel(value);
         lblValue.setFont(new Font("Segoe UI", Font.BOLD, 11)); 
         lblValue.setForeground(PURPLE_DARK);                   
-        lblValue.setBounds(x + 32, y + 12, 225, 15);
+        lblValue.setBounds(x + 32, y + 12, textW, 15);
         panel.add(lblValue);
     }
 
@@ -588,9 +582,9 @@ public class CustomerDashboardHistory extends JPanel {
 
         String stamp = java.time.LocalDateTime.now()
                 .format(java.time.format.DateTimeFormatter.ofPattern("yyyy-MMdd-HHmmss-SSS"));
-        String newOrderId = "ORD-CUST001-" + stamp;
+        String newOrderId = "ORD-" + OrderStore.getSessionCustomerId().replace("-", "") + "-" + stamp;
 
-        Model.Order newOrder = new Model.Order(newOrderId, "CUST-001", name, phone, address,
+        Model.Order newOrder = new Model.Order(newOrderId, OrderStore.getSessionCustomerId(), name, phone, address,
                 past.getStoreName(), copiedItems, "PENDING");
 
         CustomerDashboardCheckout checkout = new CustomerDashboardCheckout(newOrder, past.getLocation(), past.getPaymentMop());
@@ -657,7 +651,6 @@ public class CustomerDashboardHistory extends JPanel {
         return false;
     }
 
-    
     // 10. Panel Actions 
     public void animateOpen() {
         refreshOrders();

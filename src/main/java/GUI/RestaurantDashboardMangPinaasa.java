@@ -272,6 +272,7 @@ public class RestaurantDashboardMangPinaasa extends JPanel {
       JPanel north = new JPanel(new BorderLayout());
       north.setOpaque(false);
       north.add(buildHeader(), BorderLayout.NORTH);
+      
       JPanel noticeWrap = new JPanel(new BorderLayout());
       noticeWrap.setOpaque(false);
       noticeWrap.setBorder(BorderFactory.createEmptyBorder(8, 24, 0, 24));
@@ -318,6 +319,7 @@ public class RestaurantDashboardMangPinaasa extends JPanel {
       JPanel panel = new JPanel(new GridLayout(2, 1, 14, 14));
       panel.setBackground(UIStyle.BG_LIGHT);
       panel.setBorder(BorderFactory.createEmptyBorder(12, 24, 14, 24));
+      
       JPanel stats = new JPanel(new GridLayout(1, 4, 15, 0));
       stats.setBackground(UIStyle.BG_LIGHT);
       stats.add(UIStyle.statCard("MENU ITEMS", String.valueOf(data.restaurant.menuItems.size()), data.availableDishCount() + " available", UIStyle.PURPLE_LIGHT));

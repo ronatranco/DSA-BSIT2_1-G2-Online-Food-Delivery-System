@@ -7,7 +7,6 @@ import java.sql.SQLException;
 
 public class AccountDAO {
 
-    // who is currently logged in 
     private static String login;
 
     public static void setLogin(String value) { login = value; }
