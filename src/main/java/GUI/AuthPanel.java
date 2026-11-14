@@ -29,18 +29,20 @@ public class AuthPanel extends JPanel {
         setLayout(null);
         setBackground(BG_LIGHT);
 
-        // Left Banner
         GradientPanel leftBannerAuth = new GradientPanel();
         leftBannerAuth.setBounds(0, 0, 480, 720);
+        
         JLabel logoAuth = new JLabel("🐼", SwingConstants.CENTER);
         logoAuth.setFont(new Font("Segoe UI Emoji", Font.PLAIN, 140));
         logoAuth.setBounds(20, 140, 440, 180);
         leftBannerAuth.add(logoAuth);
+        
         JLabel titleAuth = new JLabel("GrabPanda", SwingConstants.CENTER);
         titleAuth.setFont(new Font("Segoe UI", Font.BOLD, 38));
         titleAuth.setForeground(YELLOW_ACCENT);
         titleAuth.setBounds(20, 330, 440, 45);
         leftBannerAuth.add(titleAuth);
+        
         JLabel subAuth = new JLabel("Fast & Fresh Food Delivery", SwingConstants.CENTER);
         subAuth.setFont(new Font("Segoe UI", Font.BOLD, 16));
         subAuth.setForeground(Color.WHITE);
@@ -48,7 +50,6 @@ public class AuthPanel extends JPanel {
         leftBannerAuth.add(subAuth);
         add(leftBannerAuth);
 
-        // Right Panel Options
         JPanel rightPanelAuth = new JPanel(null);
         rightPanelAuth.setBounds(480, 0, 544, 720);
         rightPanelAuth.setBackground(BG_LIGHT);

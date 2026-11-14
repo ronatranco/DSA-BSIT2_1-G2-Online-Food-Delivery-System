@@ -54,12 +54,14 @@ public class CustomerDashboardRestaurantMenus extends JPanel {
         searchBarContainer1.setBounds(477, 43, 405, 34); 
         searchBarContainer1.setBackground(COLOR_WHITE);
         searchBarContainer1.setBorder(new LineBorder(PURPLE_DARK, 1)); 
+        
         // SEARCH BAR ICON
         JLabel searchIcon1 = new JLabel(" 🔍");
         searchIcon1.setFont(new Font("Segoe UI Emoji", Font.PLAIN, 14));
         searchIcon1.setForeground(PURPLE_DARK);
         searchIcon1.setBounds(10, 0, 30, 38);
         searchBarContainer1.add(searchIcon1);
+        
         // SEARCH BAR FIELD
         JTextField searchBar1 = new JTextField("Search in menu");
         searchBar1.setBounds(47, 2, 351, 30);
@@ -69,6 +71,7 @@ public class CustomerDashboardRestaurantMenus extends JPanel {
         searchBar1.setBorder(null); 
         searchBarContainer1.add(searchBar1);
         add(searchBarContainer1);
+        
         // SEARCH BAR FOCUS & ACTION LISTENERS
         searchIcon1.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         searchIcon1.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -83,6 +86,7 @@ public class CustomerDashboardRestaurantMenus extends JPanel {
                     requestFocusInWindow();
             }
         });
+        
         searchBar1.addFocusListener(new java.awt.event.FocusListener() {
             @Override
             public void focusGained(java.awt.event.FocusEvent e) {
@@ -99,6 +103,7 @@ public class CustomerDashboardRestaurantMenus extends JPanel {
                 }
             }
         });
+        
         searchBar1.addActionListener(new java.awt.event.ActionListener() {
             @Override
             public void actionPerformed(java.awt.event.ActionEvent e) {
@@ -168,6 +173,12 @@ public class CustomerDashboardRestaurantMenus extends JPanel {
             lblResto1.setForeground(PURPLE_DARK);
             lblResto1.setBounds(40, 37, 260, 55);
             add(lblResto1);
+            // LOCATION
+            JLabel lblRestoLoc11 = new JLabel("LOCATION B");
+            lblRestoLoc11.setFont(new Font("Segoe UI", Font.PLAIN, 15));
+            lblRestoLoc11.setForeground(new Color(199, 195, 217));
+            lblRestoLoc11.setBounds(798, 82, 260, 55);
+            add(lblRestoLoc11);
             // LABEL 2
             JLabel lblPopular1 = new JLabel("Popular");
             lblPopular1.setFont(new Font("Segoe UI", Font.BOLD, 29));
@@ -216,6 +227,12 @@ public class CustomerDashboardRestaurantMenus extends JPanel {
             lblResto2.setForeground(PURPLE_DARK);
             lblResto2.setBounds(40, 35, 350, 55);
             add(lblResto2);
+            // LOCATION
+            JLabel lblRestoLoc22 = new JLabel("LOCATION C");
+            lblRestoLoc22.setFont(new Font("Segoe UI", Font.PLAIN, 15));
+            lblRestoLoc22.setForeground(new Color(199, 195, 217));
+            lblRestoLoc22.setBounds(798, 82, 260, 55);
+            add(lblRestoLoc22);
             // LABEL 2
             JLabel lblPopular2 = new JLabel("Popular");
             lblPopular2.setFont(new Font("Segoe UI", Font.BOLD, 29));
@@ -266,6 +283,12 @@ public class CustomerDashboardRestaurantMenus extends JPanel {
             lblResto3.setForeground(PURPLE_DARK);
             lblResto3.setBounds(40, 35, 350, 55);
             add(lblResto3); 
+            // LOCATION
+            JLabel lblRestoLoc33 = new JLabel("LOCATION A");
+            lblRestoLoc33.setFont(new Font("Segoe UI", Font.PLAIN, 15));
+            lblRestoLoc33.setForeground(new Color(199, 195, 217));
+            lblRestoLoc33.setBounds(798, 82, 260, 55);
+            add(lblRestoLoc33);
             // LABEL 2
             JLabel lblPopular3 = new JLabel("Popular");
             lblPopular3.setFont(new Font("Segoe UI", Font.BOLD, 29));
@@ -399,7 +422,7 @@ public class CustomerDashboardRestaurantMenus extends JPanel {
         btnAdd.setBounds(240, 110, 145, 20);
         btnAdd.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         
-        // == ADD TO CART LISTENER ==
+        // ADD TO CART LISTENER
         btnAdd.addMouseListener(new java.awt.event.MouseAdapter() {
             @Override
             public void mouseClicked(java.awt.event.MouseEvent e) {
@@ -420,6 +443,7 @@ public class CustomerDashboardRestaurantMenus extends JPanel {
                 }
             }
         }); 
+        
         foodCard.add(btnAdd);
         return foodCard;
             

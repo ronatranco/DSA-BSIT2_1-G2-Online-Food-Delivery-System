@@ -107,7 +107,6 @@ public final class Restaurant {
    }
 
    public static class Order {
-      // Order Status Labels
       public static final String PENDING = "Pending";
       public static final String PREPARING = "Preparing";
       public static final String READY = "Out for Delivery";
@@ -412,7 +411,7 @@ public final class Restaurant {
          if (acc.fullName != null && !acc.fullName.isEmpty()) restaurant.name     = acc.fullName;
          if (acc.address  != null && !acc.address.isEmpty())  restaurant.location = acc.address;
          if (acc.phone    != null && !acc.phone.isEmpty())    restaurant.contact  = acc.phone;
-         notifyChanged();   // refreshes any open dashboard
+         notifyChanged();  
       } catch (SQLException ex) {
          System.out.println("Could not load restaurant profile: " + ex.getMessage());
       }

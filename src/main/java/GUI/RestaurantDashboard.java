@@ -267,9 +267,11 @@ public class RestaurantDashboard extends JPanel {
 
    private void buildHome() {
       homePanel.setBackground(UIStyle.BG_LIGHT);
+     
       JPanel north = new JPanel(new BorderLayout());
       north.setOpaque(false);
       north.add(buildHeader(), BorderLayout.NORTH);
+     
       JPanel noticeWrap = new JPanel(new BorderLayout());
       noticeWrap.setOpaque(false);
       noticeWrap.setBorder(BorderFactory.createEmptyBorder(8, 24, 0, 24));
@@ -293,6 +295,7 @@ public class RestaurantDashboard extends JPanel {
       JPanel header = new JPanel(new BorderLayout());
       header.setBackground(UIStyle.WHITE);
       header.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createMatteBorder(0, 0, 3, 0, UIStyle.YELLOW_ACCENT), BorderFactory.createEmptyBorder(12, 24, 10, 24)));
+      
       JLabel title = new JLabel("RESTAURANT DASHBOARD");
       title.setFont(UIStyle.font(Font.BOLD, 22));
       title.setForeground(UIStyle.TEXT_DARK);
@@ -316,6 +319,7 @@ public class RestaurantDashboard extends JPanel {
       JPanel panel = new JPanel(new GridLayout(2, 1, 14, 14));
       panel.setBackground(UIStyle.BG_LIGHT);
       panel.setBorder(BorderFactory.createEmptyBorder(12, 24, 14, 24));
+    
       JPanel stats = new JPanel(new GridLayout(1, 4, 15, 0));
       stats.setBackground(UIStyle.BG_LIGHT);
       stats.add(UIStyle.statCard("MENU ITEMS", String.valueOf(data.restaurant.menuItems.size()), data.availableDishCount() + " available", UIStyle.PURPLE_LIGHT));
@@ -325,6 +329,7 @@ public class RestaurantDashboard extends JPanel {
 
       UIStyle.RoundedPanel quick = UIStyle.card(UIStyle.PURPLE_DARK);
       quick.setPadding(14, 26, 16, 24);
+     
       JLabel quickTitle = new JLabel("QUICK ACTIONS");
       quickTitle.setFont(UIStyle.font(Font.BOLD, 18));
       quickTitle.setForeground(UIStyle.TEXT_DARK);

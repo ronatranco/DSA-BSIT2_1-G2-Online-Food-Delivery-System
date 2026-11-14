@@ -4,7 +4,6 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
 
-// Right-click this file in NetBeans -> Run File
 public class TestConnection {
     public static void main(String[] args) {
         try (Connection con = databaseConnection.getConnection();

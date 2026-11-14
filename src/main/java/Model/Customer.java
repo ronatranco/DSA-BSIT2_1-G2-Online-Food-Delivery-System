@@ -11,7 +11,12 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import javax.swing.JCheckBox;
 import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  *
@@ -20,13 +25,15 @@ import javax.swing.JLabel;
 public class Customer implements ActionListener, MouseListener {
 
     private CustomerDashboard view;
+  
+    private final String cartOwnerId = Order.OrderStore.getSessionCustomerId();
 
     private boolean isCartVisible = false;
     private boolean isProfileVisible = false;
     private boolean isTrackOrderVisible = false;
     private boolean isHistoryVisible = false;
 
-    // Animation
+    // ANIMATION
     private javax.swing.Timer animationTimer;
     private double preciseWidth = 80.0;
     private int currentWidth = 80;
@@ -34,7 +41,7 @@ public class Customer implements ActionListener, MouseListener {
     private final int MAX_WIDTH = 200;
     private boolean targetsExpand = false;
 
-    // For easing curves
+    // FOR EASING CURVES
     private long animationStartTime;
     private double animationDuration = 280.0;
     private double startWidth;
@@ -57,7 +64,7 @@ public class Customer implements ActionListener, MouseListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        // == NAME DASHBOARD ==
+        // NAME DASHBOARD 
         if (e.getSource() == view.getPnlRightProfile().getBtnSaveInfo()
                 || e.getSource() == view.getPnlRightProfile().getTxtFieldName1()
                 || e.getSource() == view.getPnlRightProfile().getTxtFullAdd()) {
@@ -75,7 +82,7 @@ public class Customer implements ActionListener, MouseListener {
             }
         }
 
-        // == BUTTON CART ==
+        // BUTTON CART 
         if (e.getSource() == view.getBtnNavCart()) {
             closeAllSidebarsExcept("cart");
             if (!isCartVisible) {
@@ -85,7 +92,7 @@ public class Customer implements ActionListener, MouseListener {
                 view.getPnlRightCart().animateClose();
                 isCartVisible = false;
             }
-        } // == BUTTON PROFILE ==
+        } // BUTTON PROFILE 
         else if (e.getSource() == view.getBtnNavProfile()) {
             closeAllSidebarsExcept("profile");
             if (!isProfileVisible) {
@@ -97,7 +104,7 @@ public class Customer implements ActionListener, MouseListener {
                 collapseSidebar();
                 view.getPnlRightProfile().animateClose();
             }
-        } // == BUTTON TRACK ORDER ==
+        } // BUTTON TRACK ORDER
         else if (e.getSource() == view.getBtnNavTrack()) {
             closeAllSidebarsExcept("track");
             if (!isTrackOrderVisible) {
@@ -109,7 +116,7 @@ public class Customer implements ActionListener, MouseListener {
                 collapseSidebar();
                 view.getPnlRightTrackOrder().animateClose();
             }
-        } // == BUTTON HISTORY ==
+        } // BUTTON HISTORY 
         else if (e.getSource() == view.getBtnNavHistory()) {
             closeAllSidebarsExcept("history");
             if (!isHistoryVisible) {
@@ -121,7 +128,7 @@ public class Customer implements ActionListener, MouseListener {
                 collapseSidebar();
                 view.getPnlRightHistory().animateClose();
             }
-        } // == SUBPANEL & BUTTON LISTENERS ==
+        } // SUBPANEL & BUTTON LISTENERS
         else if (e.getSource() == view.getPnlRightCart().getCloseButton()) {
             view.getPnlRightCart().animateClose();
             isCartVisible = false;
@@ -139,18 +146,25 @@ public class Customer implements ActionListener, MouseListener {
             view.getTxtSearchBar().setText("What are you craving today?");
             view.getTxtSearchBar().setForeground(new Color(120, 120, 120));
             showAllRestaurants(view.getPnlRestoCard(), true);
-        } // == NAVIGATION ==
+        } // NAVIGATION
         else if (e.getSource() == view.getBtnNavLogoPanda()) {
             System.out.println("Routing: Logo action triggered.");
         } else if (e.getSource() == view.getBtnNavHome()) {
             closeAllSidebarsExcept("none");
             view.getTxtSearchBar().setText("What are you craving today?");
             view.getTxtSearchBar().setForeground(new Color(120, 120, 120));
+            
+            if (view.getLblPlaceholder() != null) view.getLblPlaceholder().setText("");
+            if (view.getPnlExpandedLocation() != null) view.getPnlExpandedLocation().setVisible(false);
+            if (view.getBtnExpandLocation() != null) view.getBtnExpandLocation().setText(">");
+            if (view.getSlideInTimer() != null) view.getSlideInTimer().start();
+            
             showAllRestaurants(view.getPnlRestoCard(), true);
         } else if (e.getSource() == view.getBtnNavExit()) {
             System.out.println("Logging out...");
+            saveCart();
+            view.getMainFrame().showCard("ROLE_SELECTION");
         }
-        // NOTE: Checkout is handled inside CustomerDashboardViewCart (btnCheckout listener).
     }
 
     @Override
@@ -181,6 +195,12 @@ public class Customer implements ActionListener, MouseListener {
             closeAllSidebarsExcept("none");
             view.getTxtSearchBar().setText("What are you craving today?");
             view.getTxtSearchBar().setForeground(new Color(120, 120, 120));
+            
+            if (view.getLblPlaceholder() != null) view.getLblPlaceholder().setText("");
+            if (view.getPnlExpandedLocation() != null) view.getPnlExpandedLocation().setVisible(false);
+            if (view.getBtnExpandLocation() != null) view.getBtnExpandLocation().setText(">");
+            if (view.getSlideInTimer() != null) view.getSlideInTimer().start();
+    
             showAllRestaurants(view.getPnlRestoCard(), true);
         } else if (e.getSource() == view.getLblCart()) {
             closeAllSidebarsExcept("cart");
@@ -226,6 +246,7 @@ public class Customer implements ActionListener, MouseListener {
             }
         } else if (e.getSource() == view.getLblExit()) {
             System.out.println("Logging out...");
+            saveCart();
             view.getMainFrame().showCard("ROLE_SELECTION");
         }
         view.getPnlMainBg().repaint();
@@ -339,15 +360,15 @@ public class Customer implements ActionListener, MouseListener {
         view.getPnlRestoCard().topBannerQuote.setBounds(baseX, 135, 865, 120);
         GUI.CustomerDashboardRestaurant restoCard = view.getPnlRestoCard();
 
-        // == RESTAURANT SCROLL ==
+        // RESTAURANT SCROLL
         restoCard.scrollPane.setBounds(0, 320, 1024, 400);
-        // == RESTAURANT LABEL ==
+        // RESTAURANT LABEL 
         restoCard.lblRestaurant.setBounds(baseX, 270, 400, 50);
         if (restoCard.restoLine != null) {
             restoCard.restoLine.setBounds(baseX + 220, 298, 644, 5);
         }
 
-        // == ROW 1 RESTAURANT ==
+        // ROW 1 RESTAURANT 
         restoCard.pnlRestoCard1.setBounds(baseX, 113, 200, 130);
         if (restoCard.lblRestoImage1 != null) {
             restoCard.lblRestoImage1.setBounds(baseX - 14, 3, 230, 190);
@@ -364,7 +385,7 @@ public class Customer implements ActionListener, MouseListener {
         if (restoCard.lblRestoImage4 != null) {
             restoCard.lblRestoImage4.setBounds(baseX + 646, 45, 230, 150);
         }
-        // == ROW 2 RESTAURANT ==
+        // ROW 2 RESTAURANT
         restoCard.pnlRestoCard5.setBounds(baseX, 330, 200, 130);
         if (restoCard.lblRestoImage5 != null) {
             restoCard.lblRestoImage5.setBounds(baseX - 14, 260, 230, 160);
@@ -477,7 +498,7 @@ public class Customer implements ActionListener, MouseListener {
             return;
         }
         String lowerQuery = query.toLowerCase().trim();
-        // == RESTAURANT 1 ==
+        // RESTAURANT 1 
         boolean smatch1 = "mcdollibee".contains(lowerQuery);
         if (restoCard.pnlRestoCard1 != null) {
             restoCard.pnlRestoCard1.setVisible(smatch1);
@@ -485,7 +506,7 @@ public class Customer implements ActionListener, MouseListener {
         if (restoCard.lblRestoImage1 != null) {
             restoCard.lblRestoImage1.setVisible(smatch1);
         }
-        // == RESTAURANT 2 ==
+        // RESTAURANT 2 
         boolean smatch2 = "brain cells milk tea".contains(lowerQuery);
         if (restoCard.pnlRestoCard2 != null) {
             restoCard.pnlRestoCard2.setVisible(smatch2);
@@ -493,7 +514,7 @@ public class Customer implements ActionListener, MouseListener {
         if (restoCard.lblRestoImage2 != null) {
             restoCard.lblRestoImage2.setVisible(smatch2);
         }
-        // == RESTAURANT 3 ==
+        // RESTAURANT 3 
         boolean smatch3 = "mang pinaasa".contains(lowerQuery);
         if (restoCard.pnlRestoCard3 != null) {
             restoCard.pnlRestoCard3.setVisible(smatch3);
@@ -501,7 +522,7 @@ public class Customer implements ActionListener, MouseListener {
         if (restoCard.lblRestoImage3 != null) {
             restoCard.lblRestoImage3.setVisible(smatch3);
         }
-        // == RESTAURANT 4 ==
+        // RESTAURANT 4 
         boolean smatch4 = "kamote korner".contains(lowerQuery);
         if (restoCard.pnlRestoCard4 != null) {
             restoCard.pnlRestoCard4.setVisible(smatch4);
@@ -509,7 +530,7 @@ public class Customer implements ActionListener, MouseListener {
         if (restoCard.lblRestoImage4 != null) {
             restoCard.lblRestoImage4.setVisible(smatch4);
         }
-        // == RESTAURANT 5 ==
+        // RESTAURANT 5 
         boolean smatch5 = "petsa hut".contains(lowerQuery);
         if (restoCard.pnlRestoCard5 != null) {
             restoCard.pnlRestoCard5.setVisible(smatch5);
@@ -517,7 +538,7 @@ public class Customer implements ActionListener, MouseListener {
         if (restoCard.lblRestoImage5 != null) {
             restoCard.lblRestoImage5.setVisible(smatch5);
         }
-        // == RESTAURANT 6 ==
+        // RESTAURANT 6 
         boolean smatch6 = "bibang's".contains(lowerQuery);
         if (restoCard.pnlRestoCard6 != null) {
             restoCard.pnlRestoCard6.setVisible(smatch6);
@@ -525,7 +546,7 @@ public class Customer implements ActionListener, MouseListener {
         if (restoCard.lblRestoImage6 != null) {
             restoCard.lblRestoImage6.setVisible(smatch6);
         }
-        // == RESTAURANT 7 ==
+        // RESTAURANT 7 
         boolean smatch7 = "sinabon".contains(lowerQuery);
         if (restoCard.pnlRestoCard7 != null) {
             restoCard.pnlRestoCard7.setVisible(smatch7);
@@ -533,7 +554,7 @@ public class Customer implements ActionListener, MouseListener {
         if (restoCard.lblRestoImage7 != null) {
             restoCard.lblRestoImage7.setVisible(smatch7);
         }
-        // == RESTAURANT 8 ==
+        // RESTAURANT 8 
         boolean smatch8 = "kuya's fried chicken".contains(lowerQuery);
         if (restoCard.pnlRestoCard8 != null) {
             restoCard.pnlRestoCard8.setVisible(smatch8);
@@ -544,35 +565,179 @@ public class Customer implements ActionListener, MouseListener {
         restoCard.scrollContentPanel.revalidate();
         view.getPnlMainBg().repaint();
     }
+    
+    public void filterRestaurantsByLocation(String location) {
+        GUI.CustomerDashboardRestaurant restoCard = view.getPnlRestoCard();
+        if (restoCard == null) return;
 
+        if (location == null || location.isEmpty()) {
+            showAllRestaurants(restoCard, true);
+            return;
+        }
+
+        if (restoCard.pnlRestoCard1 != null && restoCard.lblRestoImage1 != null) {
+            boolean match = restoCard.lblRestoName11.getText().equalsIgnoreCase(location);
+            restoCard.pnlRestoCard1.setVisible(match);
+            restoCard.lblRestoImage1.setVisible(match);
+        }
+        if (restoCard.pnlRestoCard2 != null && restoCard.lblRestoImage2 != null) {
+            boolean match = restoCard.lblRestoName22.getText().equalsIgnoreCase(location);
+            restoCard.pnlRestoCard2.setVisible(match);
+            restoCard.lblRestoImage2.setVisible(match);
+        }
+        if (restoCard.pnlRestoCard3 != null && restoCard.lblRestoImage3 != null) {
+            boolean match = restoCard.lblRestoName33.getText().equalsIgnoreCase(location);
+            restoCard.pnlRestoCard3.setVisible(match);
+            restoCard.lblRestoImage3.setVisible(match);
+        }
+        if (restoCard.pnlRestoCard4 != null && restoCard.lblRestoImage4 != null) {
+            boolean match = restoCard.lblRestoName44.getText().equalsIgnoreCase(location);
+            restoCard.pnlRestoCard4.setVisible(match);
+            restoCard.lblRestoImage4.setVisible(match);
+        }
+        if (restoCard.pnlRestoCard5 != null && restoCard.lblRestoImage5 != null) {
+            boolean match = restoCard.lblRestoName55.getText().equalsIgnoreCase(location);
+            restoCard.pnlRestoCard5.setVisible(match);
+            restoCard.lblRestoImage5.setVisible(match);
+        }
+        if (restoCard.pnlRestoCard6 != null && restoCard.lblRestoImage6 != null) {
+            boolean match = restoCard.lblRestoName66.getText().equalsIgnoreCase(location);
+            restoCard.pnlRestoCard6.setVisible(match);
+            restoCard.lblRestoImage6.setVisible(match);
+        }
+        if (restoCard.pnlRestoCard7 != null && restoCard.lblRestoImage7 != null) {
+            boolean match = restoCard.lblRestoName77.getText().equalsIgnoreCase(location);
+            restoCard.pnlRestoCard7.setVisible(match);
+            restoCard.lblRestoImage7.setVisible(match);
+        }
+        if (restoCard.pnlRestoCard8 != null && restoCard.lblRestoImage8 != null) {
+            boolean match = restoCard.lblRestoName88.getText().equalsIgnoreCase(location);
+            restoCard.pnlRestoCard8.setVisible(match);
+            restoCard.lblRestoImage8.setVisible(match);
+        }
+
+        restoCard.scrollContentPanel.revalidate();
+        view.getPnlMainBg().repaint();
+    }
+    
     private void showAllRestaurants(GUI.CustomerDashboardRestaurant restoCard, boolean visible) {
-        // == RESTAURANT 1 ==
+        // RESTAURANT 1 
         if (restoCard.pnlRestoCard1 != null) restoCard.pnlRestoCard1.setVisible(visible);
         if (restoCard.lblRestoImage1 != null) restoCard.lblRestoImage1.setVisible(visible);
-        // == RESTAURANT 2 ==
+        // RESTAURANT 2 
         if (restoCard.pnlRestoCard2 != null) restoCard.pnlRestoCard2.setVisible(visible);
         if (restoCard.lblRestoImage2 != null) restoCard.lblRestoImage2.setVisible(visible);
-        // == RESTAURANT 3 ==
+        // RESTAURANT 3 
         if (restoCard.pnlRestoCard3 != null) restoCard.pnlRestoCard3.setVisible(visible);
         if (restoCard.lblRestoImage3 != null) restoCard.lblRestoImage3.setVisible(visible);
-        // == RESTAURANT 4 ==
+        // RESTAURANT 4 
         if (restoCard.pnlRestoCard4 != null) restoCard.pnlRestoCard4.setVisible(visible);
         if (restoCard.lblRestoImage4 != null) restoCard.lblRestoImage4.setVisible(visible);
-        // == RESTAURANT 5 ==
+        // RESTAURANT 5 
         if (restoCard.pnlRestoCard5 != null) restoCard.pnlRestoCard5.setVisible(visible);
         if (restoCard.lblRestoImage5 != null) restoCard.lblRestoImage5.setVisible(visible);
-        // == RESTAURANT 6 ==
+        // RESTAURANT 6 
         if (restoCard.pnlRestoCard6 != null) restoCard.pnlRestoCard6.setVisible(visible);
         if (restoCard.lblRestoImage6 != null) restoCard.lblRestoImage6.setVisible(visible);
-        // == RESTAURANT 7 ==
+        // RESTAURANT 7 
         if (restoCard.pnlRestoCard7 != null) restoCard.pnlRestoCard7.setVisible(visible);
         if (restoCard.lblRestoImage7 != null) restoCard.lblRestoImage7.setVisible(visible);
-        // == RESTAURANT 8 ==
+        // RESTAURANT 8
         if (restoCard.pnlRestoCard8 != null) restoCard.pnlRestoCard8.setVisible(visible);
         if (restoCard.lblRestoImage8 != null) restoCard.lblRestoImage8.setVisible(visible);
 
         restoCard.scrollContentPanel.revalidate();
         view.getPnlMainBg().repaint();
+    }
+
+    // CART SAVE / RESTORE 
+    public void saveCart() {
+        if (view == null || view.getPnlRightCart() == null) return;
+        List<String[]> rows = new ArrayList<>();
+        JPanel container = view.getPnlRightCart().getCartContainer();
+        if (container == null) return;
+
+        for (java.awt.Component comp : container.getComponents()) {
+            if (!(comp instanceof JPanel)) continue;
+            JPanel card = (JPanel) comp;
+
+            String restaurantName = null;
+            for (java.awt.Component headerComp : card.getComponents()) {
+                if (headerComp instanceof JPanel) {
+                    for (java.awt.Component sub : ((JPanel) headerComp).getComponents()) {
+                        if (sub instanceof JCheckBox) {
+                            restaurantName = ((JCheckBox) sub).getText();
+                        }
+                    }
+                }
+            }
+            if (restaurantName == null) continue;
+
+            for (java.awt.Component c : card.getComponents()) {
+                if (!(c instanceof JPanel)) continue;
+                JPanel row = (JPanel) c;
+                if (row.getComponentCount() == 0 || !(row.getComponent(0) instanceof JPanel)) continue;
+
+                JPanel topSubRow = (JPanel) row.getComponent(0);
+                String itemName = "";
+                int qty = 0;
+                double unitPrice = 0.0;
+
+                for (java.awt.Component sub : topSubRow.getComponents()) {
+                    if (sub instanceof JLabel) {
+                        itemName = ((JLabel) sub).getText();
+                    } else if (sub instanceof JPanel) {
+                        for (java.awt.Component rc : ((JPanel) sub).getComponents()) {
+                            if (rc instanceof JPanel) {
+                                for (java.awt.Component q : ((JPanel) rc).getComponents()) {
+                                    if (q instanceof JLabel) {
+                                        try { qty = Integer.parseInt(((JLabel) q).getText()); }
+                                        catch (NumberFormatException ignored) {}
+                                    }
+                                }
+                            } else if (rc instanceof JLabel) {
+                                String t = ((JLabel) rc).getText().replace("\u20B1", "").replace(",", "").trim();
+                                try {
+                                    double line = Double.parseDouble(t);
+                                    if (qty > 0) unitPrice = line / qty;
+                                } catch (NumberFormatException ignored) {}
+                            }
+                        }
+                    }
+                }
+
+                String instructions = "";
+                for (java.awt.Component sub : row.getComponents()) {
+                    if (sub instanceof JTextField) {
+                        String text = ((JTextField) sub).getText().trim();
+                        if (!text.isEmpty() && !text.equals("Add special instructions...")) {
+                            instructions = text;
+                        }
+                    }
+                }
+
+                if (!itemName.isEmpty() && qty > 0) {
+                    rows.add(new String[]{restaurantName, itemName, String.valueOf(qty),
+                            String.valueOf(unitPrice), instructions});
+                }
+            }
+        }
+        Order.OrderStore.saveCart(cartOwnerId, rows);
+    }
+
+    public void restoreCart() {
+        if (view == null || view.getPnlRightCart() == null) return;
+        JPanel container = view.getPnlRightCart().getCartContainer();
+        if (container == null || container.getComponentCount() > 0) return; 
+
+        List<String[]> rows = Order.OrderStore.loadCart(cartOwnerId);
+        if (rows.isEmpty()) return;
+
+        for (String[] r : rows) {
+            String[][] item = { { r[1], r[2], r[3], r[4] } };
+            view.getPnlRightCart().addRestaurantCards(r[0], item);
+        }
+        view.getPnlRightCart().updateCartTotals();
     }
 
     @Override

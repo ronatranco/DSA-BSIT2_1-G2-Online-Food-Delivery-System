@@ -10,6 +10,10 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.stream.Collectors;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import Database.databaseConnection;
 
 /**
  * @author RJD 
@@ -62,8 +66,6 @@ public class Order {
 
     public String getDeliveryAddress() { return deliveryAddress; }
     public void setDeliveryAddress(String deliveryAddress) { this.deliveryAddress = deliveryAddress; }
-    
-    
 
     // 2. Business Logic & Calculations
     public void addOrderItem(OrderItem item) {
@@ -134,7 +136,6 @@ public class Order {
             this.unitPrice = Math.max(0.0, unitPrice);
             this.specialInstructions = specialInstructions != null ? specialInstructions : "";
         }
-        
 
         //5. OrderItem Getters & Setters
         public String getItemName() { return itemName; }
@@ -165,6 +166,7 @@ public class Order {
         private String status;
         private String totalPaid;
         private List<OrderItem> items;
+        private String customerId = "";   
     
     public OrderData(String storeName, String location, String orderId, String orderDate, 
                          String deliveryDate, String paymentMop, String status, String totalPaid, List<OrderItem> items) {
@@ -179,7 +181,15 @@ public class Order {
             this.items = items != null ? items : new ArrayList<>();
         }
 
+        public OrderData(String storeName, String location, String orderId, String orderDate,
+                         String deliveryDate, String paymentMop, String status, String totalPaid,
+                         List<OrderItem> items, String customerId) {
+            this(storeName, location, orderId, orderDate, deliveryDate, paymentMop, status, totalPaid, items);
+            this.customerId = customerId != null ? customerId : "";
+        }
+
     // 7. Order History Getter & Setter
+        public String getCustomerId() { return customerId; }
         public String getStoreName() { return storeName; }
         public String getLocation() { return location; }
         public String getOrderId() { return orderId; }
@@ -233,14 +243,82 @@ public class Order {
 
         private OrderStore() {}
 
+        // 8.1.3 Logged-in Customer 
+        private static String sessionCustomerId = "GUEST";
+
+        public static String getSessionCustomerId() { return sessionCustomerId; }
+
+               public static void startSession(String login) {
+            sessionCustomerId = resolveCustomerId(login);
+        }
+
+        public static void endSession() { sessionCustomerId = "GUEST"; }
+
+        private static String resolveCustomerId(String login) {
+            if (login == null || login.trim().isEmpty()) return "GUEST";
+            String key = login.trim();
+            String sql = "SELECT id FROM users WHERE role = 'customer' "
+                       + "AND (LOWER(username) = LOWER(?) OR LOWER(email) = LOWER(?))";
+            try (Connection con = databaseConnection.getConnection();
+                 PreparedStatement ps = con.prepareStatement(sql)) {
+                ps.setString(1, key);
+                ps.setString(2, key);
+                try (ResultSet rs = ps.executeQuery()) {
+                    if (rs.next()) return String.format("CUST-%03d", rs.getInt(1));
+                }
+            } catch (Exception ex) {
+                System.out.println("Could not resolve customer id: " + ex.getMessage());
+            }
+            return "CUST-" + key.toLowerCase();   
+        }
+
+        private boolean mine(OrderData o) {
+            return sessionCustomerId.equals(o.getCustomerId());
+        }
+
+        // 8.1.4 Saved Carts 
+        private static class SavedCart {
+            final String customerId;
+            final List<String[]> rows;
+            SavedCart(String customerId, List<String[]> rows) {
+                this.customerId = customerId;
+                this.rows = rows;
+            }
+        }
+
+        private static final List<SavedCart> savedCarts = new ArrayList<>();
+
+        public static void saveCart(String customerId, List<String[]> rows) {
+            if (customerId == null || customerId.equals("GUEST")) return;
+
+            for (int i = savedCarts.size() - 1; i >= 0; i--) {
+                if (savedCarts.get(i).customerId.equals(customerId)) {
+                    savedCarts.remove(i);
+                }
+            }
+            if (rows != null && !rows.isEmpty()) {
+                savedCarts.add(new SavedCart(customerId, new ArrayList<>(rows)));
+            }
+        }
+
+        public static List<String[]> loadCart(String customerId) {
+            for (SavedCart cart : savedCarts) {
+                if (cart.customerId.equals(customerId)) {
+                    return new ArrayList<>(cart.rows);
+                }
+            }
+            return new ArrayList<>();
+        }
+
         // 8.2 Place Order
         public OrderData place(Order order, String storeName, String location,
                                String paymentMop, double finalTotal) {
             for (OrderData existing : orders) {
-                if (existing.getOrderId().equals(order.getOrderId())) return existing;
+                if (existing.getOrderId().equals(order.getOrderId()) && mine(existing)) return existing;
             }
 
-            // 8.3 Order ID
+            // 8.3 Owner + Order ID
+            order.setCustomerId(sessionCustomerId);
             String id = order.getOrderId();
             if (id == null || id.trim().isEmpty()) {
                 id = String.format("#ORD-%d-%04d", LocalDate.now().getYear(), nextId++);
@@ -254,7 +332,8 @@ public class Order {
                     paymentMop,
                     PENDING,
                     String.format("₱%.2f", finalTotal),
-                    order.getOrderItems());
+                    order.getOrderItems(),
+                    sessionCustomerId);
 
             orders.add(data);
             sendToRestaurant(order, data, finalTotal, paymentMop);
@@ -281,7 +360,7 @@ public class Order {
         // 8.5 Order Received
         public boolean markReceived(String orderId) {
             for (OrderData o : orders) {
-                if (o.getOrderId().equals(orderId) && DELIVERED.equalsIgnoreCase(o.getStatus())) {
+                if (o.getOrderId().equals(orderId) && mine(o) && DELIVERED.equalsIgnoreCase(o.getStatus())) {
                     applyStatus(o, RECEIVED);
                     fireChanged();
                     return true;
@@ -293,6 +372,7 @@ public class Order {
         // 8.6 Track Order
         public List<OrderData> getActive() {
             return orders.stream()
+                    .filter(this::mine)
                     .filter(o -> !o.getStatus().equalsIgnoreCase(RECEIVED)
                               && !o.getStatus().equalsIgnoreCase(CANCELLED))
                     .collect(Collectors.toList());
@@ -301,6 +381,7 @@ public class Order {
         // 8.7 Order History
         public List<OrderData> getHistory() {
             return orders.stream()
+                    .filter(this::mine)
                     .filter(o -> o.getStatus().equalsIgnoreCase(RECEIVED)
                               || o.getStatus().equalsIgnoreCase(CANCELLED))
                     .collect(Collectors.toList());
@@ -309,6 +390,7 @@ public class Order {
         // 8.8 Order Delivered
         public List<OrderData> getDelivered() {
             return orders.stream()
+                    .filter(this::mine)
                     .filter(o -> o.getStatus().equalsIgnoreCase(RECEIVED))
                     .collect(Collectors.toList());
         }
