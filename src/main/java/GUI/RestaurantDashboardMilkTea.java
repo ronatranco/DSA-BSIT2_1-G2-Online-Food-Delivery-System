@@ -7,7 +7,6 @@ package GUI;
 /**
  *
  * @author Encrid9 
- * <darchristian4@gmail.com>
  */
 
 import java.awt.*;
