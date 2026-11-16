@@ -38,8 +38,8 @@ public class MainFrame extends JFrame implements ActionListener {
     
     private CustomerDashboard panelCustomerDashboard;
     private RestaurantDashboard panelRestaurantDashboard;
-    private RestaurantDashboardMilkTea panelMilkTeaDashboard;
-    private RestaurantDashboardMangPinaasa panelPinaasaDashboard;
+    private RestaurantDashboard panelMilkTeaDashboard;
+    private RestaurantDashboard panelPinaasaDashboard;
     private final UserAuthentication userAuth;
     private Admin adminLogic;
 
@@ -68,10 +68,10 @@ public class MainFrame extends JFrame implements ActionListener {
         panelAdminLogin = new AdminLoginPanel(this);
         panelAdminGUI = new AdminDashboard(this);
 
-        panelRestaurantDashboard = new RestaurantDashboard(this);
+        panelRestaurantDashboard = new RestaurantDashboard(this, Model.Restaurant.Brand.MCDOLLIBEE);
         panelCustomerDashboard = new CustomerDashboard(this);
-        panelMilkTeaDashboard = new RestaurantDashboardMilkTea(this);
-        panelPinaasaDashboard = new RestaurantDashboardMangPinaasa(this);
+        panelMilkTeaDashboard = new RestaurantDashboard(this, Model.Restaurant.Brand.BRAIN_CELLS_MILK_TEA);
+        panelPinaasaDashboard = new RestaurantDashboard(this, Model.Restaurant.Brand.MANG_PINAASA);
         
         mainContainer.add(panelStart, "START");
         mainContainer.add(panelAuth, "AUTH");
