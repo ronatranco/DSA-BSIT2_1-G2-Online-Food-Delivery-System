@@ -446,7 +446,7 @@ public class Order {
             String customer = order.getCustomerName();
             if (customer == null || customer.trim().isEmpty()) customer = "Customer";
 
-            Restaurant.Order ro = resto.addOrder(customer, items.toString(), total, payment);
+            Restaurant.Order ro = resto.addOrder(data.getOrderId(), customer, items.toString(), total, payment);
             links.add(new Link(data, resto, ro));
         }
 

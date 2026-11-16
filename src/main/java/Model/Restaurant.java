@@ -320,12 +320,17 @@ public final class Restaurant {
    }
 
    public Order addOrder(String customer, String items, double total, String payment) {
-      String id = String.format("ORD-%03d", ++orderCounter);
-      Order order = new Order(id, customer, items, total, payment, LocalTime.now().format(TIME_FORMAT), Order.PENDING);
-      orders.add(0, order);
-      notifyChanged();
-      return order;
-   }
+   String id = String.format("ORD-%03d", ++orderCounter);   
+   return addOrder(id, customer, items, total, payment);
+    }
+
+    public Order addOrder(String id, String customer, String items, double total, String payment) {
+       Order order = new Order(id, customer, items, total, payment, LocalTime.now().format(TIME_FORMAT), Order.PENDING);
+       orders.add(0, order);
+       notifyChanged();
+       return order;
+    }
+   
 
    public void setOrderStatus(Order order, String status) {
       order.status = status;
