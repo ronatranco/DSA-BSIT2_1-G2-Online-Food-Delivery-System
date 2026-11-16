@@ -24,8 +24,8 @@ import Model.Restaurant;
 import Model.Restaurant.MoneyFormat;
 
 public class RestaurantDashboard extends JPanel {
-   static Restaurant DATA = Restaurant.get(Restaurant.Brand.MCDOLLIBEE);
-   private final Restaurant data = DATA;
+   private final Restaurant.Brand brand;
+   private final Restaurant data;
 
    private static final int NAV_COLLAPSED = 80, NAV_EXPANDED = 240, PAGE_X = 90, PAGE_W = 934, PAGE_H = 630;
 
@@ -47,7 +47,14 @@ public class RestaurantDashboard extends JPanel {
    private long navStartTime;
    private boolean navTarget = false;
 
+   /** Default dashboard (McDollibee), kept so existing callers still compile. */
    public RestaurantDashboard(MainFrame frame) {
+      this(frame, Restaurant.Brand.MCDOLLIBEE);
+   }
+
+   public RestaurantDashboard(MainFrame frame, Restaurant.Brand brand) {
+      this.brand = brand;
+      this.data = Restaurant.get(brand);
       setLayout(null);
       setBounds(0, 0, 1024, 720);
       pnlMainBg = new JPanel() {
@@ -63,10 +70,10 @@ public class RestaurantDashboard extends JPanel {
       buildNav();
       buildHome();
       addPage("home", homePanel);
-      addPage("menu", new FoodItemsPage());
-      addPage("incoming", new IncomingOrdersPage());
-      addPage("orders", new OrderStatusPage());
-      addPage("profile", new ProfilePage());
+      addPage("menu", new FoodItemsPage(data));
+      addPage("incoming", new IncomingOrdersPage(data));
+      addPage("orders", new OrderStatusPage(data));
+      addPage("profile", new ProfilePage(data));
 
       pnlMainBg.add(leftBannerNav);
       pnlMainBg.setComponentZOrder(leftBannerNav, 0);
@@ -112,8 +119,8 @@ public class RestaurantDashboard extends JPanel {
       panda.setBounds(0, 24, NAV_COLLAPSED, 44);
       leftBannerNav.add(panda);
 
-      lblLogoPanda = new JLabel("McDollibee");
-      lblLogoPanda.setFont(UIStyle.font(Font.BOLD, 18));
+      lblLogoPanda = new JLabel(brandTitle());
+      lblLogoPanda.setFont(UIStyle.font(Font.BOLD, brandTitleSize()));
       lblLogoPanda.setForeground(UIStyle.WHITE);
       lblLogoPanda.setBounds(68, 24, NAV_EXPANDED - 76, 26);
       lblLogoPanda.setVisible(false);
@@ -127,17 +134,18 @@ public class RestaurantDashboard extends JPanel {
       leftBannerNav.add(lblRestaurant);
 
       String[][] items = {
-         {"home", "\uD83C\uDFE0", "Dashboard"},
-         {"menu", "\uD83C\uDF7D", "Menu Items"},
-         {"incoming", "\uD83D\uDCE5", "Incoming Orders"},
-         {"orders", "\uD83D\uDCCB", "Order Status"},
-         {"profile", "\uD83C\uDFEA", "Restaurant Profile"}
+         {"home", "🏠", "Dashboard"},
+         {"menu", "🛒", "Menu Items"},
+         {"incoming", "🛵", "Incoming Orders"},
+         {"orders", "📋", "Order Status"},
+         {"profile", "👤", "Restaurant Profile"}
       };
       int y = 105;
       for (String[] item : items) {
          String key = item[0];
          NavButton button = new NavButton(item[1], item[2]);
          button.setBounds(0, y, NAV_COLLAPSED, 45);
+         button.setForeground(UIStyle.YELLOW_ACCENT);
          button.addActionListener((e) -> showPage(key));
          leftBannerNav.add(button);
          navButtons.put(key, button);
@@ -147,6 +155,7 @@ public class RestaurantDashboard extends JPanel {
 
       btnNavExit = new NavButton("[\u2190", "Logout");
       btnNavExit.setBounds(0, 560, NAV_COLLAPSED, 45);
+      btnNavExit.setForeground(UIStyle.YELLOW_ACCENT);
       leftBannerNav.add(btnNavExit);
       allNav.add(btnNavExit);
 
@@ -173,6 +182,24 @@ public class RestaurantDashboard extends JPanel {
       leftBannerNav.addMouseListener(hover);
       for (Component c : leftBannerNav.getComponents()) {
          c.addMouseListener(hover);
+      }
+   }
+
+   private String brandTitle() {
+      switch (brand) {
+         case MANG_PINAASA: return "Mang Pinaasa";
+         case BRAIN_CELLS_MILK_TEA: return "Brain Cells Milk Tea";
+         case MCDOLLIBEE:
+         default: return "McDollibee";
+      }
+   }
+
+   private int brandTitleSize() {
+      switch (brand) {
+         case MANG_PINAASA: return 16;
+         case BRAIN_CELLS_MILK_TEA: return 13;
+         case MCDOLLIBEE:
+         default: return 18;
       }
    }
 
@@ -223,21 +250,31 @@ public class RestaurantDashboard extends JPanel {
    }
 
    private static class NavButton extends JButton {
-      private final String icon, label;
+      private final JLabel iconLabel;
+      private final JLabel textLabel;
       private boolean active;
 
       NavButton(String icon, String label) {
-         super(icon);
-         this.icon = icon;
-         this.label = label;
+         setLayout(null);
          setContentAreaFilled(false);
          setOpaque(false);
+         setBorderPainted(false);
          setFocusPainted(false);
          setRolloverEnabled(true);
-         setForeground(UIStyle.WHITE);
-         setFont(UIStyle.emojiFont(Font.PLAIN, 18));
          setCursor(new Cursor(Cursor.HAND_CURSOR));
-         setExpanded(false);
+
+         iconLabel = new JLabel(icon, SwingConstants.CENTER);
+         iconLabel.setFont(UIStyle.emojiFont(Font.PLAIN, 22));
+         iconLabel.setForeground(UIStyle.YELLOW_ACCENT);
+         iconLabel.setBounds(0, 0, NAV_COLLAPSED, 45);
+         add(iconLabel);
+
+         textLabel = new JLabel(label);
+         textLabel.setFont(UIStyle.font(Font.BOLD, 17));
+         textLabel.setForeground(UIStyle.WHITE);
+         textLabel.setBounds(68, -2, NAV_EXPANDED - 76, 45);
+         textLabel.setVisible(false);
+         add(textLabel);
       }
 
       void setActive(boolean active) {
@@ -246,9 +283,7 @@ public class RestaurantDashboard extends JPanel {
       }
 
       void setExpanded(boolean expanded) {
-         setText(expanded ? icon + "   " + label : icon);
-         setHorizontalAlignment(expanded ? SwingConstants.LEFT : SwingConstants.CENTER);
-         setBorder(expanded ? BorderFactory.createEmptyBorder(9, 26, 9, 10) : BorderFactory.createEmptyBorder(9, 0, 9, 0));
+         textLabel.setVisible(expanded);
       }
 
       @Override
@@ -355,11 +390,12 @@ public class RestaurantDashboard extends JPanel {
    }
 
    static abstract class Page extends JPanel {
-      final Restaurant data = DATA;
+      final Restaurant data;
       final UIStyle.Notice notice = new UIStyle.Notice();
 
-      Page() {
+      Page(Restaurant data) {
          super(new BorderLayout());
+         this.data = data;
          setOpaque(false);
       }
 
@@ -373,7 +409,8 @@ public class RestaurantDashboard extends JPanel {
       private final DefaultTableModel model = (DefaultTableModel)table.getModel();
       private final List<Restaurant.Order> shown = new ArrayList<>();
 
-      IncomingOrdersPage() {
+      IncomingOrdersPage(Restaurant data) {
+         super(data);
          JButton accept = UIStyle.button("Accept Order", UIStyle.GREEN);
          accept.addActionListener((e) -> acceptSelected());
          JButton reject = UIStyle.button("Reject Order", UIStyle.RED);
@@ -429,7 +466,8 @@ public class RestaurantDashboard extends JPanel {
       private final JTextField search = UIStyle.styledField("");
       private final JComboBox<String> filter = new JComboBox<>(new String[]{"All", "Pending", "Preparing", "Out for Delivery", "Delivered", "Cancelled", "Failed"});
 
-      OrderStatusPage() {
+      OrderStatusPage(Restaurant data) {
+         super(data);
          search.setColumns(14);
          UIStyle.onTextChange(search, this::refresh);
          filter.addActionListener((e) -> refresh());
@@ -503,7 +541,8 @@ public class RestaurantDashboard extends JPanel {
       private final JTextField contact = UIStyle.styledField("");
       private final JTextField cuisine = UIStyle.styledField("");
 
-      ProfilePage() {
+      ProfilePage(Restaurant data) {
+         super(data);
          loadFields();
          JButton save = UIStyle.primaryButton("Save Changes");
          save.addActionListener((e) -> saveProfile());
@@ -594,7 +633,8 @@ public class RestaurantDashboard extends JPanel {
       private Consumer<String> onPicked;
       private String pickReturn = "list";
 
-      FoodItemsPage() {
+      FoodItemsPage(Restaurant data) {
+         super(data);
          JButton addBtn = UIStyle.primaryButton("+ Add Food Item");
          addBtn.addActionListener((e) -> openForm(null));
          JPanel actions = new JPanel(new GridLayout(2, 3, 10, 10));
