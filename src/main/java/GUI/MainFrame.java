@@ -1,8 +1,7 @@
 /*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to edit this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-
 package GUI;
 
 import Database.databaseConnection;
@@ -20,10 +19,9 @@ import javax.swing.*;
 
 /**
  * @author rownavanana and calalang
- * CLASS FOR LOGICS AND CARDLAYOUT NAVIGATION
  */
-public class MainFrame extends JFrame implements ActionListener {
 
+public class MainFrame extends JFrame implements ActionListener {
     private JPanel mainContainer;
     private CardLayout cardLayout;
 
@@ -35,7 +33,7 @@ public class MainFrame extends JFrame implements ActionListener {
     private RestaurantLoginPanel panelRestaurantLogin;
     private AdminLoginPanel panelAdminLogin;
     private AdminDashboard panelAdminGUI;
-    
+
     private CustomerDashboard panelCustomerDashboard;
     private RestaurantDashboard panelRestaurantDashboard;
     private RestaurantDashboard panelMilkTeaDashboard;
@@ -72,7 +70,7 @@ public class MainFrame extends JFrame implements ActionListener {
         panelCustomerDashboard = new CustomerDashboard(this);
         panelMilkTeaDashboard = new RestaurantDashboard(this, Model.Restaurant.Brand.BRAIN_CELLS_MILK_TEA);
         panelPinaasaDashboard = new RestaurantDashboard(this, Model.Restaurant.Brand.MANG_PINAASA);
-        
+
         mainContainer.add(panelStart, "START");
         mainContainer.add(panelAuth, "AUTH");
         mainContainer.add(panelRoleSelection, "ROLE_SELECTION");
@@ -90,14 +88,14 @@ public class MainFrame extends JFrame implements ActionListener {
 
         showCard("START");
     }
-    
+
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> new MainFrame().setVisible(true));
     }
-    
+
     private void registerActionListeners() {
         panelStart.btnStart.addActionListener(this);
-        
+
         panelAuth.btnNavLogin.addActionListener(this);
         panelAuth.btnNavRegister.addActionListener(this);
 
@@ -154,7 +152,6 @@ public class MainFrame extends JFrame implements ActionListener {
     public void actionPerformed(ActionEvent e) {
         Object source = e.getSource();
 
-        // 1. START & AUTH PANEL NAVIGATION
         if (source == panelStart.btnStart) {
             showCard("AUTH");
         }
@@ -165,7 +162,6 @@ public class MainFrame extends JFrame implements ActionListener {
             showCard("SIGNUP");
         }
 
-        // 2. ROLE SELECTION NAVIGATION
         else if (source == panelRoleSelection.btnRoleCustomer) {
             showCard("CUSTOMER_LOGIN");
         }
@@ -179,7 +175,6 @@ public class MainFrame extends JFrame implements ActionListener {
             showCard("AUTH");
         }
 
-        // 3. CROSS-NAVIGATION & SIGNUP
         else if (source == panelSignup.btnRegister) {
             registerUser();
         }
@@ -196,14 +191,12 @@ public class MainFrame extends JFrame implements ActionListener {
             showCard("SIGNUP");
         }
 
-        // 4. GO BACK BUTTONS
         else if (source == panelCustomerLogin.btnCustomerLoginBack ||
                  source == panelRestaurantLogin.btnRestaurantLoginBack ||
                  source == panelAdminLogin.btnAdminLoginBack) {
             showCard("ROLE_SELECTION");
         }
 
-        // 5. FORGOT PASSWORD - CUSTOMER
         else if (source == panelCustomerLogin.btnForgotPassword) {
             String user = panelCustomerLogin.txtLoginEmailOrUser.getText().trim();
             String pass = new String(panelCustomerLogin.txtLoginPassword.getPassword());
@@ -220,7 +213,6 @@ public class MainFrame extends JFrame implements ActionListener {
             }
         }
 
-        // 6. FORGOT PASSWORD - RESTAURANT
         else if (source == panelRestaurantLogin.btnRestaurantForgotPassword) {
             String user = panelRestaurantLogin.txtRestaurantUser.getText().trim();
             String pass = new String(panelRestaurantLogin.txtRestaurantPass.getPassword());
@@ -237,7 +229,6 @@ public class MainFrame extends JFrame implements ActionListener {
             }
         }
 
-        // 7. FORGOT PASSWORD - ADMIN
         else if (source == panelAdminLogin.btnAdminForgotPassword) {
             String user = panelAdminLogin.txtAdminUser.getText().trim();
             String pass = new String(panelAdminLogin.txtAdminPass.getPassword());
@@ -254,14 +245,13 @@ public class MainFrame extends JFrame implements ActionListener {
             }
         }
 
-        // 8. CUSTOMER LOGIN (checks the database)
         else if (source == panelCustomerLogin.btnCustomerLogin) {
             String identifier = panelCustomerLogin.txtLoginEmailOrUser.getText().trim();
             String password = new String(panelCustomerLogin.txtLoginPassword.getPassword());
 
             if (authenticate(identifier, password, "customer")) {
-                AccountDAO.setLogin(identifier); 
-                Model.Order.OrderStore.startSession(identifier);   
+                AccountDAO.setLogin(identifier);
+                Model.Order.OrderStore.startSession(identifier);
                 panelCustomerLogin.txtLoginEmailOrUser.setText("");
                 panelCustomerLogin.txtLoginPassword.setText("");
                 if (panelCustomerLogin.chkLoginSavePassword != null) {
@@ -277,7 +267,6 @@ public class MainFrame extends JFrame implements ActionListener {
             }
         }
 
-        // 9. RESTAURANT LOGIN (checks the database)
         else if (source == panelRestaurantLogin.btnRestaurantLogin) {
             String identifier = panelRestaurantLogin.txtRestaurantUser.getText().trim();
             String password = new String(panelRestaurantLogin.txtRestaurantPass.getPassword());
@@ -293,21 +282,20 @@ public class MainFrame extends JFrame implements ActionListener {
 
                 String account = identifier.toLowerCase().replace(" ", "").replace("_", "");
                 String card = "RESTAURANT_DASHBOARD";
-                Model.Restaurant.Brand brand = Model.Restaurant.Brand.MCDOLLIBEE;   
+                Model.Restaurant.Brand brand = Model.Restaurant.Brand.MCDOLLIBEE;
                 if (account.contains("braincell") || account.contains("milktea")) {
                     card = "RESTAURANT_DASHBOARD_MILKTEA";
-                    brand = Model.Restaurant.Brand.BRAIN_CELLS_MILK_TEA;            
+                    brand = Model.Restaurant.Brand.BRAIN_CELLS_MILK_TEA;
                 } else if (account.contains("pinaasa")) {
                     card = "RESTAURANT_DASHBOARD_PINAASA";
-                    brand = Model.Restaurant.Brand.MANG_PINAASA;                    
+                    brand = Model.Restaurant.Brand.MANG_PINAASA;
                 }
 
-                Model.Restaurant.get(brand).loadFromAccount(identifier);            
+                Model.Restaurant.get(brand).loadFromAccount(identifier);
                 showCard(card);
             }
         }
 
-        // 10. ADMIN LOGIN (CHECKS THE DATABASE)
         else if (source == panelAdminLogin.btnAdminLogin) {
             String username = panelAdminLogin.txtAdminUser.getText().trim();
             String password = new String(panelAdminLogin.txtAdminPass.getPassword());
@@ -322,7 +310,6 @@ public class MainFrame extends JFrame implements ActionListener {
             }
         }
 
-        // 11. LOGOUT ACTIONS FROM ANY DASHBOARD (RETURNS TO ROLE SELECTION)
         else if ((panelAdminGUI.getBtnLogout() != null && source == panelAdminGUI.getBtnLogout()) ||
                  (panelCustomerDashboard.getBtnLogout() != null && source == panelCustomerDashboard.getBtnLogout()) ||
                  (panelRestaurantDashboard.getBtnLogout() != null && source == panelRestaurantDashboard.getBtnLogout()) ||
@@ -352,7 +339,6 @@ public class MainFrame extends JFrame implements ActionListener {
         return false;
     }
 
-    // CHECKS SIGNUP FORM & INSTERTS NEW USER INTO THE DATABASE
     private void registerUser() {
         String name     = panelSignup.txtName.getText().trim();
         String username = panelSignup.txtUsername.getText().trim();
@@ -386,7 +372,6 @@ public class MainFrame extends JFrame implements ActionListener {
 
         try (Connection con = databaseConnection.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
-
             ps.setString(1, name);
             ps.setString(2, username);
             ps.setString(3, email);
@@ -399,7 +384,6 @@ public class MainFrame extends JFrame implements ActionListener {
             JOptionPane.showMessageDialog(this, "Account created!");
             panelSignup.clearFields();
             showCard("ROLE_SELECTION");
-
         } catch (SQLException ex) {
             if (ex.getErrorCode() == 1062) {
                 JOptionPane.showMessageDialog(this, "Username or email already exists.");

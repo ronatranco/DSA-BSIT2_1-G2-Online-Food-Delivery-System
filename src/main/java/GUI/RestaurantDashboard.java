@@ -1,13 +1,9 @@
 /*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to edit this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-
 package GUI;
-/**
- *
- * @author Encrid9
- */
+
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.geom.RoundRectangle2D;
@@ -20,8 +16,14 @@ import javax.swing.border.*;
 import javax.swing.event.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.table.*;
+import Model.Admin;
 import Model.Restaurant;
 import Model.Restaurant.MoneyFormat;
+
+/**
+ *
+ * @author Encrid9
+ */
 
 public class RestaurantDashboard extends JPanel {
    private final Restaurant.Brand brand;
@@ -47,7 +49,6 @@ public class RestaurantDashboard extends JPanel {
    private long navStartTime;
    private boolean navTarget = false;
 
-   /** Default dashboard (McDollibee), kept so existing callers still compile. */
    public RestaurantDashboard(MainFrame frame) {
       this(frame, Restaurant.Brand.MCDOLLIBEE);
    }
@@ -145,7 +146,6 @@ public class RestaurantDashboard extends JPanel {
          String key = item[0];
          NavButton button = new NavButton(item[1], item[2]);
          button.setBounds(0, y, NAV_COLLAPSED, 45);
-         button.setForeground(UIStyle.YELLOW_ACCENT);
          button.addActionListener((e) -> showPage(key));
          leftBannerNav.add(button);
          navButtons.put(key, button);
@@ -153,9 +153,8 @@ public class RestaurantDashboard extends JPanel {
          y += 58;
       }
 
-      btnNavExit = new NavButton("[\u2190", "Logout");
+      btnNavExit = new NavButton("[←", "Logout");
       btnNavExit.setBounds(0, 560, NAV_COLLAPSED, 45);
-      btnNavExit.setForeground(UIStyle.YELLOW_ACCENT);
       leftBannerNav.add(btnNavExit);
       allNav.add(btnNavExit);
 
@@ -255,26 +254,23 @@ public class RestaurantDashboard extends JPanel {
       private boolean active;
 
       NavButton(String icon, String label) {
-         setLayout(null);
+         setLayout(new BorderLayout(16, 0));
          setContentAreaFilled(false);
          setOpaque(false);
-         setBorderPainted(false);
          setFocusPainted(false);
          setRolloverEnabled(true);
          setCursor(new Cursor(Cursor.HAND_CURSOR));
 
          iconLabel = new JLabel(icon, SwingConstants.CENTER);
-         iconLabel.setFont(UIStyle.emojiFont(Font.PLAIN, 22));
+         iconLabel.setFont(UIStyle.emojiFont(Font.PLAIN, 18));
          iconLabel.setForeground(UIStyle.YELLOW_ACCENT);
-         iconLabel.setBounds(0, 0, NAV_COLLAPSED, 45);
-         add(iconLabel);
 
-         textLabel = new JLabel(label);
-         textLabel.setFont(UIStyle.font(Font.BOLD, 17));
+         textLabel = new JLabel(label, SwingConstants.LEFT);
+         textLabel.setFont(UIStyle.font(Font.PLAIN, 16));
          textLabel.setForeground(UIStyle.WHITE);
-         textLabel.setBounds(68, -2, NAV_EXPANDED - 76, 45);
-         textLabel.setVisible(false);
-         add(textLabel);
+
+         add(iconLabel, BorderLayout.CENTER);
+         setExpanded(false);
       }
 
       void setActive(boolean active) {
@@ -283,7 +279,17 @@ public class RestaurantDashboard extends JPanel {
       }
 
       void setExpanded(boolean expanded) {
-         textLabel.setVisible(expanded);
+         removeAll();
+         if (expanded) {
+            setBorder(BorderFactory.createEmptyBorder(9, 26, 9, 10));
+            add(iconLabel, BorderLayout.WEST);
+            add(textLabel, BorderLayout.CENTER);
+         } else {
+            setBorder(BorderFactory.createEmptyBorder(9, 0, 9, 0));
+            add(iconLabel, BorderLayout.CENTER);
+         }
+         revalidate();
+         repaint();
       }
 
       @Override
@@ -302,11 +308,11 @@ public class RestaurantDashboard extends JPanel {
 
    private void buildHome() {
       homePanel.setBackground(UIStyle.BG_LIGHT);
-     
+
       JPanel north = new JPanel(new BorderLayout());
       north.setOpaque(false);
       north.add(buildHeader(), BorderLayout.NORTH);
-     
+
       JPanel noticeWrap = new JPanel(new BorderLayout());
       noticeWrap.setOpaque(false);
       noticeWrap.setBorder(BorderFactory.createEmptyBorder(8, 24, 0, 24));
@@ -330,7 +336,7 @@ public class RestaurantDashboard extends JPanel {
       JPanel header = new JPanel(new BorderLayout());
       header.setBackground(UIStyle.WHITE);
       header.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createMatteBorder(0, 0, 3, 0, UIStyle.YELLOW_ACCENT), BorderFactory.createEmptyBorder(12, 24, 10, 24)));
-      
+
       JLabel title = new JLabel("RESTAURANT DASHBOARD");
       title.setFont(UIStyle.font(Font.BOLD, 22));
       title.setForeground(UIStyle.TEXT_DARK);
@@ -354,7 +360,7 @@ public class RestaurantDashboard extends JPanel {
       JPanel panel = new JPanel(new GridLayout(2, 1, 14, 14));
       panel.setBackground(UIStyle.BG_LIGHT);
       panel.setBorder(BorderFactory.createEmptyBorder(12, 24, 14, 24));
-    
+
       JPanel stats = new JPanel(new GridLayout(1, 4, 15, 0));
       stats.setBackground(UIStyle.BG_LIGHT);
       stats.add(UIStyle.statCard("MENU ITEMS", String.valueOf(data.restaurant.menuItems.size()), data.availableDishCount() + " available", UIStyle.PURPLE_LIGHT));
@@ -364,7 +370,7 @@ public class RestaurantDashboard extends JPanel {
 
       UIStyle.RoundedPanel quick = UIStyle.card(UIStyle.PURPLE_DARK);
       quick.setPadding(14, 26, 16, 24);
-     
+
       JLabel quickTitle = new JLabel("QUICK ACTIONS");
       quickTitle.setFont(UIStyle.font(Font.BOLD, 18));
       quickTitle.setForeground(UIStyle.TEXT_DARK);
@@ -470,6 +476,7 @@ public class RestaurantDashboard extends JPanel {
          super(data);
          search.setColumns(14);
          UIStyle.onTextChange(search, this::refresh);
+         UIStyle.styledCombo(filter);
          filter.addActionListener((e) -> refresh());
          JPanel filterBar = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 0));
          filterBar.setOpaque(false);
@@ -518,7 +525,7 @@ public class RestaurantDashboard extends JPanel {
             Restaurant.Order order = shown.get(row);
             if (order.isFinal()) {
                notice.warn(order.id + " is already " + order.status + " and can't be changed.");
-            } else if (Restaurant.Order.READY.equals(order.status) && Restaurant.Order.PREPARING.equals(newStatus)){ 
+            } else if (Restaurant.Order.READY.equals(order.status) && Restaurant.Order.PREPARING.equals(newStatus)){
                notice.warn(order.id + " is already Out for Delivery and can't go back to Preparing.");
             } else {
                data.setOrderStatus(order, newStatus);
@@ -536,7 +543,7 @@ public class RestaurantDashboard extends JPanel {
 
    static class ProfilePage extends Page {
       private final JTextField restaurantName = UIStyle.styledField("");
-      private final JTextField location = UIStyle.styledField("");
+      private final JComboBox<String> location = UIStyle.zoneBox();
       private final JTextField ownerName = UIStyle.styledField("");
       private final JTextField contact = UIStyle.styledField("");
       private final JTextField cuisine = UIStyle.styledField("");
@@ -577,20 +584,20 @@ public class RestaurantDashboard extends JPanel {
       private void loadFields() {
          Restaurant.Restaurantt r = data.restaurant;
          restaurantName.setText(r.name);
-         location.setText(r.location);
+         location.setSelectedIndex(Arrays.asList(Admin.ZONES).indexOf(r.location));
          ownerName.setText(r.ownerName);
          contact.setText(r.contact);
          cuisine.setText(r.cuisine);
       }
 
       private void saveProfile() {
-         if (restaurantName.getText().trim().isEmpty() || location.getText().trim().isEmpty()) {
-            notice.warn("Restaurant name and location can't be empty.");
+         if (restaurantName.getText().trim().isEmpty() || location.getSelectedIndex() < 0) {
+            notice.warn("Restaurant name can't be empty, and the location must be Zone A, Zone B or Zone C.");
             return;
          }
          Restaurant.Restaurantt r = data.restaurant;
          r.name = restaurantName.getText().trim();
-         r.location = location.getText().trim();
+         r.location = String.valueOf(location.getSelectedItem());
          r.ownerName = ownerName.getText().trim();
          r.contact = contact.getText().trim();
          r.cuisine = cuisine.getText().trim();
@@ -1020,6 +1027,71 @@ public class RestaurantDashboard extends JPanel {
             public void removeUpdate(DocumentEvent e) { action.run(); }
             public void changedUpdate(DocumentEvent e) { action.run(); }
          });
+      }
+
+      static JComboBox<String> styledCombo(JComboBox<String> box) {
+         box.setFont(font(Font.PLAIN, 14));
+         box.setBackground(WHITE);
+         box.setForeground(TEXT_DARK);
+         box.setOpaque(true);
+         box.setBorder(new LineBorder(FIELD_BORDER, 1, true));
+         box.setMaximumRowCount(8);
+         box.setCursor(new Cursor(Cursor.HAND_CURSOR));
+         box.setUI(new javax.swing.plaf.basic.BasicComboBoxUI() {
+            @Override
+            protected JButton createArrowButton() {
+               JButton arrow = new JButton() {
+                  @Override
+                  protected void paintComponent(Graphics g) {
+                     Graphics2D g2 = (Graphics2D)g.create();
+                     g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                     g2.setColor(PURPLE_DARK);
+                     g2.fillRect(0, 0, getWidth(), getHeight());
+                     g2.setColor(YELLOW_ACCENT);
+                     int cx = getWidth() / 2, cy = getHeight() / 2;
+                     g2.fillPolygon(new int[]{cx - 5, cx + 5, cx}, new int[]{cy - 3, cy - 3, cy + 4}, 3);
+                     g2.dispose();
+                  }
+               };
+               arrow.setBorder(BorderFactory.createEmptyBorder());
+               arrow.setFocusPainted(false);
+               arrow.setContentAreaFilled(false);
+               arrow.setPreferredSize(new Dimension(32, 32));
+               return arrow;
+            }
+
+            @Override
+            public void paintCurrentValueBackground(Graphics g, Rectangle bounds, boolean hasFocus) {
+               g.setColor(WHITE);
+               g.fillRect(bounds.x, bounds.y, bounds.width, bounds.height);
+            }
+
+            @Override
+            protected javax.swing.plaf.basic.ComboPopup createPopup() {
+               javax.swing.plaf.basic.BasicComboPopup popup = new javax.swing.plaf.basic.BasicComboPopup(comboBox);
+               popup.setBorder(BorderFactory.createLineBorder(PURPLE_DARK, 1));
+               return popup;
+            }
+         });
+         box.setRenderer(new DefaultListCellRenderer() {
+            @Override
+            public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean selected, boolean focus) {
+               JLabel label = (JLabel)super.getListCellRendererComponent(list, value, index, selected, false);
+               label.setFont(font(Font.PLAIN, 14));
+               label.setBorder(BorderFactory.createEmptyBorder(6, 10, 6, 10));
+               label.setOpaque(true);
+               boolean highlight = selected && index >= 0;
+               label.setBackground(highlight ? SELECTION : WHITE);
+               label.setForeground(highlight ? PURPLE_DARK : TEXT_DARK);
+               return label;
+            }
+         });
+         box.setPreferredSize(new Dimension(box.getPreferredSize().width, 38));
+         return box;
+      }
+
+      static JComboBox<String> zoneBox() {
+         return styledCombo(new JComboBox<>(Admin.ZONES));
       }
 
       static void styleImageBox(JLabel label) {

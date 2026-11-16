@@ -5,334 +5,584 @@
 package Model;
 
 import Database.databaseConnection;
-import GUI.AdminDashboard;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import javax.swing.JOptionPane;
+import Model.Restaurant.MoneyFormat;
+import java.sql.*;
+import java.util.*;
 
 /**
  * @author rownavanana and calalang
- * 
  */
-public class Admin implements ActionListener {
 
-    private AdminDashboard adminDashboard;
-    private String currentView = "OVERVIEW";
+public class Admin {
+    public static final String ROLE_CUSTOMER = "CUSTOMER";
+    public static final String ROLE_RESTAURANT = "RESTAURANT";
+    public static final String STATUS_ACTIVE = "Active";
+    public static final String STATUS_BANNED = "Banned";
 
-    public Admin() {
+    public static final String[] ZONES = {"Zone A", "Zone B", "Zone C"};
+
+    public static final class Account {
+        public int id;
+        public String fullName, username, email, phone, address, status;
     }
 
-    public void setAdminDashboard(AdminDashboard adminDashboard) {
-        this.adminDashboard = adminDashboard;
-        registerAdminListeners();
-        loadOverviewData();
+    private static final String[] WANTED = {"id", "full_name", "username", "email", "phone", "address", "status"};
+
+    public List<Account> listAccounts(String role) throws SQLException {
+        List<Account> accounts = new ArrayList<>();
+        try (Connection con = databaseConnection.getConnection()) {
+            String table = accountsTable(con);
+            Set<String> columns = columnsOf(con, table);
+
+            StringBuilder select = new StringBuilder();
+            for (String column : WANTED) {
+                if (columns.contains(column)) {
+                    select.append(select.length() == 0 ? "" : ", ").append(column);
+                }
+            }
+            String sql = "SELECT " + select + " FROM " + table + " WHERE UPPER(role) = ? ORDER BY id";
+            try (PreparedStatement ps = con.prepareStatement(sql)) {
+                ps.setString(1, role.toUpperCase());
+                try (ResultSet rs = ps.executeQuery()) {
+                    while (rs.next()) {
+                        Account a = new Account();
+                        a.id = rs.getInt("id");
+                        a.fullName = text(rs, columns, "full_name");
+                        a.username = text(rs, columns, "username");
+                        a.email = text(rs, columns, "email");
+                        a.phone = text(rs, columns, "phone");
+                        a.address = text(rs, columns, "address");
+                        String status = text(rs, columns, "status");
+                        a.status = status.trim().isEmpty() ? STATUS_ACTIVE : status;
+                        accounts.add(a);
+                    }
+                }
+            }
+        }
+        return accounts;
     }
 
-    private void registerAdminListeners() {
-        if (adminDashboard != null) {
-            try { adminDashboard.getBtnNavOverview().addActionListener(this); } catch (Exception e) {}
-            try { adminDashboard.getBtnNavUsers().addActionListener(this); } catch (Exception e) {}
-            try { adminDashboard.getBtnNavRestaurants().addActionListener(this); } catch (Exception e) {}
-            try { adminDashboard.getBtnNavOrders().addActionListener(this); } catch (Exception e) {}
-            try { adminDashboard.getBtnDeleteSelectedUser().addActionListener(this); } catch (Exception e) {}
-            try { adminDashboard.getBtnRefreshData().addActionListener(this); } catch (Exception e) {}
+    public int countAccounts(String role) throws SQLException {
+        try (Connection con = databaseConnection.getConnection()) {
+            String sql = "SELECT COUNT(*) FROM " + accountsTable(con) + " WHERE UPPER(role) = ?";
+            try (PreparedStatement ps = con.prepareStatement(sql)) {
+                ps.setString(1, role.toUpperCase());
+                try (ResultSet rs = ps.executeQuery()) {
+                    return rs.next() ? rs.getInt(1) : 0;
+                }
+            }
         }
     }
 
-    @Override
-    public void actionPerformed(ActionEvent e) {
-        if (adminDashboard == null) return;
-
-        Object source = e.getSource();
-
-        if (source == adminDashboard.getBtnNavOverview()) {
-            currentView = "OVERVIEW";
-            
-            if (adminDashboard.getLblName() != null) {
-                adminDashboard.getLblName().setText("Hello, Admin!");
-                adminDashboard.getLblName().setVisible(true);
+    public static void ensureDistinctRestaurants() {
+        String[] defaults = {"McDollibee", "Brain Cells Milk Tea", "Mang Pinaasa"};
+        Restaurant.Brand[] brands = Restaurant.Brand.values();
+        Set<String> seen = new HashSet<>();
+        for (int i = 0; i < brands.length; i++) {
+            Restaurant data = Restaurant.get(brands[i]);
+            Restaurant.Restaurantt r = data.restaurant;
+            boolean changed = false;
+            if (!seen.add(r.name.trim().toLowerCase())) {
+                r.name = defaults[i % defaults.length];
+                seen.add(r.name.toLowerCase());
+                changed = true;
             }
-            
-            if (adminDashboard.getCardMetricsContainer() != null) adminDashboard.getCardMetricsContainer().setVisible(true);
-            if (adminDashboard.getPnlProfileCard() != null) adminDashboard.getPnlProfileCard().setVisible(false);
-            if (adminDashboard.getTableScrollPane() != null) adminDashboard.getTableScrollPane().setVisible(false);
-            toggleActionButtons(false);
-            loadOverviewData();
-        } 
-        else if (source == adminDashboard.getBtnNavUsers()) {
-            currentView = "USERS";
-            
-            if (adminDashboard.getLblName() != null) {
-                adminDashboard.getLblName().setText("Manage Customer Accounts");
-                adminDashboard.getLblName().setVisible(true);
+            if (!Arrays.asList(ZONES).contains(r.location)) {
+                r.location = ZONES[i % ZONES.length];
+                changed = true;
             }
-            
-            if (adminDashboard.getCardMetricsContainer() != null) adminDashboard.getCardMetricsContainer().setVisible(false);
-            if (adminDashboard.getPnlProfileCard() != null) adminDashboard.getPnlProfileCard().setVisible(false);
-            if (adminDashboard.getTableScrollPane() != null) adminDashboard.getTableScrollPane().setVisible(true);
-            toggleActionButtons(true);
-            loadUsersFromDatabase();
-        } 
-        else if (source == adminDashboard.getBtnNavRestaurants()) {
-            currentView = "RESTAURANTS";
-            
-            if (adminDashboard.getLblName() != null) {
-                adminDashboard.getLblName().setText("Restaurant Accounts");
-                adminDashboard.getLblName().setVisible(true);
+            if (changed) {
+                data.notifyChanged();
             }
-            
-            if (adminDashboard.getCardMetricsContainer() != null) adminDashboard.getCardMetricsContainer().setVisible(false);
-            if (adminDashboard.getPnlProfileCard() != null) adminDashboard.getPnlProfileCard().setVisible(false);
-            if (adminDashboard.getTableScrollPane() != null) adminDashboard.getTableScrollPane().setVisible(true);
-            toggleActionButtons(true);
-            loadRestaurantsFromDatabase();
-        } 
-        else if (source == adminDashboard.getBtnNavOrders()) { 
-            currentView = "PROFILE";
-            
-            if (adminDashboard.getLblName() != null) {
-                adminDashboard.getLblName().setText("Admin Profile");
-                adminDashboard.getLblName().setVisible(true);
-            }
-            
-            if (adminDashboard.getCardMetricsContainer() != null) adminDashboard.getCardMetricsContainer().setVisible(false);
-            if (adminDashboard.getPnlProfileCard() != null) adminDashboard.getPnlProfileCard().setVisible(true);
-            if (adminDashboard.getTableScrollPane() != null) adminDashboard.getTableScrollPane().setVisible(false);
-            toggleActionButtons(false);
         }
     }
 
-    public void actionProfilesOrResto(ActionEvent e) {
-        actionPerformed(e);
-    }
+    public static final String ROLE_ADMIN = "ADMIN";
 
-    private void toggleActionButtons(boolean show) {
-        try { adminDashboard.getBtnDeleteSelectedUser().setVisible(show); } catch (Exception e) {}
-        try { adminDashboard.getBtnBanSelectedUser().setVisible(show); } catch (Exception e) {}
-        try { adminDashboard.getBtnRefreshData().setVisible(show); } catch (Exception e) {}
-    }
+    public static final class Profile {
+        public int id = -1;
+        public String fullName = "Administrator", username = "admin", email = "", phone = "", address = "";
 
-    public void refreshCurrentView() {
-        switch (currentView) {
-            case "OVERVIEW":
-                loadOverviewData();
-                break;
-            case "USERS":
-                loadUsersFromDatabase();
-                break;
-            case "RESTAURANTS":
-                loadRestaurantsFromDatabase();
-                break;
-        }
-        JOptionPane.showMessageDialog(adminDashboard, "Content refreshed successfully!", "Refreshed", JOptionPane.INFORMATION_MESSAGE);
-    }
-
-    public void loadOverviewData() {
-        String sqlCustomers = "SELECT COUNT(*) FROM users WHERE role = 'customer'";
-        String sqlRestaurants = "SELECT COUNT(*) FROM users WHERE role = 'restaurant'";
-
-        try (Connection con = databaseConnection.getConnection();
-             PreparedStatement ps1 = con.prepareStatement(sqlCustomers);
-             ResultSet rs1 = ps1.executeQuery();
-             PreparedStatement ps2 = con.prepareStatement(sqlRestaurants);
-             ResultSet rs2 = ps2.executeQuery()) {
-
-            int totalCustomers = 0;
-            int totalRestaurants = 0;
-
-            if (rs1.next()) totalCustomers = rs1.getInt(1);
-            if (rs2.next()) totalRestaurants = rs2.getInt(1);
-
-            try { adminDashboard.getLblValUsers().setText(String.valueOf(totalCustomers)); } catch (Exception e) {}
-            try { adminDashboard.getLblValRestaurants().setText(String.valueOf(totalRestaurants)); } catch (Exception e) {}
-
-        } catch (SQLException ex) {
-            try { adminDashboard.getLblValUsers().setText("0"); } catch (Exception e) {}
-            try { adminDashboard.getLblValRestaurants().setText("0"); } catch (Exception e) {}
+        Profile copy() {
+            Profile p = new Profile();
+            p.id = id;
+            p.fullName = fullName;
+            p.username = username;
+            p.email = email;
+            p.phone = phone;
+            p.address = address;
+            return p;
         }
     }
 
-    public void loadUsersFromDatabase() {
-        String[] columns = {"ID", "Full Name", "Username", "Email", "Password", "Phone", "Status"};
+    private static final Profile profile = new Profile();
+
+    public Profile loadProfile() {
         try {
-            adminDashboard.getTableModel().setColumnIdentifiers(columns);
-            adminDashboard.getTableModel().setRowCount(0);
-        } catch (Exception e) { return; }
-
-        String sql = "SELECT id, full_name, username, email, password, phone, status FROM users WHERE role = 'customer'";
-
-        try (Connection con = databaseConnection.getConnection();
-             PreparedStatement ps = con.prepareStatement(sql);
-             ResultSet rs = ps.executeQuery()) {
-
-            while (rs.next()) {
-                String status = rs.getString("status");
-                if (status == null || status.trim().isEmpty()) status = "Active";
-                Object[] row = {
-                    rs.getInt("id"),
-                    rs.getString("full_name"),
-                    rs.getString("username"),
-                    rs.getString("email"),
-                    rs.getString("password"),
-                    rs.getString("phone"),
-                    status
-                };
-                adminDashboard.getTableModel().addRow(row);
+            List<Account> found = listAccounts(ROLE_ADMIN);
+            if (!found.isEmpty()) {
+                Account a = found.get(0);
+                synchronized (profile) {
+                    profile.id = a.id;
+                    profile.username = a.username.isEmpty() ? profile.username : a.username;
+                    profile.fullName = a.fullName.isEmpty() ? profile.fullName : a.fullName;
+                    profile.email = a.email;
+                    profile.phone = a.phone;
+                    profile.address = a.address;
+                }
             }
-
         } catch (SQLException ex) {
-            loadUsersFallback(columns);
+        }
+        synchronized (profile) {
+            return profile.copy();
         }
     }
 
-    private void loadUsersFallback(String[] columns) {
-        String sql = "SELECT id, full_name, username, email, password, phone FROM users WHERE role = 'customer'";
-        try (Connection con = databaseConnection.getConnection();
-             PreparedStatement ps = con.prepareStatement(sql);
-             ResultSet rs = ps.executeQuery()) {
+    public void saveProfile(Profile p) throws SQLException {
+        if (p.id >= 0) {
+            updateAccount(p.id, p.fullName, p.email, p.phone, p.address);
+        }
+        synchronized (profile) {
+            profile.fullName = p.fullName;
+            profile.email = p.email;
+            profile.phone = p.phone;
+            profile.address = p.address;
+        }
+    }
 
-            while (rs.next()) {
-                Object[] row = {
-                    rs.getInt("id"),
-                    rs.getString("full_name"),
-                    rs.getString("username"),
-                    rs.getString("email"),
-                    rs.getString("password"),
-                    rs.getString("phone"),
-                    "Active"
-                };
-                adminDashboard.getTableModel().addRow(row);
+    public void addAccount(String role, String fullName, String username, String email,
+                           String phone, String address, String password) throws SQLException {
+        try (Connection con = databaseConnection.getConnection()) {
+            String table = accountsTable(con);
+            if (!columnsOf(con, table).contains("password_hash")) {
+                throw new SQLException("Table '" + table + "' has no password_hash column, so accounts can't be created here.");
             }
-        } catch (SQLException e) {
-            JOptionPane.showMessageDialog(adminDashboard, "Error loading customers: " + e.getMessage(), "Database Error", JOptionPane.ERROR_MESSAGE);
-        }
-    }
-
-    public void loadRestaurantsFromDatabase() {
-        String[] columns = {"ID", "Restaurant Name", "Username", "Email", "Password", "Phone", "Address", "Status"};
-        try {
-            adminDashboard.getTableModel().setColumnIdentifiers(columns);
-            adminDashboard.getTableModel().setRowCount(0);
-        } catch (Exception e) { return; }
-
-        String sql = "SELECT id, full_name, username, email, password, phone, address, status FROM users WHERE role = 'restaurant'";
-
-        try (Connection con = databaseConnection.getConnection();
-             PreparedStatement ps = con.prepareStatement(sql);
-             ResultSet rs = ps.executeQuery()) {
-
-            while (rs.next()) {
-                String status = rs.getString("status");
-                if (status == null || status.trim().isEmpty()) status = "Active";
-                Object[] row = {
-                    rs.getInt("id"),
-                    rs.getString("full_name"),
-                    rs.getString("username"),
-                    rs.getString("email"),
-                    rs.getString("password"),
-                    rs.getString("phone"),
-                    rs.getString("address"),
-                    status
-                };
-                adminDashboard.getTableModel().addRow(row);
+            String sql = "INSERT INTO " + table
+                    + " (full_name, username, email, phone, address, password_hash, role) VALUES (?, ?, ?, ?, ?, SHA2(?, 256), ?)";
+            try (PreparedStatement ps = con.prepareStatement(sql)) {
+                ps.setString(1, fullName);
+                ps.setString(2, username);
+                ps.setString(3, email);
+                ps.setString(4, phone);
+                ps.setString(5, address);
+                ps.setString(6, password);
+                ps.setString(7, role.toUpperCase());
+                ps.executeUpdate();
             }
-
-        } catch (SQLException ex) {
-            loadRestaurantsFallback(columns);
         }
     }
 
-    private void loadRestaurantsFallback(String[] columns) {
-        String sql = "SELECT id, full_name, username, email, password, phone, address FROM users WHERE role = 'restaurant'";
-        try (Connection con = databaseConnection.getConnection();
-             PreparedStatement ps = con.prepareStatement(sql);
-             ResultSet rs = ps.executeQuery()) {
-
-            while (rs.next()) {
-                Object[] row = {
-                    rs.getInt("id"),
-                    rs.getString("full_name"),
-                    rs.getString("username"),
-                    rs.getString("email"),
-                    rs.getString("password"),
-                    rs.getString("phone"),
-                    rs.getString("address"),
-                    "Active"
-                };
-                adminDashboard.getTableModel().addRow(row);
+    public void updateAccount(int id, String fullName, String email, String phone, String address) throws SQLException {
+        try (Connection con = databaseConnection.getConnection()) {
+            String sql = "UPDATE " + accountsTable(con) + " SET full_name = ?, email = ?, phone = ?, address = ? WHERE id = ?";
+            try (PreparedStatement ps = con.prepareStatement(sql)) {
+                ps.setString(1, fullName);
+                ps.setString(2, email);
+                ps.setString(3, phone);
+                ps.setString(4, address);
+                ps.setInt(5, id);
+                ps.executeUpdate();
             }
-        } catch (SQLException e) {
-            JOptionPane.showMessageDialog(adminDashboard, "Error loading restaurants: " + e.getMessage(), "Database Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 
-    public void deleteSelectedRecord() {
-        int selectedRow = -1;
-        try { selectedRow = adminDashboard.getDataTable().getSelectedRow(); } catch (Exception e) {}
-
-        if (selectedRow == -1) {
-            JOptionPane.showMessageDialog(adminDashboard, "Please select an account from the table first before deleting!", "Selection Required", JOptionPane.WARNING_MESSAGE);
-            return;
+    public void setStatus(int id, String status) throws SQLException {
+        try (Connection con = databaseConnection.getConnection()) {
+            String table = accountsTable(con);
+            if (!columnsOf(con, table).contains("status")) {
+                throw new SQLException("Table '" + table + "' has no 'status' column. Add one with: ALTER TABLE "
+                        + table + " ADD COLUMN status VARCHAR(20) DEFAULT 'Active';");
+            }
+            try (PreparedStatement ps = con.prepareStatement("UPDATE " + table + " SET status = ? WHERE id = ?")) {
+                ps.setString(1, status);
+                ps.setInt(2, id);
+                ps.executeUpdate();
+            }
         }
+    }
 
-        int id = 0;
-        try { id = Integer.parseInt(adminDashboard.getTableModel().getValueAt(selectedRow, 0).toString()); } catch (Exception e) { return; }
-
-        int confirm = JOptionPane.showConfirmDialog(adminDashboard, "Are you sure you want to delete account ID " + id + "?", "Confirm Delete", JOptionPane.YES_NO_OPTION);
-        if (confirm != JOptionPane.YES_OPTION) return;
-
-        String sql = "DELETE FROM users WHERE id = ?";
-
+    public void deleteAccount(int id) throws SQLException {
         try (Connection con = databaseConnection.getConnection();
-             PreparedStatement ps = con.prepareStatement(sql)) {
-
+             PreparedStatement ps = con.prepareStatement("DELETE FROM " + accountsTable(con) + " WHERE id = ?")) {
             ps.setInt(1, id);
             ps.executeUpdate();
-
-            adminDashboard.getTableModel().removeRow(selectedRow);
-            JOptionPane.showMessageDialog(adminDashboard, "Record deleted successfully from database.", "Success", JOptionPane.INFORMATION_MESSAGE);
-
-        } catch (SQLException ex) {
-            JOptionPane.showMessageDialog(adminDashboard, "Error deleting record: " + ex.getMessage(), "Database Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 
-    public void banSelectedRecord() {
-        int selectedRow = -1;
-        try { selectedRow = adminDashboard.getDataTable().getSelectedRow(); } catch (Exception e) {}
+    private static volatile String resolvedTable;
 
-        if (selectedRow == -1) {
-            JOptionPane.showMessageDialog(adminDashboard, "Please select an account from the table to ban!", "Selection Required", JOptionPane.WARNING_MESSAGE);
-            return;
+    private static String accountsTable(Connection con) throws SQLException {
+        String table = resolvedTable;
+        if (table == null) {
+            table = tableExists(con, "accounts") ? "accounts" : "users";
+            resolvedTable = table;
         }
+        return table;
+    }
 
-        int id = 0;
-        try { id = Integer.parseInt(adminDashboard.getTableModel().getValueAt(selectedRow, 0).toString()); } catch (Exception e) { return; }
-
-        int confirm = JOptionPane.showConfirmDialog(adminDashboard, "Are you sure you want to ban/deactivate account ID " + id + "?", "Confirm Ban", JOptionPane.YES_NO_OPTION);
-        if (confirm != JOptionPane.YES_OPTION) return;
-
-        String sql = "UPDATE users SET status = 'Banned' WHERE id = ?";
-
-        try (Connection con = databaseConnection.getConnection();
-             PreparedStatement ps = con.prepareStatement(sql)) {
-
-            ps.setInt(1, id);
-            ps.executeUpdate();
-
-            JOptionPane.showMessageDialog(adminDashboard, "Account has been banned successfully.", "Success", JOptionPane.INFORMATION_MESSAGE);
-            refreshCurrentView();
-
-        } catch (SQLException ex) {
-            JOptionPane.showMessageDialog(adminDashboard, "Error banning account: " + ex.getMessage() + "\n(Ensure your database has a 'status' column).", "Database Error", JOptionPane.ERROR_MESSAGE);
+    private static boolean tableExists(Connection con, String name) throws SQLException {
+        DatabaseMetaData meta = con.getMetaData();
+        try (ResultSet rs = meta.getTables(con.getCatalog(), null, name, new String[]{"TABLE"})) {
+            return rs.next();
         }
     }
-    
-    public void searchDatabase(String query) {
-        System.out.println("Searching database for: " + query);
+
+    private static Set<String> columnsOf(Connection con, String table) throws SQLException {
+        Set<String> columns = new HashSet<>();
+        try (ResultSet rs = con.getMetaData().getColumns(con.getCatalog(), null, table, null)) {
+            while (rs.next()) {
+                columns.add(rs.getString("COLUMN_NAME").toLowerCase());
+            }
+        }
+        return columns;
+    }
+
+    private static String text(ResultSet rs, Set<String> columns, String column) throws SQLException {
+        if (!columns.contains(column)) {
+            return "";
+        }
+        String value = rs.getString(column);
+        return value == null ? "" : value;
+    }
+
+    public static final String FAILED = "Failed";
+
+    public static final class Report {
+        public final String title;
+        public final String[] columns;
+        public final List<Object[]> rows = new ArrayList<>();
+        public String summary = "";
+
+        Report(String title, String... columns) {
+            this.title = title;
+            this.columns = columns;
+        }
+    }
+
+    public static Report salesReport() {
+        Report report = new Report("Sales Report",
+                "Restaurant", "Orders", "Delivered", "Delivered Revenue", "Avg. Order Value", "Items Sold", "Best Seller");
+        int orders = 0, delivered = 0;
+        double revenue = 0;
+        long itemsSold = 0;
+
+        for (Restaurant.Brand brand : Restaurant.Brand.values()) {
+            Restaurant data = Restaurant.get(brand);
+            int rDelivered = 0;
+            double rRevenue = 0;
+            for (Restaurant.Order order : data.orders) {
+                if (Restaurant.Order.COMPLETED.equals(order.status)) {
+                    rDelivered++;
+                    rRevenue += order.total;
+                }
+            }
+            long rSold = 0;
+            Restaurant.Dish best = null;
+            for (Restaurant.Dish dish : data.restaurant.menuItems) {
+                rSold += dish.sold;
+                if (best == null || dish.sold > best.sold) {
+                    best = dish;
+                }
+            }
+            double average = rDelivered == 0 ? 0 : rRevenue / rDelivered;
+            report.rows.add(new Object[]{data.restaurant.name, data.orders.size(), rDelivered,
+                MoneyFormat.peso(rRevenue), MoneyFormat.peso(average), rSold,
+                best == null || best.sold == 0 ? "-" : best.name});
+            orders += data.orders.size();
+            delivered += rDelivered;
+            revenue += rRevenue;
+            itemsSold += rSold;
+        }
+        report.rows.add(new Object[]{"ALL RESTAURANTS", orders, delivered, MoneyFormat.peso(revenue),
+            MoneyFormat.peso(delivered == 0 ? 0 : revenue / delivered), itemsSold, ""});
+        report.summary = "Revenue counts delivered orders only.";
+        return report;
+    }
+
+    public static Report orderHistoryReport() {
+        Report report = new Report("Order History",
+                "Restaurant", "Order ID", "Customer", "Items", "Total", "Payment", "Time", "Status");
+        for (Restaurant.Brand brand : Restaurant.Brand.values()) {
+            Restaurant data = Restaurant.get(brand);
+            for (Restaurant.Order o : data.orders) {
+                report.rows.add(new Object[]{data.restaurant.name, o.id, o.customer, o.items,
+                    MoneyFormat.peso(o.total), o.payment, o.time, o.status});
+            }
+        }
+        report.summary = report.rows.size() + " order(s) across all restaurants.";
+        return report;
+    }
+
+    public static Report deliveryPerformanceReport() {
+        Report report = new Report("Delivery Performance",
+                "Restaurant", "Total Orders", "In Progress", "Out for Delivery", "Delivered", "Cancelled", "Failed", "Success Rate");
+        int total = 0, progress = 0, out = 0, delivered = 0, cancelled = 0, failed = 0;
+
+        for (Restaurant.Brand brand : Restaurant.Brand.values()) {
+            Restaurant data = Restaurant.get(brand);
+            int rProgress = 0, rOut = 0, rDelivered = 0, rCancelled = 0, rFailed = 0;
+            for (Restaurant.Order o : data.orders) {
+                if (Restaurant.Order.COMPLETED.equals(o.status)) {
+                    rDelivered++;
+                } else if (Restaurant.Order.READY.equals(o.status)) {
+                    rOut++;
+                } else if (Restaurant.Order.CANCELLED.equals(o.status)) {
+                    rCancelled++;
+                } else if (FAILED.equals(o.status)) {
+                    rFailed++;
+                } else {
+                    rProgress++;
+                }
+            }
+            report.rows.add(new Object[]{data.restaurant.name, data.orders.size(), rProgress, rOut,
+                rDelivered, rCancelled, rFailed, rate(rDelivered, rCancelled, rFailed)});
+            total += data.orders.size();
+            progress += rProgress;
+            out += rOut;
+            delivered += rDelivered;
+            cancelled += rCancelled;
+            failed += rFailed;
+        }
+        report.rows.add(new Object[]{"ALL RESTAURANTS", total, progress, out, delivered, cancelled, failed,
+            rate(delivered, cancelled, failed)});
+        report.summary = "Success rate = delivered \u00F7 (delivered + cancelled + failed). Orders still in progress are not counted.";
+        return report;
+    }
+
+    private static String rate(int delivered, int cancelled, int failed) {
+        int closed = delivered + cancelled + failed;
+        return closed == 0 ? "n/a" : String.format("%.0f%%", 100.0 * delivered / closed);
+    }
+
+    public static class DeliveryGraph {
+        public static final double AVG_SPEED_KMH = 25.0;
+
+        public static final class Road {
+            public final String a, b;
+            public final double km;
+
+            Road(String a, String b, double km) {
+                this.a = a;
+                this.b = b;
+                this.km = km;
+            }
+        }
+
+        public static final class Route {
+            public final List<String> path;
+            public final double km;
+
+            Route(List<String> path, double km) {
+                this.path = path;
+                this.km = km;
+            }
+
+            public int estimatedMinutes() {
+                return (int) Math.ceil(km / AVG_SPEED_KMH * 60.0);
+            }
+
+            @Override
+            public String toString() {
+                return String.join("  \u2192  ", path);
+            }
+        }
+
+        private final Map<String, Map<String, Double>> adjacency = new TreeMap<>();
+        private final Set<String> hubs = new TreeSet<>();
+
+        public boolean addLocation(String name, boolean hub) {
+            if (name == null || name.trim().isEmpty() || adjacency.containsKey(name)) {
+                return false;
+            }
+            adjacency.put(name, new TreeMap<>());
+            if (hub) {
+                hubs.add(name);
+            }
+            return true;
+        }
+
+        public boolean hasLocation(String name) {
+            return adjacency.containsKey(name);
+        }
+
+        public boolean isHub(String name) {
+            return hubs.contains(name);
+        }
+
+        public boolean removeLocation(String name) {
+            Map<String, Double> neighbours = adjacency.remove(name);
+            if (neighbours == null) {
+                return false;
+            }
+            for (String other : neighbours.keySet()) {
+                adjacency.get(other).remove(name);
+            }
+            hubs.remove(name);
+            return true;
+        }
+
+        public boolean renameLocation(String oldName, String newName) {
+            if (!adjacency.containsKey(oldName) || newName == null || newName.trim().isEmpty()
+                    || adjacency.containsKey(newName)) {
+                return false;
+            }
+            Map<String, Double> neighbours = adjacency.remove(oldName);
+            adjacency.put(newName, neighbours);
+            for (String other : neighbours.keySet()) {
+                Map<String, Double> back = adjacency.get(other);
+                back.put(newName, back.remove(oldName));
+            }
+            if (hubs.remove(oldName)) {
+                hubs.add(newName);
+            }
+            return true;
+        }
+
+        public List<String> locations() {
+            return new ArrayList<>(adjacency.keySet());
+        }
+
+        public List<String> hubs() {
+            return new ArrayList<>(hubs);
+        }
+
+        public boolean addRoad(String a, String b, double km) {
+            if (a == null || b == null || a.equals(b) || km <= 0
+                    || !adjacency.containsKey(a) || !adjacency.containsKey(b)) {
+                return false;
+            }
+            adjacency.get(a).put(b, km);
+            adjacency.get(b).put(a, km);
+            return true;
+        }
+
+        public boolean removeRoad(String a, String b) {
+            if (!adjacency.containsKey(a) || !adjacency.containsKey(b) || adjacency.get(a).remove(b) == null) {
+                return false;
+            }
+            adjacency.get(b).remove(a);
+            return true;
+        }
+
+        public List<Road> roads() {
+            List<Road> result = new ArrayList<>();
+            for (Map.Entry<String, Map<String, Double>> from : adjacency.entrySet()) {
+                for (Map.Entry<String, Double> to : from.getValue().entrySet()) {
+                    if (from.getKey().compareTo(to.getKey()) < 0) {
+                        result.add(new Road(from.getKey(), to.getKey(), to.getValue()));
+                    }
+                }
+            }
+            return result;
+        }
+
+        public int degree(String name) {
+            Map<String, Double> neighbours = adjacency.get(name);
+            return neighbours == null ? 0 : neighbours.size();
+        }
+
+        public Route shortestRoute(String from, String to) {
+            if (!adjacency.containsKey(from) || !adjacency.containsKey(to)) {
+                return null;
+            }
+            Map<String, Double> dist = new HashMap<>();
+            Map<String, String> previous = new HashMap<>();
+            PriorityQueue<Map.Entry<String, Double>> queue =
+                    new PriorityQueue<>(Comparator.comparingDouble(Map.Entry::getValue));
+            Set<String> done = new HashSet<>();
+
+            dist.put(from, 0.0);
+            queue.add(new AbstractMap.SimpleEntry<>(from, 0.0));
+            while (!queue.isEmpty()) {
+                String current = queue.poll().getKey();
+                if (!done.add(current)) {
+                    continue;
+                }
+                if (current.equals(to)) {
+                    break;
+                }
+                for (Map.Entry<String, Double> edge : adjacency.get(current).entrySet()) {
+                    double candidate = dist.get(current) + edge.getValue();
+                    if (candidate < dist.getOrDefault(edge.getKey(), Double.POSITIVE_INFINITY)) {
+                        dist.put(edge.getKey(), candidate);
+                        previous.put(edge.getKey(), current);
+                        queue.add(new AbstractMap.SimpleEntry<>(edge.getKey(), candidate));
+                    }
+                }
+            }
+            if (!dist.containsKey(to)) {
+                return null;
+            }
+            LinkedList<String> path = new LinkedList<>();
+            for (String at = to; at != null; at = previous.get(at)) {
+                path.addFirst(at);
+            }
+            return new Route(path, dist.get(to));
+        }
+
+        public Set<String> reachableFrom(String start) {
+            Set<String> seen = new LinkedHashSet<>();
+            if (!adjacency.containsKey(start)) {
+                return seen;
+            }
+            Deque<String> queue = new ArrayDeque<>();
+            queue.add(start);
+            seen.add(start);
+            while (!queue.isEmpty()) {
+                for (String next : adjacency.get(queue.poll()).keySet()) {
+                    if (seen.add(next)) {
+                        queue.add(next);
+                    }
+                }
+            }
+            return seen;
+        }
+
+        public List<String> unreachableFromHubs() {
+            Set<String> covered = new HashSet<>();
+            for (String hub : hubs) {
+                covered.addAll(reachableFrom(hub));
+            }
+            List<String> missing = new ArrayList<>();
+            for (String location : adjacency.keySet()) {
+                if (!covered.contains(location)) {
+                    missing.add(location);
+                }
+            }
+            return missing;
+        }
+
+        public Route nearestHubRoute(String destination) {
+            Route best = null;
+            for (String hub : hubs) {
+                Route route = shortestRoute(hub, destination);
+                if (route != null && (best == null || route.km < best.km)) {
+                    best = route;
+                }
+            }
+            return best;
+        }
+
+        public static DeliveryGraph createDefault(List<String> hubNames) {
+            DeliveryGraph g = new DeliveryGraph();
+            String[] zones = {"Zone A", "Zone B", "Zone C", "Zone D", "Zone E", "Zone F"};
+            for (String zone : zones) {
+                g.addLocation(zone, false);
+            }
+            double[] ring = {2.4, 1.8, 3.1, 2.2, 2.9, 1.5};
+            for (int i = 0; i < zones.length; i++) {
+                g.addRoad(zones[i], zones[(i + 1) % zones.length], ring[i]);
+            }
+            g.addRoad("Zone A", "Zone D", 4.6);
+            g.addRoad("Zone B", "Zone E", 5.2);
+
+            for (int i = 0; i < hubNames.size(); i++) {
+                String hub = hubNames.get(i);
+                g.addLocation(hub, true);
+                g.addRoad(hub, zones[(i * 2) % zones.length], 0.8 + 0.3 * i);
+                g.addRoad(hub, zones[(i * 2 + 1) % zones.length], 1.2 + 0.3 * i);
+            }
+            return g;
+        }
     }
 }
