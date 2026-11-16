@@ -1,12 +1,8 @@
 /*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to edit this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
 package Model;
-/**
- *
- * @author krist
- */
 
 import java.text.DecimalFormat;
 import java.time.DayOfWeek;
@@ -24,6 +20,11 @@ import java.util.Random;
 import javax.swing.Timer;
 import Database.AccountDAO;
 import java.sql.SQLException;
+
+/**
+ *
+ * @author Encrid9
+ */
 
 public final class Restaurant {
    private static DateTimeFormatter TIME_FORMAT = DateTimeFormatter.ofPattern("h:mm a", Locale.ENGLISH);
@@ -173,6 +174,20 @@ public final class Restaurant {
 
    private Restaurant(Brand brand) {
       seedMenu(brand);
+      switch (brand) {
+         case BRAIN_CELLS_MILK_TEA:
+            restaurant.name = "Brain Cells Milk Tea";
+            restaurant.location = "Zone B";
+            break;
+         case MANG_PINAASA:
+            restaurant.name = "Mang Pinaasa";
+            restaurant.location = "Zone C";
+            break;
+         default:
+            restaurant.name = "McDollibee";
+            restaurant.location = "Zone A";
+            break;
+      }
 
       ModifierGroup addOns = new ModifierGroup("Add-ons", false);
       addOns.options.add(new ModifierOption("Extra Cheese", 25.0));
@@ -190,14 +205,13 @@ public final class Restaurant {
       modifierGroups.add(size);
       modifierGroups.add(adjustments);
 
-
       for (DayOfWeek day : DayOfWeek.values()) {
          schedule.add(new DaySchedule(day, true, LocalTime.of(8, 0), LocalTime.of(21, 0)));
       }
    }
 
-    private void addDish(String name, String category, double price, int sold, String imageFile) {
-      Dish dish = new Dish(name, category, price, true, sold);
+    private void addDish(String name, String category, double price, String imageFile) {
+      Dish dish = new Dish(name, category, price, true, 0);
       dish.imagePath = imageFile;
       restaurant.menuItems.add(dish);
    }
@@ -205,27 +219,27 @@ public final class Restaurant {
    private void seedMenu(Brand brand) {
       switch (brand) {
          case BRAIN_CELLS_MILK_TEA:
-            addDish("Matcha", "Milk Tea", 135.0, 42, "src/main/java/gui/images/cdrestaurantmenumatcha.png");
-            addDish("Dark Choco", "Milk Tea", 120.0, 35, "src/main/java/gui/images/cdrestaurantmenudarkchoco.png");
-            addDish("Watermelon Milk Tea", "Milk Tea", 65.0, 51, "src/main/java/gui/images/cdrestaurantmenumilktea.png");
+            addDish("Matcha", "Milk Tea", 135.0, "src/main/java/gui/images/cdrestaurantmenumatcha.png");
+            addDish("Dark Choco", "Milk Tea", 120.0, "src/main/java/gui/images/cdrestaurantmenudarkchoco.png");
+            addDish("Watermelon Milk Tea", "Milk Tea", 65.0, "src/main/java/gui/images/cdrestaurantmenumilktea.png");
             restaurant.menuItems.get(0).description = "Smooth, earthy green tea blended into a rich and creamy treat.";
             restaurant.menuItems.get(1).description = "Deeply decadent and velvety chocolate crafted for the ultimate sweet tooth.";
             restaurant.menuItems.get(2).description = "A refreshing blend of creamy milk tea and sweet, juicy watermelon flavor.";
             break;
-            
+
          case MANG_PINAASA:
-            addDish("Paa Malaki", "Rice Meals", 135.0, 42, "src/main/java/gui/images/cdrestaurantmenupaa.png");
-            addDish("Pork BBQ", "Rice Meals", 120.0, 35, "src/main/java/gui/images/cdrestaurantmenubbq.png");
-            addDish("Pork Liempo", "Rice Meals", 65.0, 51, "src/main/java/gui/images/cdrestaurantmenupliempo.png");
+            addDish("Paa Malaki", "Rice Meals", 135.0, "src/main/java/gui/images/cdrestaurantmenupaa.png");
+            addDish("Pork BBQ", "Rice Meals", 120.0, "src/main/java/gui/images/cdrestaurantmenubbq.png");
+            addDish("Pork Liempo", "Rice Meals", 65.0, "src/main/java/gui/images/cdrestaurantmenupliempo.png");
             restaurant.menuItems.get(0).description = "Soft, tender bites simmered in a savory, finger-licking-good savory glaze.";
             restaurant.menuItems.get(1).description = "Smoky, skewered grilled pork brushed in a sweet and savory marinade.";
             restaurant.menuItems.get(2).description = "Juicy grilled pork belly with ultra-crispy skin, served with a tangy vinegar dip.";
             break;
-            
+
          default:
-            addDish("McChicken Joy w/Rice", "Rice Meals", 135.0, 42, "src/main/java/gui/images/cdrestaurantmenuchicken.png");
-            addDish("Peach Apple Pie", "Sides", 120.0, 35, "src/main/java/gui/images/cdrestaurantmenupapie.png");
-            addDish("Yum Big Mac Burger", "Burgers", 65.0, 51, "src/main/java/gui/images/cdrestaurantmenuburger.png");
+            addDish("McChicken Joy w/Rice", "Rice Meals", 135.0, "src/main/java/gui/images/cdrestaurantmenuchicken.png");
+            addDish("Peach Apple Pie", "Sides", 120.0, "src/main/java/gui/images/cdrestaurantmenupapie.png");
+            addDish("Yum Big Mac Burger", "Burgers", 65.0, "src/main/java/gui/images/cdrestaurantmenuburger.png");
             restaurant.menuItems.get(0).description = "Crispy on the outside, juicy on the inside, and served with fluffy rice and savory gravy.";
             restaurant.menuItems.get(1).description = "A warm, crispy crust filled with sweet, gooey peach and apple goodness.";
             restaurant.menuItems.get(2).description = "Two juicy beef patties, legendary special sauce, crisp lettuce, cheese, pickles, and onions on a toasted sesame bun.";
@@ -242,6 +256,7 @@ public final class Restaurant {
    }
 
    public void notifyChanged() {
+      recountSold();
       for (Runnable listener : new ArrayList<>(listeners)) {
          listener.run();
       }
@@ -346,7 +361,6 @@ public final class Restaurant {
             items.append(" x").append(qty);
          }
          total += dish.price * qty;
-         dish.sold += qty;
       }
       String payment = random.nextBoolean() ? "Paid" : "Cash on Delivery";
       return addOrder(customers[random.nextInt(customers.length)], items.toString(), total, payment);
@@ -364,6 +378,29 @@ public final class Restaurant {
       return (int)restaurant.menuItems.stream().filter(d -> d.available).count();
    }
 
+   public void recountSold() {
+      for (Dish dish : restaurant.menuItems) {
+         dish.sold = 0;
+      }
+      for (Order order : orders) {
+         if (!Order.COMPLETED.equals(order.status) || order.items == null) {
+            continue;
+         }
+         for (Dish dish : restaurant.menuItems) {
+            if (dish.name == null || dish.name.isEmpty()) {
+               continue;
+            }
+            java.util.regex.Matcher m = java.util.regex.Pattern.compile(
+               "(?:(\\d+)\\s*[xX\u00D7]\\s*)?" + java.util.regex.Pattern.quote(dish.name) + "(?:\\s*[xX\u00D7]\\s*(\\d+))?",
+               java.util.regex.Pattern.CASE_INSENSITIVE).matcher(order.items);
+            while (m.find()) {
+               String qty = m.group(1) != null ? m.group(1) : m.group(2);
+               dish.sold += qty == null ? 1 : Integer.parseInt(qty);
+            }
+         }
+      }
+   }
+
    public void addCategoryIfNew(String category) {
       for (String existing : categories) {
          if (existing.equalsIgnoreCase(category)) {
@@ -374,7 +411,6 @@ public final class Restaurant {
    }
 
    public static final class MoneyFormat {
-
       private MoneyFormat() {
       }
 
@@ -400,7 +436,6 @@ public final class Restaurant {
             return null;
          }
       }
-
    }
    public void loadFromAccount(String login) {
       if (login == null) return;
@@ -411,7 +446,7 @@ public final class Restaurant {
          if (acc.fullName != null && !acc.fullName.isEmpty()) restaurant.name     = acc.fullName;
          if (acc.address  != null && !acc.address.isEmpty())  restaurant.location = acc.address;
          if (acc.phone    != null && !acc.phone.isEmpty())    restaurant.contact  = acc.phone;
-         notifyChanged();  
+         notifyChanged();
       } catch (SQLException ex) {
          System.out.println("Could not load restaurant profile: " + ex.getMessage());
       }
