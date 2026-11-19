@@ -120,7 +120,6 @@ public class MainFrame extends JFrame implements ActionListener {
         panelAdminLogin.btnAdminLogin.addActionListener(this);
         panelAdminLogin.btnAdminForgotPassword.addActionListener(this);
         panelAdminLogin.btnAdminLoginBack.addActionListener(this);
-        panelAdminLogin.btnDontHaveAccount.addActionListener(this);
 
         if (panelAdminGUI.getBtnLogout() != null) {
             panelAdminGUI.getBtnLogout().addActionListener(this);
@@ -185,9 +184,6 @@ public class MainFrame extends JFrame implements ActionListener {
             showCard("SIGNUP");
         }
         else if (source == panelRestaurantLogin.btnDontHaveAccount){
-            showCard("SIGNUP");
-        }
-        else if (source == panelAdminLogin.btnDontHaveAccount){
             showCard("SIGNUP");
         }
 
@@ -344,16 +340,20 @@ public class MainFrame extends JFrame implements ActionListener {
         String username = panelSignup.txtUsername.getText().trim();
         String email    = panelSignup.txtEmail.getText().trim();
         String phone    = panelSignup.txtPhone.getText().trim();
-        String address  = panelSignup.txtAddress.getText().trim();
+        String address =  panelSignup.cmbAddress.getSelectedItem().toString();
         String role     = panelSignup.cmbRole.getSelectedItem().toString().toUpperCase();
         String password = new String(panelSignup.txtPassword.getPassword());
         String confirm  = new String(panelSignup.txtConfirmPassword.getPassword());
 
         if (name.isEmpty() || username.isEmpty() || email.isEmpty()
-                || phone.isEmpty() || address.isEmpty() || password.isEmpty()) {
+                || phone.isEmpty() || password.isEmpty()) {
             JOptionPane.showMessageDialog(this, "Please fill in all fields.");
             return;
         }
+        if (panelSignup.cmbAddress.getSelectedIndex() == 0) {
+        JOptionPane.showMessageDialog(this, "Please select a location.");
+        return;
+}
         if (!email.toLowerCase().endsWith("@gmail.com")) {
             JOptionPane.showMessageDialog(this, "Email must be a @gmail.com address.");
             return;
