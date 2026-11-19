@@ -293,7 +293,7 @@ public class CustomerDashboardCheckout extends JPanel {
                             deliveryFeeAmount + urgencyFeeAmount, voucherDiscountAmount);
                     String location = "Pickup".equals(selectedDelivery) ? "Pickup" : selectedAddress;
                     Order.OrderStore.get().place(currentOrder, currentOrder.getRestaurantId(),
-                            location, selectedMOP, finalTotal);
+                            location, selectedMOP, finalTotal, selectedUrgency);
 
                     if (onOrderPlacedCallback != null) {
                         onOrderPlacedCallback.accept(currentOrder);
@@ -319,7 +319,7 @@ public class CustomerDashboardCheckout extends JPanel {
         String location = "Pickup".equals(selectedDelivery) ? "Pickup" : selectedAddress;
 
         Order.OrderStore.get().place(currentOrder, currentOrder.getRestaurantId(),
-                location, selectedMOP, finalTotal);
+                location, selectedMOP, finalTotal, selectedUrgency);
         Order.OrderStore.get().updateStatus(currentOrder.getOrderId(), "Cancelled");
 
         currentOrder.setOrderId(null);   

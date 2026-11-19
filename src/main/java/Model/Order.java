@@ -10,6 +10,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.stream.Collectors;
+import DSA.PriorityQueue;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -166,6 +167,8 @@ public class Order {
         private String status;
         private String totalPaid;
         private List<OrderItem> items;
+        private String deliveryType = "Standard";
+        private long seq = 0;
         private String customerId = "";   
     
     public OrderData(String storeName, String location, String orderId, String orderDate, 
@@ -203,6 +206,10 @@ public class Order {
 
         public void setStatus(String status) { this.status = status; }
         public void setDeliveryDate(String deliveryDate) { this.deliveryDate = deliveryDate; }
+        public String getDeliveryType() { return deliveryType; }
+        public void setDeliveryType(String deliveryType) { this.deliveryType = deliveryType != null ? deliveryType : "Standard"; }
+        public long getSeq() { return seq; }
+        public void setSeq(long seq) { this.seq = seq; }
         
     }
 
@@ -240,6 +247,7 @@ public class Order {
         private final List<Link> links = new ArrayList<>();
         private final List<Restaurant> hooked = new ArrayList<>();
         private int nextId = 1;
+        private long nextSeq = 1;
 
         private OrderStore() {}
 
@@ -313,6 +321,11 @@ public class Order {
         // 8.2 Place Order
         public OrderData place(Order order, String storeName, String location,
                                String paymentMop, double finalTotal) {
+            return place(order, storeName, location, paymentMop, finalTotal, "Standard");
+        }
+
+        public OrderData place(Order order, String storeName, String location,
+                               String paymentMop, double finalTotal, String deliveryType) {
             for (OrderData existing : orders) {
                 if (existing.getOrderId().equals(order.getOrderId()) && mine(existing)) return existing;
             }
@@ -335,6 +348,8 @@ public class Order {
                     order.getOrderItems(),
                     sessionCustomerId);
 
+            data.setDeliveryType(deliveryType);
+            data.setSeq(nextSeq++);
             orders.add(data);
             sendToRestaurant(order, data, finalTotal, paymentMop);
             fireChanged();
@@ -371,11 +386,26 @@ public class Order {
 
         // 8.6 Track Order
         public List<OrderData> getActive() {
-            return orders.stream()
+            List<OrderData> active = orders.stream()
                     .filter(this::mine)
                     .filter(o -> !o.getStatus().equalsIgnoreCase(RECEIVED)
                               && !o.getStatus().equalsIgnoreCase(CANCELLED))
                     .collect(Collectors.toList());
+            return PriorityQueue.sort(active, OrderStore::compareByPriority);
+        }
+
+        private static int compareByPriority(OrderData a, OrderData b) {
+            boolean aDelivered = DELIVERED.equalsIgnoreCase(a.getStatus());
+            boolean bDelivered = DELIVERED.equalsIgnoreCase(b.getStatus());
+            if (aDelivered != bDelivered) {
+                return aDelivered ? 1 : -1;
+            }
+            int rankA = "Priority".equals(a.getDeliveryType()) ? 0 : 1;
+            int rankB = "Priority".equals(b.getDeliveryType()) ? 0 : 1;
+            if (rankA != rankB) {
+                return Integer.compare(rankA, rankB);
+            }
+            return Long.compare(a.getSeq(), b.getSeq());
         }
 
         // 8.7 Order History
@@ -446,7 +476,7 @@ public class Order {
             String customer = order.getCustomerName();
             if (customer == null || customer.trim().isEmpty()) customer = "Customer";
 
-            Restaurant.Order ro = resto.addOrder(data.getOrderId(), customer, items.toString(), total, payment);
+            Restaurant.Order ro = resto.addOrder(data.getOrderId(), customer, items.toString(), total, payment, data.getDeliveryType());
             links.add(new Link(data, resto, ro));
         }
 
