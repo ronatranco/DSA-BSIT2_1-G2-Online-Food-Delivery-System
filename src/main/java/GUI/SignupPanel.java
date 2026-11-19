@@ -16,7 +16,8 @@ public class SignupPanel extends JPanel {
     private Color YELLOW_ACCENT = new Color(255, 193, 7);
     private Color BG_LIGHT = new Color(248, 245, 250);
 
-    public JTextField txtName, txtUsername, txtEmail, txtPhone, txtAddress;
+    public JTextField txtName, txtUsername, txtEmail, txtPhone;
+    public JComboBox<String> cmbAddress;
     public JPasswordField txtPassword, txtConfirmPassword;
     public JComboBox<String> cmbRole;
     public JCheckBox chkSavePassword;
@@ -89,10 +90,17 @@ public class SignupPanel extends JPanel {
 
         JLabel lblAddress = new JLabel("Address");
         lblAddress.setBounds(60, 284, 380, 18);
-        txtAddress = new JTextField();
-        txtAddress.setBounds(60, 304, 380, 30);
-        rightPanelSignup.add(lblAddress);
-        rightPanelSignup.add(txtAddress);
+    cmbAddress = new JComboBox<>(new String[]{
+        "Select a location...",
+        "Binan",
+        "Cabuyao",
+        "San Pablo",
+        "San Pedro",
+        "Santa Rosa"
+    });
+    cmbAddress.setBounds(60, 304, 380, 30);
+    rightPanelSignup.add(lblAddress);
+    rightPanelSignup.add(cmbAddress);
 
         JLabel lblRole = new JLabel("Role");
         lblRole.setBounds(60, 338, 380, 18);
@@ -150,7 +158,7 @@ public class SignupPanel extends JPanel {
         txtUsername.setText("");
         txtEmail.setText("");
         txtPhone.setText("");
-        txtAddress.setText("");
+        cmbAddress.setSelectedIndex(0); 
         txtPassword.setText("");
         txtConfirmPassword.setText("");
         cmbRole.setSelectedIndex(0);

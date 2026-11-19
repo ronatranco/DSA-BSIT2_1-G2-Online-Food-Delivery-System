@@ -120,15 +120,7 @@ public class AdminLoginPanel extends JPanel {
         btnAdminLoginBack.setBounds(50, 490, 120, 30);
         rightPanelAdmin.add(btnAdminLoginBack);
         
-        btnDontHaveAccount = new JButton("Don't have acc?");
-        btnDontHaveAccount.setFont(new Font("Segoe UI", Font.BOLD, 13));
-        btnDontHaveAccount.setForeground(PURPLE_DARK);
-        btnDontHaveAccount.setContentAreaFilled(false);
-        btnDontHaveAccount.setBorderPainted(false);
-        btnDontHaveAccount.setFocusPainted(false);
-        btnDontHaveAccount.setCursor(new Cursor(Cursor.HAND_CURSOR));
-        btnDontHaveAccount.setBounds(60, 445, 380, 30);
-        rightPanelAdmin.add(btnDontHaveAccount);
+
         add(rightPanelAdmin);
     }
 
