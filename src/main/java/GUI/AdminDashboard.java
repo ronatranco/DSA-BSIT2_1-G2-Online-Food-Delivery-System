@@ -1328,9 +1328,25 @@ public class AdminDashboard extends JPanel implements MouseListener {
                     }
                     shownRestaurants.add(data);
                     shownOrders.add(o);
-                    model.addRow(new Object[]{data.restaurant.name, o.id, o.customer, o.items,
-                        MoneyFormat.peso(o.total), o.payment, o.time, o.status});
                 }
+            }
+            DSA.PriorityQueue<Restaurant.Order> priorityQueue = new DSA.PriorityQueue<>(Restaurant.Order::compareByPriority);
+            for (Restaurant.Order queued : shownOrders) {
+                priorityQueue.enqueue(queued);
+            }
+            List<Restaurant.Order> sortedOrders = priorityQueue.toSortedList();
+            List<Restaurant> sortedRestaurants = new ArrayList<>();
+            for (Restaurant.Order sorted : sortedOrders) {
+                sortedRestaurants.add(shownRestaurants.get(shownOrders.indexOf(sorted)));
+            }
+            shownOrders.clear();
+            shownOrders.addAll(sortedOrders);
+            shownRestaurants.clear();
+            shownRestaurants.addAll(sortedRestaurants);
+            for (int row = 0; row < shownOrders.size(); row++) {
+                Restaurant.Order o = shownOrders.get(row);
+                model.addRow(new Object[]{shownRestaurants.get(row).restaurant.name, o.id, o.customer, o.items,
+                    MoneyFormat.peso(o.total), o.payment, o.time, o.status});
             }
             summary.setText("Pending: " + pending + "   \u2022   In progress: " + active + "   \u2022   Delivered: " + delivered
                     + "   \u2022   Cancelled / failed: " + closedOther);
