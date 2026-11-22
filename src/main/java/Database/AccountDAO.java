@@ -12,11 +12,41 @@ public class AccountDAO {
     public static void setLogin(String value) { login = value; }
     public static String getLogin() { return login; }
     public static void clear() { login = null; }
-
+    public static final String STATUS_ACTIVE  = "Active";
+    public static final String STATUS_PENDING = "Pending";
+    public static final String STATUS_BANNED  = "Banned";
+    public enum RegisterResult { SUCCESS, DUPLICATE }
+    
     public static class Account {
         public String fullName, username, email, phone, address;
     }
+    public static RegisterResult register(String fullName, String username, String email,
+                                          String phone, String address,
+                                          String password, String role) throws SQLException {
+        // restaurants must wait for admin approval, customers are active right away
+        String status = "RESTAURANT".equalsIgnoreCase(role) ? STATUS_PENDING : STATUS_ACTIVE;
 
+        String sql = "INSERT INTO accounts "
+                   + "(full_name, username, email, phone, address, password_hash, role, status) "
+                   + "VALUES (?, ?, ?, ?, ?, SHA2(?, 256), ?, ?)";
+
+        try (Connection con = databaseConnection.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setString(1, fullName);
+            ps.setString(2, username);
+            ps.setString(3, email);
+            ps.setString(4, phone);
+            ps.setString(5, address);
+            ps.setString(6, password);
+            ps.setString(7, role.toUpperCase());
+            ps.setString(8, status);
+            ps.executeUpdate();
+            return RegisterResult.SUCCESS;
+        } catch (SQLException ex) {
+            if (ex.getErrorCode() == 1062) return RegisterResult.DUPLICATE; // username/email taken
+            throw ex;
+        }
+    }
     public static Account findByLogin(String login) throws SQLException {
         String sql = "SELECT full_name, username, email, phone, address "
                    + "FROM accounts WHERE username = ? OR email = ?";

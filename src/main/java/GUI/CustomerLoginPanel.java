@@ -21,7 +21,6 @@ public class CustomerLoginPanel extends JPanel {
 
     public JTextField txtLoginEmailOrUser;
     public JPasswordField txtLoginPassword;
-    public JCheckBox chkLoginSavePassword;
     public JButton btnCustomerLogin, btnForgotPassword, btnDontHaveAccount, btnCustomerLoginBack;
     private MainFrame mainFrame;
 
@@ -84,12 +83,6 @@ public class CustomerLoginPanel extends JPanel {
         rightPanelCustomer.add(lblCustPass);
         rightPanelCustomer.add(passPanelCust);
 
-        chkLoginSavePassword = new JCheckBox("Save Password");
-        chkLoginSavePassword.setFont(new Font("Segoe UI", Font.PLAIN, 12));
-        chkLoginSavePassword.setBackground(BG_LIGHT);
-        chkLoginSavePassword.setBounds(60, 340, 150, 20);
-        chkLoginSavePassword.setFocusPainted(false);
-        rightPanelCustomer.add(chkLoginSavePassword);
 
         btnForgotPassword = new JButton("Forgot password?");
         btnForgotPassword.setFont(new Font("Segoe UI", Font.BOLD, 12));

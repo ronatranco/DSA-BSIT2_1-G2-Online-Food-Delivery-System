@@ -2,11 +2,11 @@ package Database;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
 public class databaseConnection {
-
 
     private static final String HOST = "localhost";
     private static final String PORT = "3306";
@@ -40,7 +40,14 @@ public class databaseConnection {
               + " phone         VARCHAR(11)  NULL,"
               + " address       VARCHAR(255) NULL,"
               + " password_hash CHAR(64)     NOT NULL,"
-              + " role          VARCHAR(20)  NOT NULL)");
+              + " role          VARCHAR(20)  NOT NULL,"
+              + " status        VARCHAR(20)  NOT NULL DEFAULT 'Active')");
+
+            try (ResultSet rs = con.getMetaData().getColumns(con.getCatalog(), null, "accounts", "status")) {
+                if (!rs.next()) {
+                    st.executeUpdate("ALTER TABLE accounts ADD COLUMN status VARCHAR(20) NOT NULL DEFAULT 'Active'");
+                }
+            }
         }
 
         initialized = true;

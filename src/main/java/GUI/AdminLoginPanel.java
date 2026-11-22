@@ -22,7 +22,6 @@ public class AdminLoginPanel extends JPanel {
     // PUBLIC FIELDS PARA PAREHAS SA CUSTOMER LOGIN PANEL
     public JTextField txtAdminUser;
     public JPasswordField txtAdminPass;
-    public JCheckBox chkAdminSavePass;
     public JButton btnAdminLogin, btnAdminForgotPassword, btnAdminLoginBack, btnDontHaveAccount;
     private MainFrame mainFrame;
 
@@ -84,13 +83,6 @@ public class AdminLoginPanel extends JPanel {
         passPanelAdmin.setBounds(60, 295, 380, 38);
         rightPanelAdmin.add(lblAdminPass);
         rightPanelAdmin.add(passPanelAdmin);
-
-        chkAdminSavePass = new JCheckBox("Save Password");
-        chkAdminSavePass.setFont(new Font("Segoe UI", Font.PLAIN, 12));
-        chkAdminSavePass.setBackground(BG_LIGHT);
-        chkAdminSavePass.setBounds(60, 340, 150, 20);
-        chkAdminSavePass.setFocusPainted(false);
-        rightPanelAdmin.add(chkAdminSavePass);
 
         btnAdminForgotPassword = new JButton("Forgot password?");
         btnAdminForgotPassword.setFont(new Font("Segoe UI", Font.BOLD, 12));
