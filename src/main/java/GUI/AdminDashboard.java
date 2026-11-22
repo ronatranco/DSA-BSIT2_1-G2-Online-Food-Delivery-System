@@ -198,7 +198,7 @@ public class AdminDashboard extends JPanel implements MouseListener {
 
         sections.put("dashboard", new AdminOverviewPanel(admin));
         sections.put("accounts", new AdminAccountsPanel(admin));
-        sections.put("restaurants", new AdminRestaurantsPanel());
+        sections.put("restaurants", new AdminRestaurantsPanel(admin));
         sections.put("menus", new AdminMenuPanel());
         sections.put("orders", new AdminOrdersPanel());
         sections.put("routes", new AdminRoutesPanel());
@@ -939,7 +939,9 @@ public class AdminDashboard extends JPanel implements MouseListener {
         }
     }
 
+    
     private static final class AdminRestaurantsPanel extends JPanel implements AdminUI.Section {
+        private final Admin admin;
         private final DefaultTableModel model = AdminUI.readOnlyModel(
                 "Restaurant", "Location", "Owner", "Contact", "Cuisine", "Menu Items", "Orders");
         private final JTable table = AdminUI.table(model);
@@ -949,10 +951,11 @@ public class AdminDashboard extends JPanel implements MouseListener {
         private final JLabel notice = AdminUI.hint(" ");
         private boolean loading;
 
-        AdminRestaurantsPanel() {
+        AdminRestaurantsPanel(Admin admin) {
             super(new BorderLayout(0, 12));
+            this.admin = admin;
             setOpaque(false);
-
+            
             AdminUI.styleCombo(picker, 260);
             AdminUI.styleCombo(location, 0);
             picker.addActionListener(e -> {

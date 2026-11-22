@@ -18,6 +18,7 @@ public class Admin {
     public static final String ROLE_RESTAURANT = "RESTAURANT";
     public static final String STATUS_ACTIVE = "Active";
     public static final String STATUS_BANNED = "Banned";
+    public static final String STATUS_PENDING = "Pending";
 
     public static final String[] ZONES = {"Zone A", "Zone B", "Zone C"};
 
