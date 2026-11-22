@@ -20,7 +20,7 @@ public class SignupPanel extends JPanel {
     public JComboBox<String> cmbAddress;
     public JPasswordField txtPassword, txtConfirmPassword;
     public JComboBox<String> cmbRole;
-    public JCheckBox chkSavePassword;
+
     public JButton btnRegister, btnAlreadyHaveAccount;
     private MainFrame mainFrame;
 
@@ -125,12 +125,6 @@ public class SignupPanel extends JPanel {
         rightPanelSignup.add(lblConfirmPassword);
         rightPanelSignup.add(confirmPassPanelSignup);
 
-        chkSavePassword = new JCheckBox("Save Password");
-        chkSavePassword.setFont(new Font("Segoe UI", Font.PLAIN, 12));
-        chkSavePassword.setBackground(BG_LIGHT);
-        chkSavePassword.setBounds(60, 502, 150, 20);
-        chkSavePassword.setFocusPainted(false);
-        rightPanelSignup.add(chkSavePassword);
 
         btnRegister = new JButton("REGISTER");
         btnRegister.setFont(new Font("Segoe UI", Font.BOLD, 14));
@@ -162,7 +156,7 @@ public class SignupPanel extends JPanel {
         txtPassword.setText("");
         txtConfirmPassword.setText("");
         cmbRole.setSelectedIndex(0);
-        chkSavePassword.setSelected(false);
+
     }
 
     private JPanel createPasswordFieldWithEye(JPasswordField passField) {

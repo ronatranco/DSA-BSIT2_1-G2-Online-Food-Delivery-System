@@ -4,7 +4,7 @@
  */
 package GUI;
 
-import Database.databaseConnection;
+
 import Database.UserAuthentication;
 import Database.AccountDAO;
 import Model.Admin;
@@ -12,8 +12,6 @@ import Model.Admin;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import javax.swing.*;
 
@@ -202,9 +200,6 @@ public class MainFrame extends JFrame implements ActionListener {
             } else {
                 panelCustomerLogin.txtLoginEmailOrUser.setText("");
                 panelCustomerLogin.txtLoginPassword.setText("");
-                if (panelCustomerLogin.chkLoginSavePassword != null) {
-                    panelCustomerLogin.chkLoginSavePassword.setSelected(false);
-                }
                 JOptionPane.showMessageDialog(this, "Fields have been cleared. Please enter your credentials again.", "Forgot Password", JOptionPane.INFORMATION_MESSAGE);
             }
         }
@@ -218,9 +213,6 @@ public class MainFrame extends JFrame implements ActionListener {
             } else {
                 panelRestaurantLogin.txtRestaurantUser.setText("");
                 panelRestaurantLogin.txtRestaurantPass.setText("");
-                if (panelRestaurantLogin.chkRestaurantSavePass != null) {
-                    panelRestaurantLogin.chkRestaurantSavePass.setSelected(false);
-                }
                 JOptionPane.showMessageDialog(this, "Fields have been cleared. Please enter your credentials again.", "Forgot Password", JOptionPane.INFORMATION_MESSAGE);
             }
         }
@@ -234,9 +226,7 @@ public class MainFrame extends JFrame implements ActionListener {
             } else {
                 panelAdminLogin.txtAdminUser.setText("");
                 panelAdminLogin.txtAdminPass.setText("");
-                if (panelAdminLogin.chkAdminSavePass != null) {
-                    panelAdminLogin.chkAdminSavePass.setSelected(false);
-                }
+
                 JOptionPane.showMessageDialog(this, "Fields have been cleared. Please enter your credentials again.", "Forgot Password", JOptionPane.INFORMATION_MESSAGE);
             }
         }
@@ -250,9 +240,7 @@ public class MainFrame extends JFrame implements ActionListener {
                 Model.Order.OrderStore.startSession(identifier);
                 panelCustomerLogin.txtLoginEmailOrUser.setText("");
                 panelCustomerLogin.txtLoginPassword.setText("");
-                if (panelCustomerLogin.chkLoginSavePassword != null) {
-                    panelCustomerLogin.chkLoginSavePassword.setSelected(false);
-            }   mainContainer.remove(panelCustomerDashboard);
+                mainContainer.remove(panelCustomerDashboard);
                 panelCustomerDashboard = new CustomerDashboard(this);
                 Model.Customer freshController = new Model.Customer(panelCustomerDashboard);
                 freshController.restoreCart();
@@ -272,9 +260,7 @@ public class MainFrame extends JFrame implements ActionListener {
 
                 panelRestaurantLogin.txtRestaurantUser.setText("");
                 panelRestaurantLogin.txtRestaurantPass.setText("");
-                if (panelRestaurantLogin.chkRestaurantSavePass != null) {
-                    panelRestaurantLogin.chkRestaurantSavePass.setSelected(false);
-                }
+
 
                 String account = identifier.toLowerCase().replace(" ", "").replace("_", "");
                 String card = "RESTAURANT_DASHBOARD";
@@ -299,9 +285,6 @@ public class MainFrame extends JFrame implements ActionListener {
             if (authenticate(username, password, "admin")) {
                 panelAdminLogin.txtAdminUser.setText("");
                 panelAdminLogin.txtAdminPass.setText("");
-                if (panelAdminLogin.chkAdminSavePass != null) {
-                    panelAdminLogin.chkAdminSavePass.setSelected(false);
-                }
                 showCard("ADMIN_DASHBOARD");
             }
         }
@@ -317,18 +300,32 @@ public class MainFrame extends JFrame implements ActionListener {
         }
     }
 
-    private boolean authenticate(String login, String password, String role) {
+        private boolean authenticate(String login, String password, String role) {
         if (login.isEmpty() || password.isEmpty()) {
             JOptionPane.showMessageDialog(this, "Invalid Username or Password! \nIf you don't have an account, please create one.",
                     "Input Error", JOptionPane.ERROR_MESSAGE);
             return false;
         }
         try {
-            if (userAuth.authenticate(login, password, role)) {
-                return true;
+            UserAuthentication.Result result = userAuth.authenticate(login, password, role);
+            switch (result) {
+                case SUCCESS:
+                    return true;
+                case PENDING:
+                    JOptionPane.showMessageDialog(this,
+                            "Your account is awaiting admin approval.\nPlease try again once it has been approved.",
+                            "Awaiting Approval", JOptionPane.INFORMATION_MESSAGE);
+                    break;
+                case BANNED:
+                    JOptionPane.showMessageDialog(this,
+                            "This account has been banned.\nPlease contact an administrator.",
+                            "Account Banned", JOptionPane.ERROR_MESSAGE);
+                    break;
+                default:
+                    JOptionPane.showMessageDialog(this,
+                            "Invalid Username or Password! \nIf you don't have an account, please create one.",
+                            "Login Failed", JOptionPane.ERROR_MESSAGE);
             }
-            JOptionPane.showMessageDialog(this, "Invalid Username or Password! \nIf you don't have an account, please create one.",
-                    "Login Failed", JOptionPane.ERROR_MESSAGE);
         } catch (SQLException ex) {
             JOptionPane.showMessageDialog(this, "Database error: " + ex.getMessage());
         }
@@ -367,29 +364,26 @@ public class MainFrame extends JFrame implements ActionListener {
             return;
         }
 
-        String sql = "INSERT INTO accounts (full_name, username, email, phone, address, password_hash, role) "
-           + "VALUES (?, ?, ?, ?, ?, SHA2(?, 256), ?)";
+        try {
+            AccountDAO.RegisterResult result =
+                    AccountDAO.register(name, username, email, phone, address, password, role);
 
-        try (Connection con = databaseConnection.getConnection();
-             PreparedStatement ps = con.prepareStatement(sql)) {
-            ps.setString(1, name);
-            ps.setString(2, username);
-            ps.setString(3, email);
-            ps.setString(4, phone);
-            ps.setString(5, address);
-            ps.setString(6, password);
-            ps.setString(7, role);
-            ps.executeUpdate();
+            if (result == AccountDAO.RegisterResult.DUPLICATE) {
+                JOptionPane.showMessageDialog(this, "Username or email already exists.");
+                return;
+            }
 
-            JOptionPane.showMessageDialog(this, "Account created!");
+            if (role.equalsIgnoreCase("RESTAURANT")) {
+                JOptionPane.showMessageDialog(this,
+                        "Account created! Your restaurant is awaiting admin approval.");
+            } else {
+                JOptionPane.showMessageDialog(this, "Account created!");
+            }
             panelSignup.clearFields();
             showCard("ROLE_SELECTION");
         } catch (SQLException ex) {
-            if (ex.getErrorCode() == 1062) {
-                JOptionPane.showMessageDialog(this, "Username or email already exists.");
-            } else {
-                JOptionPane.showMessageDialog(this, "Database error: " + ex.getMessage());
-            }
+            JOptionPane.showMessageDialog(this, "Database error: " + ex.getMessage());
         }
+    
     }
 }

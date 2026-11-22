@@ -21,7 +21,6 @@ public class RestaurantLoginPanel extends JPanel {
 
     public JTextField txtRestaurantUser;
     public JPasswordField txtRestaurantPass;
-    public JCheckBox chkRestaurantSavePass;
     public JButton btnRestaurantLogin, btnRestaurantForgotPassword, btnRestaurantLoginBack, btnDontHaveAccount;
     private MainFrame mainFrame;
 
@@ -85,12 +84,6 @@ public class RestaurantLoginPanel extends JPanel {
         rightPanelRestaurant.add(lblRestaurantPass);
         rightPanelRestaurant.add(passPanelRestaurant);
 
-        chkRestaurantSavePass = new JCheckBox("Save Password");
-        chkRestaurantSavePass.setFont(new Font("Segoe UI", Font.PLAIN, 12));
-        chkRestaurantSavePass.setBackground(BG_LIGHT);
-        chkRestaurantSavePass.setBounds(60, 340, 150, 20);
-        chkRestaurantSavePass.setFocusPainted(false);
-        rightPanelRestaurant.add(chkRestaurantSavePass);
 
         btnRestaurantForgotPassword = new JButton("Forgot password?");
         btnRestaurantForgotPassword.setFont(new Font("Segoe UI", Font.BOLD, 12));
