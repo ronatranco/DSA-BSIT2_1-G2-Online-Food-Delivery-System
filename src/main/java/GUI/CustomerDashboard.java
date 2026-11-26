@@ -12,6 +12,9 @@ import java.awt.*;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import javax.swing.*;
+import Database.AccountDAO;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  *
@@ -39,6 +42,7 @@ public class CustomerDashboard extends JPanel {
  
     private CustomerDashboardRestaurant pnlRestoCard;
     private final Map<String, CustomerDashboardRestaurantMenus> menuPanels = new LinkedHashMap<>();
+    private List<AccountDAO.RestaurantInfo> restaurants = new ArrayList<>();
     private CustomerDashboardTrackOrder pnlRightTrackOrder;
     private CustomerDashboardHistory pnlRightHistory;
     private CustomerDashboardProfile pnlRightProfile;
@@ -542,8 +546,7 @@ public class CustomerDashboard extends JPanel {
                     pnlMainBg.requestFocusInWindow();
             }
         });
-        // == LAYER ORDER == 
-    // == LAYER ORDER ==
+        // == LAYER ORDER ==
     pnlMainBg.setComponentZOrder(leftBannerNav, 0);         // Left Nav Panel
     pnlMainBg.setComponentZOrder(pnlRightCart, 1);          // Order Summary Panel
 
@@ -562,7 +565,7 @@ public class CustomerDashboard extends JPanel {
             @Override
             public void componentShown(java.awt.event.ComponentEvent e) {
                 loadUserDataFromDatabase();
-                
+                loadRestaurants();
                 if (isFirstShow) {
                     String currentProfileName = pnlRightProfile.getName();
                     String currentProfileAddress = pnlRightProfile.getAddress();
@@ -596,6 +599,19 @@ public class CustomerDashboard extends JPanel {
             return pnlRestoCard;
     }   public JTextField getTxtSearchBar() {
             return txtSearchBar;
+    }
+    public void loadRestaurants() {
+        try {
+            restaurants = AccountDAO.listActiveRestaurants();
+        } catch (java.sql.SQLException ex) {
+            restaurants = new ArrayList<>();
+            System.out.println("Could not load restaurants: " + ex.getMessage());
+        }
+        pnlRestoCard.showRestaurants(restaurants, controller);
+    }
+
+    public List<AccountDAO.RestaurantInfo> getRestaurants() {
+        return restaurants;
     }
     public void showMenu(String restaurantName) {
     CustomerDashboardRestaurantMenus panel = menuPanels.get(restaurantName);
