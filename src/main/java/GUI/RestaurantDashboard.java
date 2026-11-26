@@ -433,7 +433,7 @@ public class RestaurantDashboard extends JPanel {
       private void refresh() {
          shown.clear();
          model.setRowCount(0);
-         for (Restaurant.Order order : data.orders) {
+         for (Restaurant.Order order : Restaurant.byPriority(data.orders)) {
             if (Restaurant.Order.PENDING.equals(order.status)) {
                shown.add(order);
                model.addRow(UIStyle.orderRow(order));
@@ -445,6 +445,11 @@ public class RestaurantDashboard extends JPanel {
          int row = UIStyle.requireSelection(table, notice, "an order");
          if (row >= 0) {
             Restaurant.Order order = shown.get(row);
+            Restaurant.Order next = data.nextPendingOrder();
+            if (next != null && next != order) {
+               notice.warn("Order " + next.id + " (" + next.deliveryType + ") has the highest priority. Accept it first.");
+               return;
+            }
             data.setOrderStatus(order, Restaurant.Order.PREPARING);
             notice.success("Order " + order.id + " accepted.");
          }
@@ -509,7 +514,7 @@ public class RestaurantDashboard extends JPanel {
          String statusFilter = String.valueOf(filter.getSelectedItem());
          shown.clear();
          model.setRowCount(0);
-         for (Restaurant.Order order : data.orders) {
+         for (Restaurant.Order order : Restaurant.byPriority(data.orders)) {
             boolean statusMatches = "All".equals(statusFilter) || statusFilter.equals(order.status);
             boolean textMatches = query.isEmpty() || order.id.toLowerCase().contains(query) || order.customer.toLowerCase().contains(query);
             if (statusMatches && textMatches) {

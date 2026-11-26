@@ -232,7 +232,7 @@ public class CustomerDashboardRestaurant extends JPanel {
             }
             shown++;
         }
-        blEmpty.setText(dynamicCards.isEmpty() ? "No restaurants yet" : "No restaurants found");
+        lblEmpty.setText(dynamicCards.isEmpty() ? "No restaurants yet" : "No restaurants found");
         lblEmpty.setVisible(shown == 0);
         int rows = (shown + PER_ROW - 1) / PER_ROW;
         scrollContentPanel.setPreferredSize(new Dimension(1000, Math.max(605, 113 + rows * 217 + 30)));
