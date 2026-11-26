@@ -173,22 +173,17 @@ public class Customer implements ActionListener, MouseListener {
             return;
         }
         // Resto Menu 1
+        // Resto Menu 1
         if (e.getSource() == view.getPnlRestoCard().getLblRestoName1()) {
-            view.getPnlMenuMcDollibee().setVisible(true);
-            view.getPnlMenuBrainCells().setVisible(false);
-            view.getPnlMenuMangPinaasa().setVisible(false);
+            view.showMenu("McDollibee");
             closeAllSidebarsExcept("menu");
         } // Resto Menu 2
         else if (e.getSource() == view.getPnlRestoCard().getLblRestoName2()) {
-            view.getPnlMenuMcDollibee().setVisible(false);
-            view.getPnlMenuBrainCells().setVisible(true);
-            view.getPnlMenuMangPinaasa().setVisible(false);
+            view.showMenu("Brain Cells Milk Tea");
             closeAllSidebarsExcept("menu");
         } // Resto Menu 3
         else if (e.getSource() == view.getPnlRestoCard().getLblRestoName3()) {
-            view.getPnlMenuMcDollibee().setVisible(false);
-            view.getPnlMenuBrainCells().setVisible(false);
-            view.getPnlMenuMangPinaasa().setVisible(true);
+            view.showMenu("Mang Pinaasa");
             closeAllSidebarsExcept("menu");
         }
         if (e.getSource() == view.getLblHome()) {
@@ -435,14 +430,10 @@ public class Customer implements ActionListener, MouseListener {
         if (!exception.equals("cart")) {
             view.closeCheckoutPanels(); 
         }
-        boolean isMenuVisible = (view.getPnlMenuMcDollibee() != null && view.getPnlMenuMcDollibee().isVisible())
-                || (view.getPnlMenuBrainCells() != null && view.getPnlMenuBrainCells().isVisible())
-                || (view.getPnlMenuMangPinaasa() != null && view.getPnlMenuMangPinaasa().isVisible());
+        boolean isMenuVisible = view.isAnyMenuVisible();
 
         if (exception.equals("profile") || exception.equals("history") || exception.equals("track") || exception.equals("none")) {
-            if (view.getPnlMenuMcDollibee() != null) view.getPnlMenuMcDollibee().setVisible(false);
-            if (view.getPnlMenuBrainCells() != null) view.getPnlMenuBrainCells().setVisible(false);
-            if (view.getPnlMenuMangPinaasa() != null) view.getPnlMenuMangPinaasa().setVisible(false);
+            view.hideAllMenus();
             isMenuVisible = false;
         }
         boolean hideRestaurantView = isMenuVisible;
