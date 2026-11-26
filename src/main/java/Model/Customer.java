@@ -446,7 +446,7 @@ public class Customer implements ActionListener, MouseListener {
             showAllRestaurants(restoCard, true);
             return;
         }
-        restoCard.filterByArea(location);
+        restoCard.showOnly(view.getAreaIndex().get(location));
         view.getPnlMainBg().repaint();
     }
 

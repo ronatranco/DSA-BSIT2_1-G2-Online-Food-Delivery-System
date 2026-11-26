@@ -43,6 +43,7 @@ public class CustomerDashboard extends JPanel {
     private CustomerDashboardRestaurant pnlRestoCard;
     private final Map<String, CustomerDashboardRestaurantMenus> menuPanels = new LinkedHashMap<>();
     private List<AccountDAO.RestaurantInfo> restaurants = new ArrayList<>();
+    private final DSA.HashTable areaIndex = new DSA.HashTable(); 
     private CustomerDashboardTrackOrder pnlRightTrackOrder;
     private CustomerDashboardHistory pnlRightHistory;
     private CustomerDashboardProfile pnlRightProfile;
@@ -258,9 +259,6 @@ public class CustomerDashboard extends JPanel {
             public void actionPerformed(java.awt.event.ActionEvent e) {
                 JPopupMenu dropdownMenu = new JPopupMenu();
                 
-                JMenuItem item1 = new JMenuItem("Location A");
-                JMenuItem item2 = new JMenuItem("Location B");
-                JMenuItem item3 = new JMenuItem("Location C");
                 
                 java.awt.event.ActionListener menuListener = new java.awt.event.ActionListener() {
                     @Override
@@ -273,12 +271,11 @@ public class CustomerDashboard extends JPanel {
                         }
                     }
                 };
-                item1.addActionListener(menuListener);
-                item2.addActionListener(menuListener);
-                item3.addActionListener(menuListener);
-                dropdownMenu.add(item1);
-                dropdownMenu.add(item2);
-                dropdownMenu.add(item3);
+                for (String area : getAreaIndex().areas()) {
+                    JMenuItem item = new JMenuItem(area);
+                    item.addActionListener(menuListener);
+                    dropdownMenu.add(item);
+                }
                 dropdownMenu.pack(); 
                 int pixelBuffer = 35;
                 int xOffset = btnLocationDropDown.getWidth() - dropdownMenu.getPreferredSize().width - pixelBuffer;
@@ -607,9 +604,15 @@ public class CustomerDashboard extends JPanel {
             restaurants = new ArrayList<>();
             System.out.println("Could not load restaurants: " + ex.getMessage());
         }
+        areaIndex.rebuild(restaurants);
         pnlRestoCard.showRestaurants(restaurants, controller);
     }
-
+    public DSA.HashTable getAreaIndex() {
+        if (areaIndex.isStale()) {
+            loadRestaurants();
+        }
+        return areaIndex;
+    }
     public List<AccountDAO.RestaurantInfo> getRestaurants() {
         return restaurants;
     }

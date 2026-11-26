@@ -110,13 +110,17 @@ public class CustomerDashboardRestaurant extends JPanel {
     // ===== restaurant cards built from the database =====
     public static class RestoCard {
         public final String name;
+        public final int id;
+
         public final String area;
         public final JPanel panel;
         public final JLabel lblName;
         public final JLabel lblImage;   // null when the restaurant has no picture
         public final int imageDy;       // image label's y offset from the card's top
+        
 
-        RestoCard(String name, String area, JPanel panel, JLabel lblName, JLabel lblImage, int imageDy) {
+        RestoCard(int id, String name, String area, JPanel panel, JLabel lblName, JLabel lblImage, int imageDy) {
+            this.id = id;
             this.name = name;
             this.area = area;
             this.panel = panel;
@@ -196,7 +200,7 @@ public class CustomerDashboardRestaurant extends JPanel {
             card.add(lblArea);
 
             scrollContentPanel.add(card);
-            dynamicCards.add(new RestoCard(name, area, card, lblName, imageLabel, imageDy));
+            dynamicCards.add(new RestoCard(r.id, name, area, card, lblName, imageLabel, imageDy));
         }
         layoutCards(lastBaseX);
     }
@@ -237,7 +241,12 @@ public class CustomerDashboardRestaurant extends JPanel {
         for (RestoCard c : dynamicCards) c.panel.setVisible(c.name.toLowerCase().contains(q));
         layoutCards(lastBaseX);
     }
-
+    public void showOnly(List<AccountDAO.RestaurantInfo> list) {
+        java.util.Set<Integer> ids = new java.util.HashSet<>();
+        for (AccountDAO.RestaurantInfo r : list) ids.add(r.id);
+        for (RestoCard c : dynamicCards) c.panel.setVisible(ids.contains(c.id));
+        layoutCards(lastBaseX);
+    }
     public void filterByArea(String area) {
         for (RestoCard c : dynamicCards) c.panel.setVisible(c.area.equalsIgnoreCase(area.trim()));
         layoutCards(lastBaseX);
