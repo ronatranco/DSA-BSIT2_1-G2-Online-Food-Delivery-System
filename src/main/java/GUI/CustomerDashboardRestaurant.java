@@ -4,9 +4,13 @@
  */
 package GUI;
 
+import Database.AccountDAO;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.util.ArrayList;
+import java.util.List;
 import javax.swing.*;
 
 /**
@@ -20,13 +24,11 @@ public class CustomerDashboardRestaurant extends JPanel {
     private Font TITLE_FONT = new Font("Segoe UI", Font.BOLD, 36);
     private Color PURPLE_LIGHT_HOVER = new Color(142, 68, 173);
     
-    public JPanel topBannerQuote, pnlRestoCard1, pnlRestoCard2, pnlRestoCard3, pnlRestoCard4, 
-                  pnlRestoCard5, pnlRestoCard6, pnlRestoCard7, pnlRestoCard8;
-    public JLabel lblRestaurant, lblRestoName1, lblRestoName11, lblRestoName2, lblRestoName22, lblRestoName3, lblRestoName33, lblRestoName4, lblRestoName44, 
-                  lblRestoName5, lblRestoName55, lblRestoName6, lblRestoName66, lblRestoName7, lblRestoName77, lblRestoName8, lblRestoName88, lblRestoImage1, 
-                  lblRestoImage2, lblRestoImage3, lblRestoImage4, lblRestoImage5, lblRestoImage6, lblRestoImage7, lblRestoImage8;
+    public JPanel topBannerQuote;
+    public JLabel lblRestaurant;
     public JScrollPane scrollPane;
     public JPanel scrollContentPanel, restoLine;
+    private JLabel lblEmpty; 
 
     public CustomerDashboardRestaurant(){
         setBounds(0, 0, 1024, 720); 
@@ -84,6 +86,12 @@ public class CustomerDashboardRestaurant extends JPanel {
         scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_NEVER);
         add(scrollPane);
+        lblEmpty = new JLabel("No restaurants yet", SwingConstants.CENTER);
+        lblEmpty.setFont(new Font("Segoe UI", Font.BOLD, 20));
+        lblEmpty.setForeground(new Color(150, 145, 170));
+        lblEmpty.setBounds(110, 120, 860, 40);
+        lblEmpty.setVisible(false);
+        scrollContentPanel.add(lblEmpty);
 
         // RESTAURANT
         lblRestaurant = new JLabel("Restaurants");
@@ -104,250 +112,153 @@ public class CustomerDashboardRestaurant extends JPanel {
         if (topBannerQuote != null) {
             setComponentZOrder(topBannerQuote, 3);
         }
-        
-        // RESTAURANT CARDS IN CD
+    }
 
-        // ROW 1 RESTAURANT
-        
-        // RESTAURANT 1 (MCDOLLIBEE)
-        pnlRestoCard1 = new JPanel();
-        pnlRestoCard1.setLayout(null);
-        pnlRestoCard1.setBackground(COLOR_WHITE); 
-        pnlRestoCard1.setBounds(110, 113, 200, 130);
-        pnlRestoCard1.setBorder(BorderFactory.createLineBorder(PURPLE_DARK, 1));
-        scrollContentPanel.add(pnlRestoCard1);
-        
-        java.awt.Image restoimg1 = new ImageIcon("src/main/java/gui/images/CDRestaurantMJImg1.png").getImage()
-                             .getScaledInstance(170, 190, java.awt.Image.SCALE_SMOOTH);
-        lblRestoImage1 = new JLabel(new ImageIcon(restoimg1));
-        lblRestoImage1.setBounds(96, 3, 230, 190); 
-        scrollContentPanel.add(lblRestoImage1);
-        scrollContentPanel.setComponentZOrder(lblRestoImage1, 0);
-        scrollContentPanel.revalidate();
-        scrollContentPanel.repaint();
-        
-        lblRestoName1 = new JLabel("McDollibee", SwingConstants.CENTER);
-        lblRestoName1.setFont(new Font("Segoe UI", Font.BOLD, 18));
-        lblRestoName1.setForeground(PURPLE_DARK);
-        lblRestoName1.setBounds(0, 79, 200, 30); 
-        addHoverEffect(lblRestoName1);
-        pnlRestoCard1.add(lblRestoName1);
-        
-        lblRestoName11 = new JLabel("Location B", SwingConstants.CENTER);
-        lblRestoName11.setFont(new Font("Segoe UI", Font.PLAIN, 12));
-        lblRestoName11.setForeground(new Color(199, 195, 217));
-        lblRestoName11.setBounds(0, 99, 200, 30); 
-        pnlRestoCard1.add(lblRestoName11);
-        
-        // RESTAURANT 2 (BRAIN CELLS MILK TEA)
-        pnlRestoCard2 = new JPanel();
-        pnlRestoCard2.setLayout(null);
-        pnlRestoCard2.setBackground(COLOR_WHITE); 
-        pnlRestoCard2.setBounds(330, 113, 200, 130); 
-        pnlRestoCard2.setBorder(BorderFactory.createLineBorder(PURPLE_DARK, 1));
-        scrollContentPanel.add(pnlRestoCard2);
-        
-        java.awt.Image restoimg2 = new ImageIcon("src/main/java/gui/images/CDRestaurantBCMTImg2.png").getImage()
-                             .getScaledInstance(150, 140, java.awt.Image.SCALE_SMOOTH);
-        lblRestoImage2 = new JLabel(new ImageIcon(restoimg2));
-        lblRestoImage2.setBounds(316, 45, 230, 150); 
-        scrollContentPanel.add(lblRestoImage2);
-        scrollContentPanel.setComponentZOrder(lblRestoImage2, 0);
-        scrollContentPanel.revalidate();
-        scrollContentPanel.repaint();
+    // ===== restaurant cards built from the database =====
+    public static class RestoCard {
+        public final String name;
+        public final int id;
 
-        lblRestoName2 = new JLabel("Brain Cells Milk Tea", SwingConstants.CENTER);
-        lblRestoName2.setFont(new Font("Segoe UI", Font.BOLD, 18)); 
-        lblRestoName2.setForeground(PURPLE_DARK);
-        lblRestoName2.setBounds(0, 79, 200, 30); 
-        addHoverEffect(lblRestoName2);
-        pnlRestoCard2.add(lblRestoName2);
+        public final String area;
+        public final JPanel panel;
+        public final JLabel lblName;
+        public final JLabel lblImage;   // null when the restaurant has no picture
+        public final int imageDy;       // image label's y offset from the card's top
         
-        lblRestoName22 = new JLabel("Location C", SwingConstants.CENTER);
-        lblRestoName22.setFont(new Font("Segoe UI", Font.PLAIN, 12)); 
-        lblRestoName22.setForeground(new Color(199, 195, 217));
-        lblRestoName22.setBounds(0, 99, 200, 30); 
-        addHoverEffect(lblRestoName2);
-        pnlRestoCard2.add(lblRestoName22);
-        
-        // RESTAURANT 3 (MANG PINAASA)
-        pnlRestoCard3 = new JPanel();
-        pnlRestoCard3.setLayout(null);
-        pnlRestoCard3.setBackground(COLOR_WHITE); 
-        pnlRestoCard3.setBounds(550, 113, 200, 130);
-        pnlRestoCard3.setBorder(BorderFactory.createLineBorder(PURPLE_DARK, 1));
-        scrollContentPanel.add(pnlRestoCard3);
-        
-        java.awt.Image restoimg3 = new ImageIcon("src/main/java/gui/images/CDRestaurantMIImg3.png").getImage()
-                             .getScaledInstance(150, 140, java.awt.Image.SCALE_SMOOTH);
-        lblRestoImage3 = new JLabel(new ImageIcon(restoimg3));
-        lblRestoImage3.setBounds(536, 45, 230, 150); 
-        scrollContentPanel.add(lblRestoImage3);
-        scrollContentPanel.setComponentZOrder(lblRestoImage3, 0);
-        scrollContentPanel.revalidate();
-        scrollContentPanel.repaint();
 
-        lblRestoName3 = new JLabel("Mang Pinaasa", SwingConstants.CENTER);
-        lblRestoName3.setFont(new Font("Segoe UI", Font.BOLD, 18));
-        lblRestoName3.setForeground(PURPLE_DARK);
-        lblRestoName3.setBounds(0, 78, 200, 30); 
-        addHoverEffect(lblRestoName3);
-        pnlRestoCard3.add(lblRestoName3);
-        
-        lblRestoName33 = new JLabel("Location A", SwingConstants.CENTER);
-        lblRestoName33.setFont(new Font("Segoe UI", Font.PLAIN, 12)); 
-        lblRestoName33.setForeground(new Color(199, 195, 217));
-        lblRestoName33.setBounds(0, 99, 200, 30); 
-        pnlRestoCard3.add(lblRestoName33);
-        
-        // RESTAURANT 4 (KAMOTE KORNER)
-        pnlRestoCard4 = new JPanel();
-        pnlRestoCard4.setLayout(null);
-        pnlRestoCard4.setBackground(COLOR_WHITE); 
-        pnlRestoCard4.setBounds(770, 113, 200, 130); 
-        pnlRestoCard4.setBorder(BorderFactory.createLineBorder(PURPLE_DARK, 1));
-        scrollContentPanel.add(pnlRestoCard4);
-        
-        java.awt.Image restoimg4 = new ImageIcon("src/main/java/gui/images/CDRestaurantKKImg4.png").getImage()
-                             .getScaledInstance(150, 140, java.awt.Image.SCALE_SMOOTH);
-        lblRestoImage4 = new JLabel(new ImageIcon(restoimg4));
-        lblRestoImage4.setBounds(756, 45, 230, 150); 
-        scrollContentPanel.add(lblRestoImage4);
-        scrollContentPanel.setComponentZOrder(lblRestoImage4, 0);
+        RestoCard(int id, String name, String area, JPanel panel, JLabel lblName, JLabel lblImage, int imageDy) {
+            this.id = id;
+            this.name = name;
+            this.area = area;
+            this.panel = panel;
+            this.lblName = lblName;
+            this.lblImage = lblImage;
+            this.imageDy = imageDy;
+        }
+    }
 
-        lblRestoName4 = new JLabel("Kamote Korner", SwingConstants.CENTER);
-        lblRestoName4.setFont(new Font("Segoe UI", Font.BOLD, 18));
-        lblRestoName4.setForeground(PURPLE_DARK);
-        lblRestoName4.setBounds(0, 78, 200, 30); 
-        addHoverEffect(lblRestoName4);
-        pnlRestoCard4.add(lblRestoName4);
-        
-        lblRestoName44 = new JLabel("Location A", SwingConstants.CENTER);
-        lblRestoName44.setFont(new Font("Segoe UI", Font.PLAIN, 12)); 
-        lblRestoName44.setForeground(new Color(199, 195, 217));
-        lblRestoName44.setBounds(0, 99, 200, 30); 
-        pnlRestoCard4.add(lblRestoName44);
-        
-        // ROW 2 RESTAURANT
-        // RESTAURANT 5 (PETSA HUT)
-        pnlRestoCard5 = new JPanel();
-        pnlRestoCard5.setLayout(null);
-        pnlRestoCard5.setBackground(COLOR_WHITE); 
-        pnlRestoCard5.setBounds(110, 330, 200, 130); 
-        pnlRestoCard5.setBorder(BorderFactory.createLineBorder(PURPLE_DARK, 1));
-        scrollContentPanel.add(pnlRestoCard5);
-        
-        java.awt.Image restoimg5 = new ImageIcon("src/main/java/gui/images/CDRestaurantPHImg5.png").getImage()
-                             .getScaledInstance(170, 160, java.awt.Image.SCALE_SMOOTH);
-        lblRestoImage5 = new JLabel(new ImageIcon(restoimg5));
-        lblRestoImage5.setBounds(96, 260, 230, 160); 
-        scrollContentPanel.add(lblRestoImage5);
-        scrollContentPanel.setComponentZOrder(lblRestoImage5, 0);
+    private final List<RestoCard> dynamicCards = new ArrayList<>();
+    private static final int CARD_W = 200, CARD_H = 130, CARD_GAP = 20, PER_ROW = 4;
+    private int lastBaseX = 110;
+
+    // old pictures, matched by restaurant name: {file, imgW, imgH, labelH, yOffsetFromCardTop}
+    private static final java.util.Map<String, Object[]> RESTO_IMAGES = new java.util.HashMap<>();
+    static {
+        RESTO_IMAGES.put("mcdollibee",           new Object[]{"CDRestaurantMJImg1.png",  170, 190, 190, -110});
+        RESTO_IMAGES.put("brain cells milk tea", new Object[]{"CDRestaurantBCMTImg2.png", 150, 140, 150, -68});
+        RESTO_IMAGES.put("mang pinaasa",         new Object[]{"CDRestaurantMIImg3.png",  150, 140, 150, -68});
+        RESTO_IMAGES.put("kamote korner",        new Object[]{"CDRestaurantKKImg4.png",  150, 140, 150, -68});
+        RESTO_IMAGES.put("petsa hut",            new Object[]{"CDRestaurantPHImg5.png",  170, 160, 160, -70});
+        RESTO_IMAGES.put("bibang's",             new Object[]{"CDRestaurantBBImg6.png",  100, 140, 160, -70});
+        RESTO_IMAGES.put("sinabon",              new Object[]{"CDRestaurantSImg7.png",   140, 150, 160, -70});
+        RESTO_IMAGES.put("kuya's fried chicken", new Object[]{"CDRestaurantKFCImg8.png", 160, 150, 160, -70});
+    }
+
+    public List<RestoCard> getCards() {
+        return dynamicCards;
+    }
+
+    public void showRestaurants(List<AccountDAO.RestaurantInfo> list, MouseListener clickListener) {
+        for (RestoCard c : dynamicCards) {
+            scrollContentPanel.remove(c.panel);
+            if (c.lblImage != null) scrollContentPanel.remove(c.lblImage);
+        }
+        dynamicCards.clear();
+
+        for (AccountDAO.RestaurantInfo r : list) {
+            String name = (r.name == null) ? "(unnamed)" : r.name;
+            String area = (r.area == null) ? "" : r.area;
+
+            JPanel card = new JPanel();
+            card.setLayout(null);
+            card.setBackground(COLOR_WHITE);
+            card.setBorder(BorderFactory.createLineBorder(PURPLE_DARK, 1));
+
+            JLabel imageLabel = null;
+            int imageDy = 0;
+            Object[] info = RESTO_IMAGES.get(name.toLowerCase().trim());
+            if (info != null) {
+                java.awt.Image img = new ImageIcon("src/main/java/gui/images/" + info[0]).getImage()
+                        .getScaledInstance((int) info[1], (int) info[2], java.awt.Image.SCALE_SMOOTH);
+                imageLabel = new JLabel(new ImageIcon(img));
+                imageDy = (int) info[4];
+                imageLabel.setSize(230, (int) info[3]);
+                scrollContentPanel.add(imageLabel);
+                scrollContentPanel.setComponentZOrder(imageLabel, 0); // draw above the card
+            } else {
+                JLabel icon = new JLabel("\uD83C\uDF7D", SwingConstants.CENTER);
+                icon.setFont(new Font("Segoe UI Emoji", Font.PLAIN, 36));
+                icon.setBounds(0, 12, CARD_W, 50);
+                card.add(icon);
+            }
+
+            JLabel lblName = new JLabel(name, SwingConstants.CENTER);
+            lblName.setFont(new Font("Segoe UI", Font.BOLD, 18));
+            lblName.setForeground(PURPLE_DARK);
+            lblName.setBounds(0, 70, CARD_W, 30);
+            addHoverEffect(lblName);
+            lblName.addMouseListener(clickListener);
+            card.add(lblName);
+
+            JLabel lblArea = new JLabel(area, SwingConstants.CENTER);
+            lblArea.setFont(new Font("Segoe UI", Font.PLAIN, 12));
+            lblArea.setForeground(new Color(150, 145, 170));
+            lblArea.setBounds(0, 98, CARD_W, 24);
+            card.add(lblArea);
+
+            scrollContentPanel.add(card);
+            dynamicCards.add(new RestoCard(r.id, name, area, card, lblName, imageLabel, imageDy));
+        }
+        layoutCards(lastBaseX);
+    }
+
+    // places the visible cards in rows of 4, with no gaps
+    public void layoutCards(int baseX) {
+        lastBaseX = baseX;
+        int shown = 0;
+        for (RestoCard c : dynamicCards) {
+            if (!c.panel.isVisible()) {
+                if (c.lblImage != null) c.lblImage.setVisible(false);
+                continue;
+            }
+            int col = shown % PER_ROW;
+            int row = shown / PER_ROW;
+            int x = baseX + col * (CARD_W + CARD_GAP);
+            int y = 113 + row * 217;   // same spacing as the old hardcoded cards (113, 330)
+            c.panel.setBounds(x, y, CARD_W, CARD_H);
+            if (c.lblImage != null) {
+                c.lblImage.setVisible(true);
+                c.lblImage.setLocation(x - 14, y + c.imageDy);
+            }
+            shown++;
+        }
+        blEmpty.setText(dynamicCards.isEmpty() ? "No restaurants yet" : "No restaurants found");
+        lblEmpty.setVisible(shown == 0);
+        int rows = (shown + PER_ROW - 1) / PER_ROW;
+        scrollContentPanel.setPreferredSize(new Dimension(1000, Math.max(605, 113 + rows * 217 + 30)));
         scrollContentPanel.revalidate();
         scrollContentPanel.repaint();
-        
-        lblRestoName5 = new JLabel("Petsa Hut", SwingConstants.CENTER);
-        lblRestoName5.setFont(new Font("Segoe UI", Font.BOLD, 18));
-        lblRestoName5.setForeground(PURPLE_DARK);
-        lblRestoName5.setBounds(0, 78, 200, 30); 
-        addHoverEffect(lblRestoName5);
-        pnlRestoCard5.add(lblRestoName5);
-        
-        lblRestoName55 = new JLabel("Location A", SwingConstants.CENTER);
-        lblRestoName55.setFont(new Font("Segoe UI", Font.PLAIN, 12)); 
-        lblRestoName55.setForeground(new Color(199, 195, 217));
-        lblRestoName55.setBounds(0, 99, 200, 30); 
-        pnlRestoCard5.add(lblRestoName55);
-        
-        // RESTAURANT 6 (BIBANG'S)
-        pnlRestoCard6 = new JPanel();
-        pnlRestoCard6.setLayout(null);
-        pnlRestoCard6.setBackground(COLOR_WHITE); 
-        pnlRestoCard6.setBounds(330, 330, 200, 130); 
-        pnlRestoCard6.setBorder(BorderFactory.createLineBorder(PURPLE_DARK, 1));
-        scrollContentPanel.add(pnlRestoCard6);
-        
-        java.awt.Image restoimg6 = new ImageIcon("src/main/java/gui/images/CDRestaurantBBImg6.png").getImage()
-                             .getScaledInstance(100, 140, java.awt.Image.SCALE_SMOOTH);
-        lblRestoImage6 = new JLabel(new ImageIcon(restoimg6));
-        lblRestoImage6.setBounds(316, 260, 230, 160); 
-        scrollContentPanel.add(lblRestoImage6);
-        scrollContentPanel.setComponentZOrder(lblRestoImage6, 0);
-        scrollContentPanel.revalidate();
-        scrollContentPanel.repaint();
-        
-        lblRestoName6 = new JLabel("Bibang's", SwingConstants.CENTER);
-        lblRestoName6.setFont(new Font("Segoe UI", Font.BOLD, 18));
-        lblRestoName6.setForeground(PURPLE_DARK);
-        lblRestoName6.setBounds(0, 78, 200, 30); 
-        addHoverEffect(lblRestoName6);
-        pnlRestoCard6.add(lblRestoName6);
-        
-        lblRestoName66 = new JLabel("Location B", SwingConstants.CENTER);
-        lblRestoName66.setFont(new Font("Segoe UI", Font.PLAIN, 12)); 
-        lblRestoName66.setForeground(new Color(199, 195, 217));
-        lblRestoName66.setBounds(0, 99, 200, 30); 
-        pnlRestoCard6.add(lblRestoName66);
-        
-        // RESTAURANT 7 (SINABON)
-        pnlRestoCard7 = new JPanel();
-        pnlRestoCard7.setLayout(null);
-        pnlRestoCard7.setBackground(COLOR_WHITE); 
-        pnlRestoCard7.setBounds(550, 330, 200, 130); 
-        pnlRestoCard7.setBorder(BorderFactory.createLineBorder(PURPLE_DARK, 1));
-        scrollContentPanel.add(pnlRestoCard7);
-        
-        java.awt.Image restoimg7 = new ImageIcon("src/main/java/gui/images/CDRestaurantSImg7.png").getImage()
-                             .getScaledInstance(140, 150, java.awt.Image.SCALE_SMOOTH);
-        lblRestoImage7 = new JLabel(new ImageIcon(restoimg7));
-        lblRestoImage7.setBounds(536, 260, 230, 160); 
-        scrollContentPanel.add(lblRestoImage7);
-        scrollContentPanel.setComponentZOrder(lblRestoImage7, 0);
-        scrollContentPanel.revalidate();
-        scrollContentPanel.repaint();
-        
-        lblRestoName7 = new JLabel("Sinabon", SwingConstants.CENTER);
-        lblRestoName7.setFont(new Font("Segoe UI", Font.BOLD, 18));
-        lblRestoName7.setForeground(PURPLE_DARK);
-        lblRestoName7.setBounds(0, 78, 200, 30); 
-        addHoverEffect(lblRestoName7);
-        pnlRestoCard7.add(lblRestoName7);
-        
-        lblRestoName77 = new JLabel("Location B", SwingConstants.CENTER);
-        lblRestoName77.setFont(new Font("Segoe UI", Font.PLAIN, 12)); 
-        lblRestoName77.setForeground(new Color(199, 195, 217));
-        lblRestoName77.setBounds(0, 99, 200, 30); 
-        pnlRestoCard7.add(lblRestoName77);
-        
-        // RESTAURANT 8 (KUYA'S FRIED CHICKEN)
-        pnlRestoCard8 = new JPanel();
-        pnlRestoCard8.setLayout(null);
-        pnlRestoCard8.setBackground(COLOR_WHITE); 
-        pnlRestoCard8.setBounds(770, 330, 200, 130); 
-        pnlRestoCard8.setBorder(BorderFactory.createLineBorder(PURPLE_DARK, 1));
-        scrollContentPanel.add(pnlRestoCard8);
-        
-        java.awt.Image restoimg8 = new ImageIcon("src/main/java/gui/images/CDRestaurantKFCImg8.png").getImage()
-                             .getScaledInstance(160, 150, java.awt.Image.SCALE_SMOOTH);
-        lblRestoImage8 = new JLabel(new ImageIcon(restoimg8));
-        lblRestoImage8.setBounds(756, 260, 230, 160); 
-        scrollContentPanel.add(lblRestoImage8);
-        scrollContentPanel.setComponentZOrder(lblRestoImage8, 0);
-        scrollContentPanel.revalidate();
-        scrollContentPanel.repaint();
-        
-        lblRestoName8 = new JLabel("Kuya's Fried Chicken", SwingConstants.CENTER);
-        lblRestoName8.setFont(new Font("Segoe UI", Font.BOLD, 18));
-        lblRestoName8.setForeground(PURPLE_DARK);
-        lblRestoName8.setBounds(0, 78, 200, 30); 
-        addHoverEffect(lblRestoName8);
-        pnlRestoCard8.add(lblRestoName8);
-        
-        lblRestoName88 = new JLabel("Location C", SwingConstants.CENTER);
-        lblRestoName88.setFont(new Font("Segoe UI", Font.PLAIN, 12)); 
-        lblRestoName88.setForeground(new Color(199, 195, 217));
-        lblRestoName88.setBounds(0, 99, 200, 30); 
-        pnlRestoCard8.add(lblRestoName88);
+    }
+
+    public void showAll(boolean visible) {
+        for (RestoCard c : dynamicCards) c.panel.setVisible(visible);
+        layoutCards(lastBaseX);
+    }
+
+    public void filterByName(String query) {
+        String q = query.toLowerCase().trim();
+        for (RestoCard c : dynamicCards) c.panel.setVisible(c.name.toLowerCase().contains(q));
+        layoutCards(lastBaseX);
+    }
+    public void showOnly(List<AccountDAO.RestaurantInfo> list) {
+        java.util.Set<Integer> ids = new java.util.HashSet<>();
+        for (AccountDAO.RestaurantInfo r : list) ids.add(r.id);
+        for (RestoCard c : dynamicCards) c.panel.setVisible(ids.contains(c.id));
+        layoutCards(lastBaseX);
+    }
+    public void filterByArea(String area) {
+        for (RestoCard c : dynamicCards) c.panel.setVisible(c.area.equalsIgnoreCase(area.trim()));
+        layoutCards(lastBaseX);
     }
 
     private void addHoverEffect(JLabel label) {
@@ -369,12 +280,5 @@ public class CustomerDashboardRestaurant extends JPanel {
                 }
             }
         });
-    }
-        public JLabel getLblRestoName1() {
-            return lblRestoName1;
-    }   public JLabel getLblRestoName2() {
-            return lblRestoName2;
-    }   public JLabel getLblRestoName3() {
-            return lblRestoName3;
     }
 }

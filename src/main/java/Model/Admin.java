@@ -185,6 +185,7 @@ public class Admin {
                 ps.executeUpdate();
             }
         }
+        DSA.HashTable.markStale(); 
     }
 
     public void setStatus(int id, String status) throws SQLException {
@@ -200,6 +201,7 @@ public class Admin {
                 ps.executeUpdate();
             }
         }
+        DSA.HashTable.markStale();
     }
 
     public void deleteAccount(int id) throws SQLException {

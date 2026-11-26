@@ -4,6 +4,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class AccountDAO {
 
@@ -68,5 +70,34 @@ public class AccountDAO {
                 return a;
             }
         }
+    }
+
+    public static class RestaurantInfo {
+        public int id;
+        public String name;
+        public String area;
+    }
+
+    public static List<RestaurantInfo> listActiveRestaurants() throws SQLException {
+        String sql = "SELECT id, full_name, address FROM accounts "
+                   + "WHERE UPPER(role) = 'RESTAURANT' AND status = ? "
+                   + "ORDER BY full_name";
+
+        List<RestaurantInfo> list = new ArrayList<>();
+        try (Connection con = databaseConnection.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setString(1, STATUS_ACTIVE);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    RestaurantInfo r = new RestaurantInfo();
+                    r.id = rs.getInt("id");
+                    r.name = rs.getString("full_name");
+                    String address = rs.getString("address");
+                    r.area = (address == null) ? "" : address.trim();
+                    list.add(r);
+                }
+            }
+        }
+        return list;
     }
 }
