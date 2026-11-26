@@ -28,6 +28,7 @@ public class CustomerDashboardRestaurant extends JPanel {
     public JLabel lblRestaurant;
     public JScrollPane scrollPane;
     public JPanel scrollContentPanel, restoLine;
+    private JLabel lblEmpty; 
 
     public CustomerDashboardRestaurant(){
         setBounds(0, 0, 1024, 720); 
@@ -85,6 +86,12 @@ public class CustomerDashboardRestaurant extends JPanel {
         scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_NEVER);
         add(scrollPane);
+        lblEmpty = new JLabel("No restaurants yet", SwingConstants.CENTER);
+        lblEmpty.setFont(new Font("Segoe UI", Font.BOLD, 20));
+        lblEmpty.setForeground(new Color(150, 145, 170));
+        lblEmpty.setBounds(110, 120, 860, 40);
+        lblEmpty.setVisible(false);
+        scrollContentPanel.add(lblEmpty);
 
         // RESTAURANT
         lblRestaurant = new JLabel("Restaurants");
@@ -225,6 +232,8 @@ public class CustomerDashboardRestaurant extends JPanel {
             }
             shown++;
         }
+        blEmpty.setText(dynamicCards.isEmpty() ? "No restaurants yet" : "No restaurants found");
+        lblEmpty.setVisible(shown == 0);
         int rows = (shown + PER_ROW - 1) / PER_ROW;
         scrollContentPanel.setPreferredSize(new Dimension(1000, Math.max(605, 113 + rows * 217 + 30)));
         scrollContentPanel.revalidate();
