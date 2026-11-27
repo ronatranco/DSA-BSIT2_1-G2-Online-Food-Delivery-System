@@ -597,7 +597,7 @@ public class RestaurantDashboard extends JPanel {
 
       private void saveProfile() {
          if (restaurantName.getText().trim().isEmpty() || location.getSelectedIndex() < 0) {
-            notice.warn("Restaurant name can't be empty, and the location must be Zone A, Zone B or Zone C.");
+            notice.warn("Restaurant name can't be empty, you must choose a location.");
             return;
          }
          Restaurant.Restaurantt r = data.restaurant;
