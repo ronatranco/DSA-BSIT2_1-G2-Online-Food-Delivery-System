@@ -49,6 +49,30 @@ public class databaseConnection {
                     st.executeUpdate("ALTER TABLE accounts ADD COLUMN status VARCHAR(20) NOT NULL DEFAULT 'Active'");
                 }
             }
+
+            st.executeUpdate(
+                "CREATE TABLE IF NOT EXISTS orders ("
+              + " id              INT AUTO_INCREMENT PRIMARY KEY,"
+              + " order_code      VARCHAR(30)  NOT NULL UNIQUE,"
+              + " customer_id     INT          NULL,"
+              + " restaurant_id   INT          NULL,"
+              + " restaurant_name VARCHAR(100) NOT NULL,"
+              + " location        VARCHAR(255) NULL,"
+              + " payment_method  VARCHAR(30)  NULL,"
+              + " urgency         VARCHAR(20)  NOT NULL DEFAULT 'Standard',"
+              + " status          VARCHAR(30)  NOT NULL DEFAULT 'Pending',"
+              + " total           DECIMAL(10,2) NOT NULL DEFAULT 0,"
+              + " created_at      TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP)");
+
+            st.executeUpdate(
+                "CREATE TABLE IF NOT EXISTS order_items ("
+              + " id                   INT AUTO_INCREMENT PRIMARY KEY,"
+              + " order_id             INT          NOT NULL,"
+              + " item_name            VARCHAR(100) NOT NULL,"
+              + " quantity             INT          NOT NULL,"
+              + " unit_price           DECIMAL(10,2) NOT NULL,"
+              + " special_instructions VARCHAR(255) NULL,"
+              + " FOREIGN KEY (order_id) REFERENCES orders(id) ON DELETE CASCADE)");
         }
 
         initialized = true;
