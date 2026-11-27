@@ -288,7 +288,7 @@ public class CustomerDashboardCheckout extends JPanel {
             if (proceed) {
                 if (currentOrder != null) {
                     currentOrder.setStatus("CONFIRMED");
-
+                    currentOrder.setUrgency(selectedUrgency);
                     double finalTotal = currentOrder.calculateFinalTotal(
                             deliveryFeeAmount + urgencyFeeAmount, voucherDiscountAmount);
                     String location = "Pickup".equals(selectedDelivery) ? "Pickup" : selectedAddress;
@@ -313,7 +313,7 @@ public class CustomerDashboardCheckout extends JPanel {
     // 8. Record of Order Time
     private void recordTimedOutOrder() {
         if (currentOrder == null) return;
-
+        currentOrder.setUrgency(selectedUrgency);
         double finalTotal = currentOrder.calculateFinalTotal(
                 deliveryFeeAmount + urgencyFeeAmount, voucherDiscountAmount);
         String location = "Pickup".equals(selectedDelivery) ? "Pickup" : selectedAddress;
@@ -723,7 +723,7 @@ public class CustomerDashboardCheckout extends JPanel {
         cardStandard.add(createPriceBadge("FREE", innerWidth));
         contentPanel.add(cardStandard);
 
-        cardPriority = createOptionCard(8, 0, innerWidth, "⚡ Priority (15-25 mins)", false, urgencySelection, "Priority");
+        cardPriority = createOptionCard(8, 0, innerWidth, "⚡ Express (15-25 mins)", false, urgencySelection, "Priority");
         chkPriority = (RoundCheckBox) cardPriority.getClientProperty("checkbox");
         cardPriority.add(createPriceBadge(String.format("+₱%.0f", PRIORITY_FEE), innerWidth));
         contentPanel.add(cardPriority);
@@ -743,8 +743,8 @@ public class CustomerDashboardCheckout extends JPanel {
 
         chkPriority.addActionListener(e -> {
             if (chkPriority.isSelected()) {
-                urgencySelection[0] = "Priority";
-                selectedUrgency = "Priority";
+                urgencySelection[0] = "Express";
+                selectedUrgency = "Express";
                 urgencyFeeAmount = PRIORITY_FEE;
                 cardStandard.repaint(); cardPriority.repaint();
                 updatePaymentSummaryLabels();
@@ -781,7 +781,7 @@ public class CustomerDashboardCheckout extends JPanel {
         lblDeliveryFeeValue.setForeground(TEXT_DARK);
         contentPanel.add(lblDeliveryFeeValue);
 
-        lblUrgencyFee = new JLabel("Priority Fee");
+        lblUrgencyFee = new JLabel("Express Fee");
         lblUrgencyFee.setFont(new Font("Segoe UI", Font.PLAIN, 11));
         lblUrgencyFee.setForeground(TEXT_DARK);
         contentPanel.add(lblUrgencyFee);

@@ -44,6 +44,8 @@ public class CustomerDashboard extends JPanel {
     private final Map<String, CustomerDashboardRestaurantMenus> menuPanels = new LinkedHashMap<>();
     private List<AccountDAO.RestaurantInfo> restaurants = new ArrayList<>();
     private final DSA.HashTable areaIndex = new DSA.HashTable(); 
+    private static final String ALL_LOCATIONS = "All locations";
+    
     private CustomerDashboardTrackOrder pnlRightTrackOrder;
     private CustomerDashboardHistory pnlRightHistory;
     private CustomerDashboardProfile pnlRightProfile;
@@ -264,6 +266,9 @@ public class CustomerDashboard extends JPanel {
                     @Override
                     public void actionPerformed(java.awt.event.ActionEvent ev) {
                         String selectedLocation = ev.getActionCommand();
+                        if (selectedLocation.equals(ALL_LOCATIONS)) {
+                            selectedLocation = "";          // empty = show every restaurant
+                        }
                         lblPlaceholder.setText(selectedLocation);
                         
                         if (controller != null) {
@@ -271,6 +276,10 @@ public class CustomerDashboard extends JPanel {
                         }
                     }
                 };
+                JMenuItem itemAll = new JMenuItem(ALL_LOCATIONS);
+                itemAll.addActionListener(menuListener);
+                dropdownMenu.add(itemAll);
+                dropdownMenu.addSeparator();
                 for (String area : getAreaIndex().areas()) {
                     JMenuItem item = new JMenuItem(area);
                     item.addActionListener(menuListener);

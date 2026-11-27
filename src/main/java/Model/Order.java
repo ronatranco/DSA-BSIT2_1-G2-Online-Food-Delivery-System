@@ -21,7 +21,7 @@ import Database.databaseConnection;
  * 
  */
 public class Order {
-
+    
     private String orderId;
     private String customerId;
     private String customerName;
@@ -30,6 +30,7 @@ public class Order {
     private String restaurantId;
     private List<OrderItem> orderItems;
     private String status;
+    private String urgency = "Standard";   // delivery urgency chosen at checkout
 
     public Order(String orderId, String customerId, String customerName, String customerPhone,
                  String deliveryAddress, String restaurantId, List<OrderItem> orderItems, String status) {
@@ -59,6 +60,10 @@ public class Order {
     public String getStatus() { return status; }
     public void setStatus(String status) { this.status = status; }
     
+    public String getUrgency() { return urgency; }
+    public void setUrgency(String urgency) {
+        this.urgency = (urgency == null || urgency.isEmpty()) ? "Standard" : urgency;
+    }
     public String getCustomerName() { return customerName; }
     public void setCustomerName(String customerName) { this.customerName = customerName; }
 
@@ -333,9 +338,16 @@ public class Order {
             // 8.3 Owner + Order ID
             order.setCustomerId(sessionCustomerId);
             String id = order.getOrderId();
-            if (id == null || id.trim().isEmpty()) {
-                id = String.format("#ORD-%d-%04d", LocalDate.now().getYear(), nextId++);
+            try {
+                id = Database.OrderDAO.insertOrder(order, storeName, location, paymentMop, finalTotal);
                 order.setOrderId(id);
+            } catch (Exception ex) {
+                System.out.println("Could not save order to the database: " + ex.getMessage());
+                // fall back to an in-memory id so the app keeps working
+                if (id == null || id.trim().isEmpty()) {
+                    id = String.format("#ORD-%d-%04d", LocalDate.now().getYear(), nextId++);
+                    order.setOrderId(id);
+                }
             }
 
             OrderData data = new OrderData(
@@ -374,23 +386,37 @@ public class Order {
 
         // 8.5 Order Received
         public boolean markReceived(String orderId) {
+            try {
+                // the database decides: must be this customer's order and currently Delivered
+                if (!Database.OrderDAO.markReceived(orderId)) return false;
+            } catch (Exception ex) {
+                System.out.println("Could not mark order received in the database: " + ex.getMessage());
+                return false;
+            }
+            // keep the in-memory copy in step (it only exists for orders placed this session)
             for (OrderData o : orders) {
-                if (o.getOrderId().equals(orderId) && mine(o) && DELIVERED.equalsIgnoreCase(o.getStatus())) {
-                    applyStatus(o, RECEIVED);
-                    fireChanged();
-                    return true;
+                if (o.getOrderId().equals(orderId)) {
+                    o.setStatus(RECEIVED);
                 }
             }
-            return false;
+            fireChanged();
+            return true;
         }
 
         // 8.6 Track Order
+
         public List<OrderData> getActive() {
-            List<OrderData> active = orders.stream()
-                    .filter(this::mine)
-                    .filter(o -> !o.getStatus().equalsIgnoreCase(RECEIVED)
-                              && !o.getStatus().equalsIgnoreCase(CANCELLED))
-                    .collect(Collectors.toList());
+            List<OrderData> active;
+            try {
+                active = Database.OrderDAO.listForCustomer(true);   // from the orders table
+            } catch (Exception ex) {
+                System.out.println("Could not load orders from the database: " + ex.getMessage());
+                active = orders.stream()
+                        .filter(this::mine)
+                        .filter(o -> !o.getStatus().equalsIgnoreCase(RECEIVED)
+                                  && !o.getStatus().equalsIgnoreCase(CANCELLED))
+                        .collect(Collectors.toList());
+            }
             return PriorityQueue.sort(active, OrderStore::compareByPriority);
         }
 
@@ -400,12 +426,16 @@ public class Order {
             if (aDelivered != bDelivered) {
                 return aDelivered ? 1 : -1;
             }
-            int rankA = "Priority".equals(a.getDeliveryType()) ? 0 : 1;
-            int rankB = "Priority".equals(b.getDeliveryType()) ? 0 : 1;
+            int rankA = isExpress(a.getDeliveryType()) ? 0 : 1;
+            int rankB = isExpress(b.getDeliveryType()) ? 0 : 1;
             if (rankA != rankB) {
                 return Integer.compare(rankA, rankB);
             }
             return Long.compare(a.getSeq(), b.getSeq());
+        }
+
+        private static boolean isExpress(String type) {
+            return "Express".equalsIgnoreCase(type) || "Priority".equalsIgnoreCase(type);
         }
 
         // 8.7 Order History
@@ -436,6 +466,12 @@ public class Order {
             o.setStatus(status);
             if (DELIVERED.equalsIgnoreCase(status)) {
                 o.setDeliveryDate(LocalDateTime.now().format(FMT));
+            }
+            // keep the database in step with the in-memory copy
+            try {
+                Database.OrderDAO.updateStatus(o.getOrderId(), status);
+            } catch (Exception ex) {
+                System.out.println("Could not update order status in the database: " + ex.getMessage());
             }
         }
 
