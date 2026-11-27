@@ -198,15 +198,15 @@ public final class Restaurant {
       switch (brand) {
          case BRAIN_CELLS_MILK_TEA:
             restaurant.name = "Brain Cells Milk Tea";
-            restaurant.location = "Zone B";
+            restaurant.location = "Binan";
             break;
          case MANG_PINAASA:
             restaurant.name = "Mang Pinaasa";
-            restaurant.location = "Zone C";
+            restaurant.location = "Santa Rosa";
             break;
          default:
             restaurant.name = "McDollibee";
-            restaurant.location = "Zone A";
+            restaurant.location = "San Pedro";
             break;
       }
 
@@ -351,7 +351,8 @@ public final class Restaurant {
 
     public Order addOrder(String id, String customer, String items, double total, String payment, String deliveryType) {
        Order order = new Order(id, customer, items, total, payment, LocalTime.now().format(TIME_FORMAT), Order.PENDING);
-       order.deliveryType = Order.PRIORITY.equals(deliveryType) ? Order.PRIORITY : Order.STANDARD;
+       boolean express = Order.PRIORITY.equals(deliveryType) || "Express".equalsIgnoreCase(deliveryType);
+       order.deliveryType = express ? Order.PRIORITY : Order.STANDARD;
        orders.add(0, order);
        notifyChanged();
        return order;

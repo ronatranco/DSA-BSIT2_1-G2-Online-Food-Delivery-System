@@ -4,6 +4,7 @@
  */
 package GUI;
 
+import DSA.GraphDeliveryRoutes;
 import Model.Admin;
 import Model.Admin.*;
 import Model.Restaurant;
@@ -983,7 +984,7 @@ public class AdminDashboard extends JPanel implements MouseListener {
             form.setOpaque(false);
             form.add(AdminUI.label("Restaurant Name:"));
             form.add(name);
-            form.add(AdminUI.label("Location (Zone A\u2013C):"));
+            form.add(AdminUI.label("Location (area):"));
             form.add(location);
             form.add(AdminUI.label("Owner Name:"));
             form.add(owner);
@@ -1080,7 +1081,7 @@ public class AdminDashboard extends JPanel implements MouseListener {
                 return;
             }
             if (location.getSelectedIndex() < 0) {
-                AdminUI.warn(this, "Please choose the restaurant's location: Zone A, Zone B or Zone C.");
+                AdminUI.warn(this, "Please choose the restaurant's location.");
                 return;
             }
             Restaurant data = current();
@@ -1357,12 +1358,12 @@ public class AdminDashboard extends JPanel implements MouseListener {
     }
 
     private static final class AdminRoutesPanel extends JPanel implements AdminUI.Section {
-        private final DeliveryGraph graph;
-        private final String[] hubNames = new String[Restaurant.Brand.values().length];
+        private final GraphDeliveryRoutes graph;
+
 
         private final DefaultTableModel model = AdminUI.readOnlyModel("From", "To", "Distance (km)", "Est. time (min)");
         private final JTable table = AdminUI.table(model);
-        private final List<DeliveryGraph.Road> shown = new ArrayList<>();
+        private final List<GraphDeliveryRoutes.Road> shown = new ArrayList<>();
 
         private final JComboBox<String> fromBox = new JComboBox<>();
         private final JComboBox<String> toBox = new JComboBox<>();
@@ -1373,13 +1374,9 @@ public class AdminDashboard extends JPanel implements MouseListener {
             super(new BorderLayout(0, 12));
             setOpaque(false);
 
-            List<String> names = new ArrayList<>();
-            Restaurant.Brand[] brands = Restaurant.Brand.values();
-            for (int i = 0; i < brands.length; i++) {
-                hubNames[i] = Restaurant.get(brands[i]).restaurant.name;
-                names.add(hubNames[i]);
-            }
-            graph = DeliveryGraph.createDefault(names);
+            graph = GraphDeliveryRoutes.shared();
+            syncHubs();
+
 
             JButton addLocation = AdminUI.button("Add Location", AdminUI.PURPLE_DARK);
             addLocation.addActionListener(e -> addLocation());
@@ -1459,27 +1456,26 @@ public class AdminDashboard extends JPanel implements MouseListener {
 
         @Override
         public void onShow() {
-            syncRestaurantNames();
+            syncHubs();
             refresh();
         }
 
-        private void syncRestaurantNames() {
-            Restaurant.Brand[] brands = Restaurant.Brand.values();
-            for (int i = 0; i < brands.length; i++) {
-                String current = Restaurant.get(brands[i]).restaurant.name;
-                if (!current.equals(hubNames[i]) && graph.renameLocation(hubNames[i], current)) {
-                    hubNames[i] = current;
-                }
+        // a restaurant's area becomes a hub in the graph
+        private void syncHubs() {
+            List<String> areas = new ArrayList<>();
+            for (Restaurant.Brand brand : Restaurant.Brand.values()) {
+                areas.add(Restaurant.get(brand).restaurant.location);
             }
+            graph.setHubs(areas);
         }
 
         private void refresh() {
             model.setRowCount(0);
             shown.clear();
-            for (DeliveryGraph.Road road : graph.roads()) {
+            for (GraphDeliveryRoutes.Road road : graph.roads()) {
                 shown.add(road);
                 model.addRow(new Object[]{road.a, road.b, String.format("%.1f", road.km),
-                    (int) Math.ceil(road.km / DeliveryGraph.AVG_SPEED_KMH * 60.0)});
+                    (int) Math.ceil(road.km / GraphDeliveryRoutes.AVG_SPEED_KMH * 60.0)});
             }
             Object from = fromBox.getSelectedItem(), to = toBox.getSelectedItem();
             fromBox.removeAllItems();
@@ -1510,7 +1506,7 @@ public class AdminDashboard extends JPanel implements MouseListener {
                 result.setText("Start and destination are the same place.");
                 return;
             }
-            DeliveryGraph.Route route = graph.shortestRoute(from, to);
+            GraphDeliveryRoutes.Route route = graph.shortestRoute(from, to);
             result.setText(route == null
                     ? "No route exists between " + from + " and " + to + ". Add a road to connect them."
                     : describe(route));
@@ -1525,12 +1521,12 @@ public class AdminDashboard extends JPanel implements MouseListener {
                 result.setText(to + " is itself a restaurant.");
                 return;
             }
-            DeliveryGraph.Route route = graph.nearestHubRoute(to);
+            GraphDeliveryRoutes.Route route = graph.nearestHubRoute(to);
             result.setText(route == null ? "No restaurant can currently reach " + to + "."
                     : "Nearest restaurant: " + route.path.get(0) + "\n" + describe(route));
         }
 
-        private String describe(DeliveryGraph.Route route) {
+        private String describe(GraphDeliveryRoutes.Route route) {
             return route + "\n\nDistance: " + String.format("%.1f", route.km) + " km"
                     + "\nEstimated ride: about " + route.estimatedMinutes() + " min";
         }
@@ -1578,7 +1574,7 @@ public class AdminDashboard extends JPanel implements MouseListener {
             JTextField km = new JTextField();
             int row = table.getSelectedRow();
             if (row >= 0) {
-                DeliveryGraph.Road road = shown.get(table.convertRowIndexToModel(row));
+                GraphDeliveryRoutes.Road road = shown.get(table.convertRowIndexToModel(row));
                 a.setSelectedItem(road.a);
                 b.setSelectedItem(road.b);
                 km.setText(String.format("%.1f", road.km));
@@ -1608,7 +1604,7 @@ public class AdminDashboard extends JPanel implements MouseListener {
             if (row < 0) {
                 return;
             }
-            DeliveryGraph.Road road = shown.get(row);
+            GraphDeliveryRoutes.Road road = shown.get(row);
             if (AdminUI.confirm(this, "Remove the road " + road.a + " \u2194 " + road.b + "?")) {
                 graph.removeRoad(road.a, road.b);
                 refresh();

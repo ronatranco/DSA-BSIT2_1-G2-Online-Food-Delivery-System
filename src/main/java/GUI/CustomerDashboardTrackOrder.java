@@ -12,7 +12,7 @@ import javax.swing.table.DefaultTableModel;
 import Model.Order.OrderData;
 import Model.Order.OrderItem;
 import Model.Order.OrderStore;
-
+import DSA.GraphDeliveryRoutes;
 /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
@@ -64,7 +64,7 @@ public class CustomerDashboardTrackOrder extends JPanel {
         add(lblTitle);
 
         // 5. Table Model
-        String[] columnOrder = {"Restaurant Name", "Order Summary", "Total", "Status"};
+        String[] columnOrder = {"Restaurant Name", "Order Summary", "Total", "Status", "Distance", "Est. Time"};
         tableModel = new DefaultTableModel(columnOrder, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
@@ -201,7 +201,36 @@ public class CustomerDashboardTrackOrder extends JPanel {
         OrderStore.get().addListener(() -> SwingUtilities.invokeLater(this::refreshOrders));
         refreshOrders();
     }
+    // distance and delivery time from the restaurant's area to the customer's area (Dijkstra)
+    private String[] routeInfo(OrderData o) {
+        if ("Pickup".equalsIgnoreCase(o.getLocation())) {
+            return new String[]{"Pickup", "-"};
+        }
+        GraphDeliveryRoutes graph = GraphDeliveryRoutes.shared();
+        String from = restaurantArea(o.getStoreName());
+        String to = graph.resolveArea(o.getLocation());
+        if (from == null || to == null) {
+            return new String[]{"-", "-"};
+        }
+        if (from.equals(to)) {
+            return new String[]{"Same area", "10 min"};
+        }
+        GraphDeliveryRoutes.Route route = graph.shortestRoute(from, to);
+        if (route == null) {
+            return new String[]{"No route", "-"};
+        }
+        return new String[]{String.format("%.1f km", route.km), route.estimatedMinutes() + " min"};
+    }
 
+    private String restaurantArea(String storeName) {
+        for (Model.Restaurant.Brand brand : Model.Restaurant.Brand.values()) {
+            Model.Restaurant r = Model.Restaurant.get(brand);
+            if (r.restaurant.name.equalsIgnoreCase(storeName)) {
+                return GraphDeliveryRoutes.shared().resolveArea(r.restaurant.location);
+            }
+        }
+        return null;
+    }
     // 11. Refresh Orders 
     public void refreshOrders() {
         String keepId = null;
@@ -217,11 +246,14 @@ public class CustomerDashboardTrackOrder extends JPanel {
                 reselect = shownOrders.size();
             }
             shownOrders.add(o);
+            String[] eta = routeInfo(o);
             tableModel.addRow(new Object[]{
                 o.getStoreName(),
                 buildSummary(o),
                 o.getTotalPaid(),
-                o.getStatus()
+                o.getStatus(),
+                eta[0],
+                eta[1]
             });
         }
         if (reselect >= 0) {

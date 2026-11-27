@@ -114,7 +114,7 @@ public class OrderDAO {
         String login = AccountDAO.getLogin();
         if (login == null) return result;
 
-        String sql = "SELECT id, order_code, restaurant_name, location, payment_method, status, total, created_at "
+        String sql = "SELECT id, order_code, restaurant_name, location, payment_method, status, total, created_at, urgency "
                    + "FROM orders "
                    + "WHERE customer_id = (SELECT id FROM accounts WHERE username = ? OR email = ? LIMIT 1) "
                    + "AND status " + (active ? "NOT IN" : "IN") + " ('Received', 'Cancelled') "
@@ -138,17 +138,20 @@ public class OrderDAO {
                                     ri.getDouble("unit_price"), ri.getString("special_instructions")));
                         }
                     }
-                    result.add(new Order.OrderData(
-                            rs.getString("restaurant_name"),
-                            rs.getString("location"),
-                            rs.getString("order_code"),
-                            rs.getTimestamp("created_at").toLocalDateTime().format(FMT),
-                            "—",
-                            rs.getString("payment_method"),
-                            rs.getString("status"),
-                            String.format("₱%.2f", rs.getDouble("total")),
-                            items,
-                            Order.OrderStore.getSessionCustomerId()));
+                    Order.OrderData od = new Order.OrderData(
+                    rs.getString("restaurant_name"),
+                    rs.getString("location"),
+                    rs.getString("order_code"),
+                    rs.getTimestamp("created_at").toLocalDateTime().format(FMT),
+                    "—",
+                    rs.getString("payment_method"),
+                    rs.getString("status"),
+                    String.format("₱%.2f", rs.getDouble("total")),
+                    items,
+                    Order.OrderStore.getSessionCustomerId());
+                    od.setDeliveryType(rs.getString("urgency"));
+                    od.setSeq(rs.getInt("id"));      
+                    result.add(od);
                 }
             }
         }
