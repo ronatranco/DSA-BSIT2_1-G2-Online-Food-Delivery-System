@@ -17,7 +17,9 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Random;
+import java.util.concurrent.atomic.AtomicLong;
 import javax.swing.Timer;
+import DSA.PriorityQueue;
 import Database.AccountDAO;
 import java.sql.SQLException;
 
@@ -114,6 +116,9 @@ public final class Restaurant {
       public static final String COMPLETED = "Delivered";
       public static final String CANCELLED = "Cancelled";
       public static final String FAILED = "Failed";
+      public static final String STANDARD = "Standard";
+      public static final String PRIORITY = "Priority";
+      private static final AtomicLong SEQUENCE = new AtomicLong();
       public final String id;
       public final String customer;
       public final String items;
@@ -121,6 +126,8 @@ public final class Restaurant {
       public final String payment;
       public final String time;
       public String status;
+      public String deliveryType = STANDARD;
+      public final long seq = SEQUENCE.incrementAndGet();
 
       public Order(String id, String customer, String items, double total, String payment, String time, String status) {
          this.id = id;
@@ -134,6 +141,20 @@ public final class Restaurant {
 
       public boolean isFinal() {
          return COMPLETED.equals(status) || CANCELLED.equals(status) || FAILED.equals(status);
+      }
+
+      public int priorityRank() {
+         return PRIORITY.equals(deliveryType) ? 0 : 1;
+      }
+
+      public static int compareByPriority(Order a, Order b) {
+         if (a.isFinal() != b.isFinal()) {
+            return a.isFinal() ? 1 : -1;
+         }
+         if (a.priorityRank() != b.priorityRank()) {
+            return Integer.compare(a.priorityRank(), b.priorityRank());
+         }
+         return Long.compare(a.seq, b.seq);
       }
 
       public boolean countsAsSale() {
@@ -325,7 +346,12 @@ public final class Restaurant {
     }
 
     public Order addOrder(String id, String customer, String items, double total, String payment) {
+       return addOrder(id, customer, items, total, payment, Order.STANDARD);
+    }
+
+    public Order addOrder(String id, String customer, String items, double total, String payment, String deliveryType) {
        Order order = new Order(id, customer, items, total, payment, LocalTime.now().format(TIME_FORMAT), Order.PENDING);
+       order.deliveryType = Order.PRIORITY.equals(deliveryType) ? Order.PRIORITY : Order.STANDARD;
        orders.add(0, order);
        notifyChanged();
        return order;
@@ -369,6 +395,20 @@ public final class Restaurant {
       }
       String payment = random.nextBoolean() ? "Paid" : "Cash on Delivery";
       return addOrder(customers[random.nextInt(customers.length)], items.toString(), total, payment);
+   }
+
+   public Order nextPendingOrder() {
+      PriorityQueue<Order> queue = new PriorityQueue<>(Order::compareByPriority);
+      for (Order order : orders) {
+         if (Order.PENDING.equals(order.status)) {
+            queue.enqueue(order);
+         }
+      }
+      return queue.dequeue();
+   }
+
+   public static List<Order> byPriority(List<Order> source) {
+      return PriorityQueue.sort(source, Order::compareByPriority);
    }
 
    public int pendingCount() {
